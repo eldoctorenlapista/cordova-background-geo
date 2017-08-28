@@ -434,7 +434,7 @@ enum {
             }
 
             NSString *syncUrl = [_config hasSyncUrl] ? _config.syncUrl : _config.url;
-            [uploader sync:syncUrl onLocationThreshold:_config.syncThreshold];
+            [uploader sync:syncUrl onLocationThreshold:_config.syncThreshold withHttpHeaders:_config.httpHeaders];
         });
     }
 
