@@ -175,7 +175,9 @@ public class LocationService extends Service {
 
         dao = (DAOFactory.createLocationDAO(this));
         syncAccount = AccountHelper.CreateSyncAccount(this,
-                AuthenticatorService.getAccount(getStringResource(Config.ACCOUNT_TYPE_RESOURCE)));
+                AuthenticatorService.getAccount(
+                    getStringResource(Config.ACCOUNT_NAME_RESOURCE),
+                    getStringResource(Config.ACCOUNT_TYPE_RESOURCE)));
 
         registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }

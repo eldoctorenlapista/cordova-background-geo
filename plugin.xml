@@ -21,6 +21,7 @@
     <platform name="android">
         <preference name="ICON" default="@mipmap/icon" />
         <preference name="SMALL_ICON" default="@mipmap/icon" />
+        <preference name="ACCOUNT_NAME" default="@string/app_name" />
         <preference name="ACCOUNT_LABEL" default="@string/app_name" />
         <preference name="ACCOUNT_TYPE" default="$PACKAGE_NAME.account" />
         <preference name="CONTENT_AUTHORITY" default="$PACKAGE_NAME" />
@@ -131,6 +132,7 @@
         </config-file>
 
         <config-file target="res/values/strings.xml" parent="/resources">
+            <string name="account_name">$ACCOUNT_NAME</string>
             <string name="account_type">$ACCOUNT_TYPE</string>
             <string name="content_authority">$CONTENT_AUTHORITY</string>
         </config-file>
