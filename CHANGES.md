@@ -1,5 +1,9 @@
 ## Changelog
 
+### [2.3.0] - 2017-10-31
+### Added
+- Android Make account name configurable PR #334 by unixmonkey
+
 ### [2.2.5] - 2016-11-13
 ### Fixed
 - Android fixing issue #195 PR204
