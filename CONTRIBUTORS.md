@@ -6,3 +6,4 @@ Many thanks to all contributors and special thanks to [christocracy](https://git
 * [codebling](https://github.com/codebling)
 * [pmwisdom](https://github.com/pmwisdom)
 * [nevyn](https://github.com/nevyn)
+* [unixmonkey](https://github.com/unixmonkey)

@@ -1,5 +1,12 @@
 # cordova-plugin-mauron85-background-geolocation
 
+## Donation
+
+Please support my work and support continuous development by your donation.
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KTUXQQD85F666)
+
+
 ## Description
 
 Cross-platform geolocation for Cordova / PhoneGap with battery-saving "circular region monitoring" and "stop detection".
@@ -28,20 +35,9 @@ In that case, also provide relevant parts of output of `adb logcat` command.
 ## Semantic Versioning
 This plugin is following semantic versioning as defined http://semver.org
 
-## Migration to 2.0
+## Migrations
 
-As version 2.0 platform support for Windows Phone 8 was removed.
-Some incompatible changes were introduced:
-
-* option `stopOnTerminate` defaults to true
-* option `locationService` renamed to `locationProvider`
-* android providers are now **ANDROID_DISTANCE_FILTER_PROVIDER** and **ANDROID_ACTIVITY_PROVIDER**
-* removed `locationTimeout` option (use `interval` in milliseconds instead)
-* `notificationIcon` was replaced with two separate options (`notificationIconSmall` and `notificationIconLarge`)
-* js object backgroundGeoLocation is deprecated use `backgroundGeolocation` instead
-* iOS foreground mode witch automatic background mode switch
-* iOS [switchMode](#switchmodemodeid-success-fail) allows to switch between foreground and background mode
-* setPace on iOS is deprecated use switchMode instead
+See [MIGRATIONS.md](/MIGRATIONS.md)
 
 ## Installing the plugin
 
@@ -69,6 +65,15 @@ NOTE: If you're using *hydration*, you have to download and reinstall your app w
 
 ## Compilation
 
+### Compatibility
+
+| Plugin version   | Cordova CLI       | Cordova Platform Android | Cordova Platform iOS |
+|------------------|-------------------|--------------------------|----------------------|
+| <2.3.0           | 6.4.0             | 6.3.0                    |                      |
+| >=2.3.0          | 7.1.0             | 6.3.0                    |                      |
+
+**Please note** that as of Cordova Android 6.0.0 icons are by default in mipmap/ directory not drawable/ directory, so this plugin will have a build issue on < 6.0.0 Cordova builds, you will need to update Authenticator.xml to drawable directory from mipmap directory to work on older versions.
+
 ### Android
 You will need to ensure that you have installed the following items through the Android SDK Manager:
 
@@ -81,10 +86,6 @@ You will need to ensure that you have installed the following items through the 
 | Android Support Library    | 23.1.1  |
 | Google Play Services       | 29      |
 | Google Repository          | 24      |
-
-
-#### Backwards Compatibility
-Please note that as of Cordova Android 6.0.0 icons are by default in mipmap/ directory not drawable/ directory, so this plugin will have a build issue on < 6.0.0 Cordova builds, you will need to update Authenticator.xml to drawable directory from mipmap directory to work on older versions.
 
 
 ## Quick Example
@@ -476,102 +477,7 @@ Plugin will not work in XDK emulator ('Unimplemented API Emulation: BackgroundGe
 
 ## Debugging
 
-Plugin logs all activity into database. Logs are retained for 7 days.
-You can attach your device to the computer and print logs to console.
-
-* For iOS open Safari and select from menu `Develop` ➜ `Your Device name`
-* For Android launch Chrome `about:inspect`
-
-Copy paste following snippet into your browser console:
-
-```javascript
-function padLeft(nr, n, str) {
-  return Array(n - String(nr).length + 1).join(str || '0') + nr;
-}
-
-function printLogs(logEntries, logFormatter, COLORS, MAX_LINES) {
-  MAX_LINES = MAX_LINES || 100; // maximum lines to print per batch
-  var batch = Math.ceil(logEntries.length / MAX_LINES);
-  var logLines = Array(MAX_LINES); //preallocate memory prevents GC
-  var logLinesColor = Array(MAX_LINES * 2);
-  for (var i = 0; i < batch; i++) {
-    var it = 0;
-    var logEntriesPart = logEntries.slice((i * MAX_LINES), (i + 1) * MAX_LINES);
-    for (var j = 0; j < logEntriesPart.length; j++) {
-      var logEntry = logEntriesPart[j];
-      logLines[j] = logFormatter(logEntry);
-      logLinesColor[it++] = ('background:white;color:black');
-      logLinesColor[it++] = (COLORS[logEntry.level]);      
-    }
-    if (logEntriesPart.length < MAX_LINES) {
-      console.log.apply(console, [logLines.slice(0,logEntriesPart.length).join('\n')]
-        .concat(logLinesColor.slice(0,logEntriesPart.length*2)));
-    } else {
-      console.log.apply(console, [logLines.join('\n')].concat(logLinesColor));
-    }
-  }
-}
-
-function printAndroidLogs(logEntries) {
-  var COLORS = Object();
-  COLORS['ERROR'] = 'background:white;color:red';
-  COLORS['WARN'] = 'background:black;color:yellow';
-  COLORS['INFO'] = 'background:white;color:blue';
-  COLORS['TRACE'] = 'background:white;color:black';
-  COLORS['DEBUG'] = 'background:white;color:black';
-
-  var logFormatter = function(logEntry) {
-    var d = new Date(logEntry.timestamp);
-    var dateStr = [d.getFullYear(), padLeft(d.getMonth()+1,2), padLeft(d.getDate(),2)].join('/');
-    var timeStr = [padLeft(d.getHours(),2), padLeft(d.getMinutes(),2), padLeft(d.getSeconds(),2)].join(':');
-    return ['%c[', dateStr, ' ', timeStr, '] %c', logEntry.logger, ':', logEntry.message].join('');
-  }
-
-  return printLogs(logEntries, logFormatter, COLORS);
-}
-
-function printIosLogs(logEntries) {
-  var COLORS = Array();
-  COLORS[1] = 'background:white;color:red';
-  COLORS[2] = 'background:black;color:yellow';
-  COLORS[4] = 'background:white;color:blue';
-  COLORS[8] = 'background:white;color:black';
-  COLORS[16] = 'background:white;color:black';
-
-  var logFormatter = function(logEntry) {
-    var d = new Date(logEntry.timestamp * 1000);
-    var dateStr = [d.getFullYear(), padLeft(d.getMonth()+1,2), padLeft(d.getDate(),2)].join('/');
-    var timeStr = [padLeft(d.getHours(),2), padLeft(d.getMinutes(),2), padLeft(d.getSeconds(),2)].join(':');
-    return ['%c[', dateStr, ' ', timeStr, '] %c', logEntry.logger, ':', logEntry.message].join('');
-  }
-
-  return printLogs(logEntries, logFormatter, COLORS);
-}
-```
-
-Print Android logs:
-
-```
-backgroundGeolocation.getLogEntries(100, printAndroidLogs);
-```
-
-Print iOS logs:
-
-```
-backgroundGeolocation.getLogEntries(100, printIosLogs);
-```
-
-### Debugging sounds
-| *ios*                               | *android*                         |                         |
-|-------------------------------------|-----------------------------------|-------------------------|
-| Exit stationary region              | Calendar event notification sound | dialtone beep-beep-beep |
-| Geolocation recorded                | SMS sent sound                    | tt short beep           |
-| Aggressive geolocation engaged      | SIRI listening sound              |                         |
-| Passive geolocation engaged         | SIRI stop listening sound         |                         |
-| Acquiring stationary location sound | "tick,tick,tick" sound            |                         |
-| Stationary location acquired sound  | "bloom" sound                     | long tt beep            |
-
-**NOTE:** For iOS  in addition, you must manually enable the *Audio and Airplay* background mode in *Background Capabilities* to hear these debugging sounds.
+See [DEBUGGING.md](/DEBUGGING.md)
 
 ## Geofencing
 There is nice cordova plugin [cordova-plugin-geofence](https://github.com/cowbell/cordova-plugin-geofence), which does exactly that. Let's keep this plugin lightweight as much as possible.
