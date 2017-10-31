@@ -47,7 +47,7 @@ cordova plugin add cordova-plugin-mauron85-background-geolocation
 
 Default iOS location permission prompt can be changed in your config.xml:
 ```
-<plugin name="cordova-plugin-mauron85-background-geolocation" spec="^2.2.0">
+<plugin name="cordova-plugin-mauron85-background-geolocation">
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app requires background tracking enabled" />
 </plugin>
 ```
@@ -58,7 +58,7 @@ This plugin should work with Adobe® PhoneGap™ Build without any modification.
 To register plugin add following line into your config.xml:
 
 ```
-<plugin name="cordova-plugin-mauron85-background-geolocation" spec="^2.2.0"/>
+<plugin name="cordova-plugin-mauron85-background-geolocation"/>
 ```
 
 NOTE: If you're using *hydration*, you have to download and reinstall your app with every new version of the plugin, as plugins are not updated.
