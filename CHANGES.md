@@ -1,5 +1,9 @@
 ## Changelog
 
+### [2.3.1] - 2017-10-31
+### Fix
+- iOS httpHeaders values are not sent with syncUrl on iOS PR #325
+
 ### [2.3.0] - 2017-10-31
 ### Added
 - Android Make account name configurable PR #334 by unixmonkey

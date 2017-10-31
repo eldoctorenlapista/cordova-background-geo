@@ -7,3 +7,4 @@ Many thanks to all contributors and special thanks to [christocracy](https://git
 * [pmwisdom](https://github.com/pmwisdom)
 * [nevyn](https://github.com/nevyn)
 * [unixmonkey](https://github.com/unixmonkey)
+* [Arakaki-Yuji](https://github.com/Arakaki-Yuji)
