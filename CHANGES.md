@@ -1,5 +1,9 @@
 ## Changelog
 
+### [2.3.2] - 2017-11-06
+### Fix
+- iOS support for iOS 11 (#PR 330)
+
 ### [2.3.1] - 2017-10-31
 ### Fix
 - iOS httpHeaders values are not sent with syncUrl on iOS PR #325
