@@ -41,7 +41,7 @@
     location.latitude = [NSNumber numberWithDouble:37.35439853];
     location.longitude = [NSNumber numberWithDouble:-122.1100721];
     location.provider = @"TEST";
-    location.serviceProvider = [NSNumber numberWithInt:-1];
+    location.locationProvider = [NSNumber numberWithInt:-1];
     
     [locationDAO persistLocation:location];
     
@@ -57,7 +57,7 @@
     XCTAssertTrue([result.latitude isEqualToNumber:[NSNumber numberWithDouble:37.35439853]], "Location latitude is %@ expecting %@", result.latitude, [NSNumber numberWithDouble:37.35439853]);
     XCTAssertTrue([result.longitude isEqualToNumber:[NSNumber numberWithDouble:-122.1100721]], "Location longitude is %@ expecting %@", result.longitude, [NSNumber numberWithDouble:-122.1100721]);
     XCTAssertTrue([result.provider isEqualToString:@"TEST"], @"Location provider is expected to be TEST");
-    XCTAssertTrue([result.serviceProvider isEqualToNumber:[NSNumber numberWithInt:-1]], "Location service_provider is %@ expecting %@", result.serviceProvider, [NSNumber numberWithInt:-1]);
+    XCTAssertTrue([result.locationProvider isEqualToNumber:[NSNumber numberWithInt:-1]], "Location service_provider is %@ expecting %@", result.locationProvider, [NSNumber numberWithInt:-1]);
 }
 
 
@@ -73,7 +73,7 @@
     location.latitude = [NSNumber numberWithDouble:37.35439853];
     location.longitude = [NSNumber numberWithDouble:-122.1100721];
     location.provider = @"TEST";
-    location.serviceProvider = [NSNumber numberWithInt:-1];
+    location.locationProvider = [NSNumber numberWithInt:-1];
     
     NSNumber *locationId1 = [locationDAO persistLocation:location];
     NSNumber *locationId2 = [locationDAO persistLocation:location];
@@ -101,7 +101,7 @@
     location.latitude = [NSNumber numberWithDouble:37.35439853];
     location.longitude = [NSNumber numberWithDouble:-122.1100721];
     location.provider = @"TEST";
-    location.serviceProvider = [NSNumber numberWithInt:-1];
+    location.locationProvider = [NSNumber numberWithInt:-1];
     
     [locationDAO persistLocation:location];
     [locationDAO persistLocation:location];
@@ -134,7 +134,7 @@
         location.latitude = [NSNumber numberWithDouble:37.35439853+i];
         location.longitude = [NSNumber numberWithDouble:-122.1100721+i];
         location.provider = @"TEST";
-        location.serviceProvider = [NSNumber numberWithInt:-1];
+        location.locationProvider = [NSNumber numberWithInt:-1];
         
         [locationDAO persistLocation:location];
     }
@@ -153,7 +153,7 @@
         XCTAssertTrue([result.latitude isEqualToNumber:[NSNumber numberWithDouble:37.35439853+i]], "Location latitude is %@ expecting %@", result.latitude, [NSNumber numberWithDouble:37.35439853+i]);
         XCTAssertTrue([result.longitude isEqualToNumber:[NSNumber numberWithDouble:-122.1100721+i]], "Location longitude is %@ expecting %@", result.longitude, [NSNumber numberWithDouble:-122.1100721+i]);
         XCTAssertTrue([result.provider isEqualToString:@"TEST"], @"Location provider is expected to be TEST");
-        XCTAssertTrue([result.serviceProvider isEqualToNumber:[NSNumber numberWithInt:-1]], "Location service_provider is %@ expecting %@", result.serviceProvider, [NSNumber numberWithInt:-1]);
+        XCTAssertTrue([result.locationProvider isEqualToNumber:[NSNumber numberWithInt:-1]], "Location service_provider is %@ expecting %@", result.locationProvider, [NSNumber numberWithInt:-1]);
     }
 }
 
@@ -171,7 +171,7 @@
         location.latitude = [NSNumber numberWithDouble:37.35439853+i];
         location.longitude = [NSNumber numberWithDouble:-122.1100721+i];
         location.provider = @"TEST";
-        location.serviceProvider = [NSNumber numberWithInt:-1];
+        location.locationProvider = [NSNumber numberWithInt:-1];
         location.isValid = (i % 2) == 0;
         
         [locationDAO persistLocation:location];

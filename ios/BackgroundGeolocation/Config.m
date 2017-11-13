@@ -13,9 +13,9 @@
 
 @implementation Config
 
-@synthesize stationaryRadius, distanceFilter, desiredAccuracy, isDebugging, activityType, stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, saveBatteryOnBackground, maxLocations, pauseLocationUpdates;
+@synthesize stationaryRadius, distanceFilter, desiredAccuracy, isDebugging, activityType, stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, saveBatteryOnBackground, maxLocations, pauseLocationUpdates, locationProvider;
 
--(id) init {
+-(instancetype) init {
     self = [super init];
 
     if (self == nil) {
@@ -26,12 +26,13 @@
     distanceFilter = 500;
     desiredAccuracy = 100;
     isDebugging = NO;
-    activityType = @"OTHER";
-    stopOnTerminate = NO;
+    activityType = @"OtherNavigation";
+    stopOnTerminate = YES;
     saveBatteryOnBackground = YES;
     maxLocations = 10000;
     syncThreshold = 100;
-    pauseLocationUpdates = YES;
+    pauseLocationUpdates = NO;
+    locationProvider = DISTANCE_FILTER_PROVIDER;
 
     return self;
 }
@@ -81,6 +82,9 @@
     if (isNotNull(config[@"pauseLocationUpdates"])) {
         instance.pauseLocationUpdates = [config[@"pauseLocationUpdates"] boolValue];
     }
+    if (isNotNull(config[@"locationProvider"])) {
+        instance.locationProvider = [config[@"locationProvider"] integerValue];
+    }
 
     return instance;
 }
@@ -128,9 +132,32 @@
     return kCLLocationAccuracyHundredMeters;
 }
 
+- (NSDictionary*) toDictionary
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:10];
+ 
+    if (activityType != nil) [dict setObject:activityType forKey:@"activityType"];
+    if (url != nil) [dict setObject:url forKey:@"url"];
+    if (syncUrl != nil) [dict setObject:syncUrl forKey:@"syncUrl"];
+    if (httpHeaders != nil) [dict setObject:httpHeaders forKey:@"httpHeaders"];
+
+    [dict setObject:[NSNumber numberWithInteger:stationaryRadius] forKey:@"stationaryRadius"];
+    [dict setObject:[NSNumber numberWithInteger:distanceFilter] forKey:@"distanceFilter"];
+    [dict setObject:[NSNumber numberWithInteger:desiredAccuracy] forKey:@"desiredAccuracy"];
+    [dict setObject:[NSNumber numberWithBool:isDebugging] forKey:@"debug"];
+    [dict setObject:[NSNumber numberWithBool:stopOnTerminate] forKey:@"stopOnTerminate"];
+    [dict setObject:[NSNumber numberWithInteger:syncThreshold] forKey:@"syncThreshold"];
+    [dict setObject:[NSNumber numberWithBool:saveBatteryOnBackground] forKey:@"saveBatteryOnBackground"];
+    [dict setObject:[NSNumber numberWithInteger:maxLocations] forKey:@"maxLocations"];
+    [dict setObject:[NSNumber numberWithBool:pauseLocationUpdates] forKey:@"pauseLocationUpdates"];
+    [dict setObject:[NSNumber numberWithInteger:locationProvider] forKey:@"locationProvider"];
+    
+    return dict; 
+}
+
 - (NSString *) description
 {
-    return [NSString stringWithFormat:@"Config: distanceFilter=%ld stationaryRadius=%ld desiredAccuracy=%ld activityType=%@ isDebugging=%d stopOnTerminate=%d url=%@ httpHeaders=%@ pauseLocationUpdates=%d", (long)distanceFilter, (long)stationaryRadius, (long)desiredAccuracy, activityType, isDebugging, stopOnTerminate, url, httpHeaders, pauseLocationUpdates];
+    return [NSString stringWithFormat:@"Config: distanceFilter=%ld stationaryRadius=%ld desiredAccuracy=%ld activityType=%@ isDebugging=%d stopOnTerminate=%d url=%@ syncThreshold=%ld maxLocations=%ld httpHeaders=%@ pauseLocationUpdates=%d saveBatteryOnBackground=%d locationProvider=%ld", (long)distanceFilter, (long)stationaryRadius, (long)desiredAccuracy, activityType, isDebugging, stopOnTerminate, url, syncThreshold, maxLocations, httpHeaders, pauseLocationUpdates, saveBatteryOnBackground, (long)locationProvider];
 }
 
 

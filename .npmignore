@@ -11,3 +11,7 @@
 !/android
 !/ios
 !/LICENSE
+
+# Xcode
+xcuserdata
+project.xcworkspace

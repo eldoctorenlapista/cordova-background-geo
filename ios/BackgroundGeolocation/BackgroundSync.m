@@ -1,6 +1,5 @@
 //
-//  LocationUploader.m
-//  CDVBackgroundGeolocation
+//  BackgroundSync.m
 //
 //  Created by Marian Hello on 07/07/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -8,17 +7,17 @@
 
 #import "UIKit/UIKit.h"
 #import "Logging.h"
-#import "LocationUploader.h"
+#import "BackgroundSync.h"
 #import "SQLiteLocationDAO.h"
 
-@interface LocationUploader ()  <NSURLSessionDelegate, NSURLSessionTaskDelegate>
+@interface BackgroundSync ()  <NSURLSessionDelegate, NSURLSessionTaskDelegate>
 {
     NSURLSession *urlSession;
     NSMutableArray *tasks;
 }
 @end
 
-@implementation LocationUploader
+@implementation BackgroundSync
 
 - (instancetype) init
 {
@@ -55,7 +54,7 @@
     }
 }
 
-- (void) sync:(NSString*)url onLocationThreshold:(NSInteger)threshold withHttpHeaders: (NSMutableDictionary*)httpHeaders;
+- (void) sync:(NSString*)url onLocationThreshold:(NSInteger)threshold;
 {
     SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
     NSNumber *locationsCount = [locationDAO getLocationsCount];
@@ -85,12 +84,7 @@
     [request setHTTPMethod:@"POST"];
     [request setValue:[NSString stringWithFormat:@"%llu", bytesTotalForThisFile] forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    if (httpHeaders != nil) {
-        for(id key in httpHeaders) {
-            id value = [httpHeaders objectForKey:key];
-            [request addValue:value forHTTPHeaderField:key];
-        }
-    }
+    
     NSURLSessionTask *task = [urlSession uploadTaskWithRequest:request fromFile:jsonUrl];
     task.taskDescription = fileName;
     [tasks addObject:task];

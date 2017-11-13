@@ -7,14 +7,14 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "LocationUploader.h"
+#import "BackgroundSync.h"
 #import "SQLiteLocationDAO.h"
 
-@interface LocationUploaderTests : XCTestCase
+@interface BackgroundSyncTests : XCTestCase
 
 @end
 
-@implementation LocationUploaderTests
+@implementation BackgroundSyncTests
 
 - (void)setUp {
     [super setUp];
@@ -41,12 +41,12 @@
         location.latitude = [NSNumber numberWithDouble:37.35439853+i];
         location.longitude = [NSNumber numberWithDouble:-122.1100721+i];
         location.provider = @"TEST";
-        location.serviceProvider = [NSNumber numberWithInt:-1];
+        location.locationProvider = [NSNumber numberWithInt:-1];
         
         [locationDAO persistLocation:location];
     }
     
-    LocationUploader *uploader = [[LocationUploader alloc] init];
+    BackgroundSync *uploader = [[BackgroundSync alloc] init];
     [uploader sync:@"http://192.168.81.15:3000/testSync" onLocationThreshold:10];
     sleep(5);
     
