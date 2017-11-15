@@ -65,7 +65,7 @@ var BackgroundGeolocation = {
   LOW_ACCURACY: 1000,
   PASSIVE_ACCURACY: 10000,
 
-  configure: function (success, failure, config) {
+  configure: function (config, success, failure) {
     exec(success || emptyFnc,
       failure || emptyFnc,
       'BackgroundGeolocation',
