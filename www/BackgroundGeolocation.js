@@ -15,9 +15,15 @@ var radio = require('./radio');
 
 var emptyFnc = function () { };
 
+var broadcast = function(topic) {
+  return function (args) {
+    radio(topic).broadcast(args);
+  }
+}
+
 var execBroadcast = function (successTopic, failTopic, method, args) {
-  exec(radio(successTopic).broadcast,
-    radio(failTopic).broadcast,
+  exec(broadcast(successTopic),
+    broadcast(failTopic),
     'BackgroundGeolocation',
     method,
     args
