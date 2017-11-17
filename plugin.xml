@@ -19,6 +19,7 @@
 
     <!-- android -->
     <platform name="android">
+        <preference name="GOOGLE_PLAY_SERVICES_VERSION" default="+"/>
         <preference name="ICON" default="@mipmap/icon" />
         <preference name="SMALL_ICON" default="@mipmap/icon" />
         <preference name="ACCOUNT_NAME" default="@string/app_name" />
@@ -27,7 +28,7 @@
         <preference name="CONTENT_AUTHORITY" default="$PACKAGE_NAME" />
 
         <framework src="android/logtofile.gradle" custom="true" type="gradleReference"/>
-        <framework src="com.google.android.gms:play-services-location:+" />
+        <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
         <framework src="com.android.support:support-v4:+" />
         <source-file src="android/plugin/src/main/java/com/tenforwardconsulting/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/cordova"/>
         <source-file src="android/plugin/src/main/java/com/tenforwardconsulting/bgloc/DistanceFilterLocationProvider.java" target-dir="src/com/tenforwardconsulting/bgloc"/>
