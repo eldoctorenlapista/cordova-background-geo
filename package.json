@@ -24,12 +24,18 @@
     "cordova",
     "phonegap"
   ],
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=3.0.0"
+  "engines": {
+    "cordovaDependencies": {
+      "0.0.1": {
+        "cordova": ">=3.0.0"
+      },
+      "2.3.3": {
+        "cordova-ios": ">=4.4.0",
+        "cordova-android": ">=6.3.0",
+        "cordova": ">=7.1.0"
+      }
     }
-  ],
+  },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
