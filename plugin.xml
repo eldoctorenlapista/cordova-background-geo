@@ -17,6 +17,9 @@
         <clobbers target="BackgroundGeolocation"/>
     </js-module>
 
+    <js-module src="www/radio.js" name="radio">
+    </js-module>
+
     <!-- android -->
     <platform name="android">
         <preference name="ICON" default="@mipmap/icon" />
