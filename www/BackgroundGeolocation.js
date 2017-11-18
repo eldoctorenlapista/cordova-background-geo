@@ -10,7 +10,7 @@
  */
 
 var exec = require('cordova/exec');
-var channel = require("cordova/channel");
+var channel = require('cordova/channel');
 var radio = require('./radio');
 
 var emptyFnc = function () { };

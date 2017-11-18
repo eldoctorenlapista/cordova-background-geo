@@ -45,7 +45,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     NSLog(@"%@ #%@", TAG, @"configure");
     [self.commandDelegate runInBackground:^{
         Config* config = [Config fromDictionary:[command.arguments objectAtIndex:0]];
-        
+
         NSError *error = nil;
         CDVPluginResult* result = nil;
         if (![facade configure:config error:&error]) {
@@ -65,16 +65,13 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     NSLog(@"%@ #%@", TAG, @"start");
     [self.commandDelegate runInBackground:^{
         NSError *error = nil;
-        CDVPluginResult* result = nil;
 
         [facade start:&error];
         if (error == nil) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            [self sendEvent:@"start"];
         } else {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[error userInfo]];
+            [self sendError:error];
         }
-        
-        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
 
@@ -86,19 +83,18 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     NSLog(@"%@ #%@", TAG, @"stop");
     [self.commandDelegate runInBackground:^{
         NSError *error = nil;
-        CDVPluginResult* result = nil;
-        if ([facade stop:&error]) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+
+        [facade stop:&error];
+        if (error == nil) {
+            [self sendEvent:@"stop"];
         } else {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[error userInfo]];
+            [self sendError:error];
         }
-        
-        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
 
 /**
- * Change 
+ * Change
  * @param {Number} operation mode BACKGROUND/FOREGROUND
  */
 - (void) switchMode:(CDVInvokedUrlCommand *)command
@@ -107,6 +103,33 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     [self.commandDelegate runInBackground:^{
         BGOperationMode mode = [[command.arguments objectAtIndex: 0] intValue];
         [facade switchMode:mode];
+    }];
+}
+
+- (void) getConfig:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@"%@ #%@", TAG, @"getConfig");
+    [self.commandDelegate runInBackground:^{
+        Config *config = [facade getConfig];
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[config toDictionary]];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }];
+}
+
+- (void) checkStatus:(CDVInvokedUrlCommand *)command
+{
+    NSLog(@"%@ #%@", TAG, @"checkStatus");
+    [self.commandDelegate runInBackground:^{
+        BOOL isRunning = [facade isStarted];
+        BOOL hasPermissions = [facade isLocationEnabled];
+        NSInteger authorization = 1; // TODO: check authorization
+
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:3];
+        [dict setObject:[NSNumber numberWithBool:isRunning] forKey:@"isRunning"];
+        [dict setObject:[NSNumber numberWithBool:hasPermissions] forKey:@"hasPermissions"];
+        [dict setObject:[NSNumber numberWithInteger:authorization] forKey:@"authorization"];
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
 
@@ -161,7 +184,11 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     NSLog(@"%@ #%@", TAG, @"getLocations");
     [self.commandDelegate runInBackground:^{
         NSArray *locations = [facade getLocations];
-        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:locations];
+        NSMutableArray* dictionaryLocations = [[NSMutableArray alloc] initWithCapacity:[locations count]];
+        for (Location* location in locations) {
+            [dictionaryLocations addObject:[location toDictionary]];
+        }
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:dictionaryLocations];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
@@ -171,7 +198,11 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     NSLog(@"%@ #%@", TAG, @"getValidLocations");
     [self.commandDelegate runInBackground:^{
         NSArray *locations = [facade getValidLocations];
-        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:locations];
+        NSMutableArray* dictionaryLocations = [[NSMutableArray alloc] initWithCapacity:[locations count]];
+        for (Location* location in locations) {
+            [dictionaryLocations addObject:[location toDictionary]];
+        }
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:dictionaryLocations];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
@@ -248,7 +279,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 
     NSDictionary *event = [[NSDictionary alloc] initWithObjectsAndKeys:
                            [NSString stringWithFormat:@"%@", name], @"name",
-                           resultAsNSInteger, @"payload",
+                           [NSNumber numberWithInteger:resultAsNSInteger], @"payload",
                            nil];
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
     [result setKeepCallbackAsBool:YES];
@@ -260,12 +291,25 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     if (callbackId == nil) {
         return;
     }
-    
+
     NSDictionary *event = [[NSDictionary alloc] initWithObjectsAndKeys:
                            [NSString stringWithFormat:@"%@", name], @"name",
                            resultAsDictionary, @"payload",
                            nil];
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+}
+
+- (void) sendError:(NSError*)error
+{
+    NSLog(@"%@ #%@", TAG, @"onError");
+    if (callbackId == nil) {
+        return;
+    }
+
+    CDVPluginResult* result = nil;
+    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[error userInfo]];
     [result setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
@@ -297,20 +341,13 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 - (void) onLocationResume
 {
     NSLog(@"%@ %@", TAG, @"location updates resumed");
-    [self sendEvent:@"stop"];
+    [self sendEvent:@"start"];
 }
 
 - (void) onError:(NSError*)error
 {
     NSLog(@"%@ #%@", TAG, @"onError");
-    if (callbackId == nil) {
-        return;
-    }
-
-    CDVPluginResult* result = nil;
-    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[error userInfo]];
-    [result setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    [self sendError:error];
 }
 
 -(void) onAppResume:(NSNotification *)notification
@@ -331,7 +368,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 -(void) onFinishLaunching:(NSNotification *)notification
 {
     NSDictionary *dict = [notification userInfo];
-    
+
     if ([dict objectForKey:UIApplicationLaunchOptionsLocationKey]) {
         NSLog(@"%@ %@", TAG, @"started by system on location event.");
 //        [manager switchOperationMode:BACKGROUND];
