@@ -75,8 +75,8 @@
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/cordova/PermissionHelper.java" target-dir="src/com/marianhello/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/cordova" />
 
-        <resource-file src="android/CDVBackgroundGeolocation/src/main/res/xml/syncadapter.xml" target="res/xml/syncadapter.xml" />
-        <resource-file src="android/CDVBackgroundGeolocation/src/main/res/xml/authenticator.xml" target="res/xml/authenticator.xml" />
+        <resource-file src="android/BackgroundGeolocation/src/main/res/xml/syncadapter.xml" target="res/xml/syncadapter.xml" />
+        <resource-file src="android/BackgroundGeolocation/src/main/res/xml/authenticator.xml" target="res/xml/authenticator.xml" />
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
