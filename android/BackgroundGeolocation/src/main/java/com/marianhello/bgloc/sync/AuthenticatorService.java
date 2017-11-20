@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 public class AuthenticatorService extends Service {
+    public static final String ACCOUNT_NAME = "dummy";
 
     private Authenticator mAuthenticator;
 
@@ -28,7 +29,7 @@ public class AuthenticatorService extends Service {
     }
 
 
-    public static Account getAccount(String accountName, String accountType) {
-        return new Account(accountName, accountType);
+    public static Account getAccount(String accountType) {
+        return new Account(ACCOUNT_NAME, accountType);
     }
 }

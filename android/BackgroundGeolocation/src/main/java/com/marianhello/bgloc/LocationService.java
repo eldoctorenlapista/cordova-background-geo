@@ -48,12 +48,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class LocationService extends Service {
 
     /** Keeps track of all current registered clients. */
-    ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+    HashMap<Integer, Messenger> mClients = new HashMap();
 
     /**
      * Command sent by the service to
@@ -101,6 +102,10 @@ public class LocationService extends Service {
     /** foreground operation mode of location provider */
     public static final int FOREGROUND_MODE = 1;
 
+
+    /** indicate if service is running */
+    private static Boolean isRunning = false;
+
     private static final int ONE_MINUTE = 1000 * 60;
     private static final int FIVE_MINUTES = 1000 * 60 * 5;
 
@@ -133,10 +138,10 @@ public class LocationService extends Service {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_REGISTER_CLIENT:
-                    mClients.add(msg.replyTo);
+                    mClients.put(msg.arg1, msg.replyTo);
                     break;
                 case MSG_UNREGISTER_CLIENT:
-                    mClients.remove(msg.replyTo);
+                    mClients.remove(msg.arg1);
                     break;
                 case MSG_SWITCH_MODE:
                     switchMode(msg.arg1);
@@ -175,9 +180,7 @@ public class LocationService extends Service {
 
         dao = (DAOFactory.createLocationDAO(this));
         syncAccount = AccountHelper.CreateSyncAccount(this,
-                AuthenticatorService.getAccount(
-                    getStringResource(Config.ACCOUNT_NAME_RESOURCE),
-                    getStringResource(Config.ACCOUNT_TYPE_RESOURCE)));
+                AuthenticatorService.getAccount(getStringResource(Config.ACCOUNT_TYPE_RESOURCE)));
 
         registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
@@ -192,6 +195,8 @@ public class LocationService extends Service {
             handlerThread.quit(); //sorry
         }
         unregisterReceiver(connectivityChangeReceiver);
+
+        isRunning = false;
         super.onDestroy();
     }
 
@@ -242,15 +247,15 @@ public class LocationService extends Service {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
             builder.setContentTitle(config.getNotificationTitle());
             builder.setContentText(config.getNotificationText());
-            if (config.getSmallNotificationIcon() != null) {
+            if (config.hasSmallNotificationIcon()) {
                 builder.setSmallIcon(getDrawableResource(config.getSmallNotificationIcon()));
             } else {
                 builder.setSmallIcon(android.R.drawable.ic_menu_mylocation);
             }
-            if (config.getLargeNotificationIcon() != null) {
+            if (config.hasLargeNotificationIcon()) {
                 builder.setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), getDrawableResource(config.getLargeNotificationIcon())));
             }
-            if (config.getNotificationIconColor() != null) {
+            if (config.hasNotificationIconColor()) {
                 builder.setColor(this.parseNotificationIconColor(config.getNotificationIconColor()));
             }
 
@@ -268,6 +273,7 @@ public class LocationService extends Service {
         }
 
         provider.startRecording();
+        isRunning = true;
 
         //We want this service to continue running until it is explicitly stopped
         return START_STICKY;
@@ -321,7 +327,6 @@ public class LocationService extends Service {
      * when number of locations reaches syncTreshold.
      *
      * @param location
-     * @param PROVIDER_ID
      */
     public void handleLocation(BackgroundLocation location) {
         log.debug("New location {}", location.toString());
@@ -329,7 +334,7 @@ public class LocationService extends Service {
         location.setBatchStartMillis(System.currentTimeMillis() + ONE_MINUTE); // prevent sync of not yet posted location
         persistLocation(location);
 
-        if (config.hasUrl() || config.hasSyncUrl()) {
+        if (config.hasSyncUrl()) {
             Long locationsCount = dao.locationsForSyncCount(System.currentTimeMillis());
             log.debug("Location to sync: {} threshold: {}", locationsCount, config.getSyncThreshold());
             if (locationsCount >= config.getSyncThreshold()) {
@@ -366,14 +371,16 @@ public class LocationService extends Service {
     }
 
     public void sendClientMessage(Message msg) {
-        for (int i = mClients.size() - 1; i >= 0; i--) {
+        Iterator<Messenger> it = mClients.values().iterator();
+        while (it.hasNext()) {
             try {
-                mClients.get(i).send(msg);
+                Messenger client = it.next();
+                client.send(msg);
             } catch (RemoteException e) {
                 // The client is dead.  Remove it from the list;
                 // we are going through the list from back to front
                 // so this is safe to do inside the loop.
-                mClients.remove(i);
+                it.remove();
             }
         }
     }
@@ -496,5 +503,9 @@ public class LocationService extends Service {
                 (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    public static boolean isRunning() {
+        return LocationService.isRunning;
     }
 }

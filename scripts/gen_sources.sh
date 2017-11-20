@@ -1,4 +1,3 @@
-file:///Users/finch/dev/cordova-plugin-background-geolocation/scripts/gen_sources.sh
 #!/usr/bin/env bash
 
 platform=$1
@@ -10,8 +9,8 @@ script_dir=$( cd "$(dirname "$0")" ; pwd -P )
 
 if [[ "$platform" == android ]]; then
   src_root="android"
-  target_regexp="s|android/plugin/src/main/java|src|"
-  sources_regexp=".*android/plugin/src/main/java/.*\.java"
+  target_regexp="s|android/.*BackgroundGeolocation/src/main/java|src|"
+  sources_regexp=".*BackgroundGeolocation/src/main/java/.*\.java"
 elif [[ "$platform" ==  ios ]]; then
   src_root="ios"
   sources_regexp=".*BackgroundGeolocation/\.[h,m]"

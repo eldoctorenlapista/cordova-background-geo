@@ -80,6 +80,10 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
     public static final String ACTION_DELETE_ALL_LOCATIONS = "deleteAllLocations";
     public static final String ACTION_GET_CONFIG = "getConfig";
     public static final String ACTION_GET_LOG_ENTRIES = "getLogEntries";
+    public static final String ACTION_CHECK_STATUS = "checkStatus";
+
+    private static final int AUTHORIZATION_AUTHORIZED = 1;
+    private static final int AUTHORIZATION_DENIED = 0;
 
     public static final int START_REQ_CODE = 0;
     public static final int PERMISSION_DENIED_ERROR_CODE = 2;
@@ -426,6 +430,18 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
             });
 
             return true;
+        } else if (ACTION_CHECK_STATUS.equals(action)) {
+            cordova.getThreadPool().execute(new Runnable() {
+                public void run() {
+                    try {
+                        callbackContext.success(checkStatus());
+                    } catch (Exception e) {
+                        callbackContext.error("Getting logs failed: " + e.getMessage());
+                    }
+                }
+            });
+
+            return true;
         }
 
         return false;
@@ -660,6 +676,15 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
         return jsonLogsArray;
     }
 
+    public JSONObject checkStatus() throws Exception {
+        JSONObject json = new JSONObject();
+        json.put("isRunning", LocationService.isRunning());
+        json.put("hasPermissions", hasPermissions());
+        json.put("authorization", getAuthorizationStatus());
+
+        return json;
+    }
+
     public boolean hasPermissions() {
         for(String p : permissions) {
             if(!PermissionHelper.hasPermission(this, p)) {
@@ -667,6 +692,11 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
             }
         }
         return true;
+    }
+
+    public int getAuthorizationStatus() throws SettingNotFoundException {
+        boolean enabled = isLocationEnabled(getContext());
+        return enabled ? AUTHORIZATION_AUTHORIZED : AUTHORIZATION_DENIED;
     }
 
     public void onRequestPermissionResult(int requestCode, String[] permissions,
