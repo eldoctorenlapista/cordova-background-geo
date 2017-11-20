@@ -1,12 +1,12 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        applicationId "com.marianhello.cdvbackgroundgeolocation"
+//        applicationId "com.marianhello.backgroundgeolocation"
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
