@@ -222,7 +222,7 @@ var BackgroundGeolocation = {
 
     var topic = radio(event);
     var callbacks = [].concat.apply([], topic.channels[event]); // flatten array
-    return topic.unsubscribe(callbacks);
+    return topic.unsubscribe.apply(topic, callbacks);
   }
 };
 

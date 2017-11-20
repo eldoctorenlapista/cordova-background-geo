@@ -87,6 +87,8 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
     public static final String ACTION_GET_LOG_ENTRIES = "getLogEntries";
     public static final String ACTION_CHECK_STATUS = "checkStatus";
     public static final String ACTION_REGISTER_EVENT_LISTENER = "addEventListener";
+    public static final String ACTION_START_TASK = "startTask";
+    public static final String ACTION_END_TASK = "endTask";
 
     private static final int AUTHORIZATION_AUTHORIZED = 1;
     private static final int AUTHORIZATION_DENIED = 0;
@@ -403,6 +405,12 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
                 }
             });
 
+            return true;
+        } else if (ACTION_START_TASK.equals(action)) {
+            callbackContext.success(1);
+            return true;
+        } else if (ACTION_END_TASK.equals(action)) {
+            callbackContext.success();
             return true;
         }
 
