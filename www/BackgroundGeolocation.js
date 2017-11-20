@@ -221,7 +221,8 @@ var BackgroundGeolocation = {
     }
 
     var topic = radio(event);
-    return topic.unsubscribe(topic.channels);
+    var callbacks = [].concat.apply([], topic.channels[event]); // flatten array
+    return topic.unsubscribe(callbacks);
   }
 };
 
