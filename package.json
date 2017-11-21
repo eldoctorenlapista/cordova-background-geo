@@ -1,10 +1,10 @@
 {
-  "name": "cordova-plugin-mauron85-background-geolocation",
-  "version": "3.0.0-alpha.2",
+  "name": "@mauron85/cordova-plugin-background-geolocation",
+  "version": "3.0.0-alpha.4",
   "description": "Cordova Background Geolocation Plugin",
   "main": "www/BackgroundGeolocation.js",
   "cordova": {
-    "id": "cordova-plugin-mauron85-background-geolocation",
+    "id": "@mauron85/cordova-plugin-background-geolocation",
     "platforms": [
       "android",
       "ios"
