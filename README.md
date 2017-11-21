@@ -6,10 +6,6 @@ Documentation has been updated to v3. Documentation for version 2.x can be found
 
 Plugin has been upgraded significantly since v2. Please read docs carefully.
 
-NPM package has been moved. Please update your package.json to:
-
-[@mauron85/cordova-plugin-background-geolocation](https://www.npmjs.com/package/@mauron85/cordova-plugin-background-geolocation)
-
 ## Donation
 
 Please support my work and support continuous development by your donation.
@@ -52,12 +48,12 @@ See [MIGRATIONS.md](/MIGRATIONS.md)
 ## Installing the plugin
 
 ```
-cordova plugin add @mauron85/cordova-plugin-background-geolocation
+cordova plugin add cordova-plugin-mauron85-background-geolocation
 ```
 
 Default iOS location permission prompt can be changed in your config.xml:
 ```
-<plugin name="@mauron85/cordova-plugin-background-geolocation">
+<plugin name="cordova-plugin-mauron85-background-geolocation">
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app requires background tracking enabled" />
 </plugin>
 ```
@@ -68,7 +64,7 @@ This plugin should work with Adobe® PhoneGap™ Build without any modification.
 To register plugin add following line into your config.xml:
 
 ```
-<plugin name="@mauron85/cordova-plugin-background-geolocation"/>
+<plugin name="cordova-plugin-mauron85-background-geolocation"/>
 ```
 
 NOTE: If you're using *hydration*, you have to download and reinstall your app with every new version of the plugin, as plugins are not updated.
