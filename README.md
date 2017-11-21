@@ -4,7 +4,7 @@
 
 Documentation has been updated to v3. Documentation for version 2.x can be found [here](https://github.com/mauron85/cordova-plugin-background-geolocation/tree/2.x).
 
-Plugin has been upgraded significantly since v2. Please read docs carefully.
+Plugin has been upgraded significantly since v2. Please read docs thoroughly.
 
 ## Donation
 
