@@ -312,7 +312,7 @@ FMDBLogger *sqliteLogger;
     }
     
     if ([_config hasSyncUrl]) {
-        [uploader sync:_config.syncUrl onLocationThreshold:_config.syncThreshold];
+        [uploader sync:_config.syncUrl onLocationThreshold:_config.syncThreshold withHttpHeaders:_config.httpHeaders];
     }
 }
 
