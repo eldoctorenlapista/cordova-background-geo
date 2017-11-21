@@ -1,13 +1,15 @@
-# prevent accidental commits by exclude everything
-/*
+.DS_Store
+node_modules
+npm-debug.log
 
-# only include project files
-!/.npmignore
-!/*.md
-!/*.png
-!/plugin.xml
-!/package.json
-!/www
-!/android
-!/ios
-!/LICENSE
+# Xcode
+xcuserdata
+project.xcworkspace
+
+# Android/IJ
+.idea
+.gradle
+local.properties
+*.iml
+build
+*.skip
