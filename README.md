@@ -18,7 +18,7 @@ Cross-platform geolocation for Cordova / PhoneGap with battery-saving "circular 
 
 Plugin can be used for geolocation when app is running in foreground or background. It is more battery and data efficient than html5 geolocation or cordova-geolocation plugin. It can be used side by side with other geolocation providers (eg. html5 navigator.geolocation).
 
-On Android you can choose from two location location providers:
+You can choose from two location location providers:
 * **DISTANCE_FILTER_PROVIDER**
 * **ACTIVITY_PROVIDER** (Android only)
 * **RAW_PROVIDER**
@@ -60,7 +60,8 @@ Default iOS location permission prompt can be changed in your config.xml:
 
 For compatibility with other plugins you may also set specific google play version.
 Following example will lock google play services to version 11.0.1 for compatibility with phonegap-plugin-push.
-Note: Always consult documentation of other plugins to figure out correct GOOGLE_PLAY_SERVICES_VERSION.
+
+**Note:** Always consult documentation of other plugins to figure out correct GOOGLE_PLAY_SERVICES_VERSION.
 ```
 <plugin name="cordova-plugin-mauron85-background-geolocation">
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app requires background tracking enabled" />
@@ -68,7 +69,8 @@ Note: Always consult documentation of other plugins to figure out correct GOOGLE
 </plugin>
 ```
 
-Note: To apply changes, you must remove and reinstall plugin.
+
+**Note:** To apply changes, you must remove and reinstall plugin.
 
 ## Registering plugin for Adobe® PhoneGap™ Build
 
@@ -79,7 +81,7 @@ To register plugin add following line into your config.xml:
 <plugin name="cordova-plugin-mauron85-background-geolocation"/>
 ```
 
-NOTE: If you're using *hydration*, you have to download and reinstall your app with every new version of the plugin, as plugins are not updated.
+**Note:** If you're using *hydration*, you have to download and reinstall your app with every new version of the plugin, as plugins are not updated.
 
 ## Compilation
 
@@ -108,7 +110,8 @@ You will need to ensure that you have installed the following items through the 
 
 ## Example using React Component
 
-Note: You don't have to use React or write your app in ES2015. You can call BackgroundGeolocation methods directly.
+
+**Note:** You don't have to use React or write your app in ES2015. You can call BackgroundGeolocation methods directly.
 
 ```javascript
 import React, { Component } from 'react';
@@ -277,7 +280,8 @@ Location callback will be called with one argument - location object, which trie
 | `altitude`         | `Number`  | altitude if available, in meters above the WGS 84 reference ellipsoid. |
 | `bearing`          | `Number`  | bearing, in degrees.                                                   |
 
-Note: Android currently returns `time` as type of String (instead of Number) [@see issue #9685](https://github.com/facebook/react-native/issues/9685)
+
+**Note:** Android currently returns `time` as type of String (instead of Number) [@see issue #9685](https://github.com/facebook/react-native/issues/9685)
 
 ### start()
 Platform: iOS, Android
@@ -327,7 +331,7 @@ Platform: iOS, Android
 Method will return all stored locations.
 This method is useful for initial rendering of user location on a map just after application launch.
 
-NOTE: Returned locations does not contain location.id.
+**Note:** Returned locations does not contain location.id.
 
 | Success callback parameter | Type    | Description                    |
 |----------------------------|---------|--------------------------------|
@@ -345,7 +349,7 @@ BackgroundGeolocation.getLocations(
 Platform: iOS, Android
 
 Method will return locations, which has not been yet posted to server.
-NOTE: Locations does contain location.id.
+**Note:** Locations does contain location.id.
 
 | Success callback parameter | Type    | Description                    |
 |----------------------------|---------|--------------------------------|
@@ -356,11 +360,13 @@ Platform: iOS, Android
 
 Delete location with locationId.
 
-Note: Locations are not actually deleted from database to avoid gaps in locationId numbering.
+
+**Note:** Locations are not actually deleted from database to avoid gaps in locationId numbering.
 Instead locations are marked as deleted. Locations marked as deleted will not appear in output of `BackgroundGeolocation.getLocations`.
 
 ### deleteAllLocations(success, fail)
-Note: You don't need to delete all locations. Plugin manages number of locations automatically and location count never exceeds number as defined by `option.maxLocations`.
+
+**Note:** You don't need to delete all locations. Plugin manages number of locations automatically and location count never exceeds number as defined by `option.maxLocations`.
 
 Platform: iOS, Android
 
@@ -411,7 +417,8 @@ And unregistered:
 eventSubscription.remove();
 ```
 
-Note: Components should unregister all event listeners in `componentWillUnmount` method,
+
+**Note:** Components should unregister all event listeners in `componentWillUnmount` method,
 individually, or with `removeAllListeners`
 
 | Name                | Callback param      | Platform | Description                                                                     |
@@ -420,6 +427,8 @@ individually, or with `removeAllListeners`
 | `stationary`        | `Location`          | all      | on device entered stationary mode      |
 | `error`             | `{ code, message }` | all      | on plugin error                        |
 | `authorization`     | `status`            | all      | on user toggle location service        |
+| `start`             |                     | all      | geolocation has been started           |
+| `stop`              |                     | all      | geolocation has been stopped           |
 | `foreground`        |                     | android  | app entered foreground state (visible) |
 | `background`        |                     | android  | app entered background state           |
 
@@ -464,11 +473,12 @@ On Android devices it is recommended to have a notification in the drawer (optio
 
 #### Custom ROMs
 
-Plugin should work with custom ROMS at least ANDROID_DISTANCE_FILTER_PROVIDER. But ANDROID_ACTIVITY_PROVIDER provider depends on Google Play Services.
+Plugin should work with custom ROMS at least DISTANCE_FILTER_PROVIDER. But ACTIVITY_PROVIDER provider depends on Google Play Services.
 Usually ROMs don't include Google Play Services libraries. Strange bugs may occur, like no GPS locations (only from network and passive) and other. When posting issue report, please mention that you're using custom ROM.
 
 #### Multidex
-Note: Following section was kindly copied from [phonegap-plugin-push](https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#multidex). Visit link for resolving issue with facebook plugin.
+
+**Note:** Following section was kindly copied from [phonegap-plugin-push](https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#multidex). Visit link for resolving issue with facebook plugin.
 
 If you have an issue compiling the app and you're getting an error similar to this (`com.android.dex.DexException: Multiple dex files define`):
 
@@ -500,7 +510,7 @@ Android 6.0 "Marshmallow" introduced a new permissions model where the user can 
 
 #### Notification icons
 
-**NOTE:** Only available for API Level >=21.
+**Note:** Only available for API Level >=21.
 
 To use custom notification icons, you need to put icons into *res/drawable* directory **of your app**. You can automate the process  as part of **after_platform_add** hook configured via [config.xml](https://github.com/mauron85/cordova-plugin-background-geolocation-example/blob/master/config.xml). Check [config.xml](https://github.com/mauron85/cordova-plugin-background-geolocation-example/blob/master/config.xml) and [scripts/res_android.js](https://github.com/mauron85/cordova-plugin-background-geolocation-example/blob/master/scripts/res_android.js) of example app for reference.
 
