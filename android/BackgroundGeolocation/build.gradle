@@ -6,7 +6,6 @@ android {
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-//        applicationId "com.marianhello.backgroundgeolocation"
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
@@ -32,8 +31,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.google.android.gms:play-services-location:+'
     compile 'com.android.support:support-v4:+'
-    compile 'com.github.tony19:logback-android-core:1.1.1-4'
-    compile 'com.github.tony19:logback-android-classic:1.1.1-4'
-    compile 'org.slf4j:slf4j-api:1.7.6'
     compile project(':CordovaLib')
 }
+
+apply from: '../logtofile.gradle'

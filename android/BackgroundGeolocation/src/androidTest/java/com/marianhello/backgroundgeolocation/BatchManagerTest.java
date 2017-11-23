@@ -1,4 +1,4 @@
-package com.marianhello.cdvbackgroundgeolocation;
+package com.marianhello.backgroundgeolocation;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -105,7 +105,7 @@ public class BatchManagerTest {
         List<BackgroundLocation> locations = null;
         BatchManager batchManager = new BatchManager(ctx);
         try {
-            File batchFile = batchManager.createBatch(1000L);
+            File batchFile = batchManager.createBatch(1000L, 0);
             JsonReader reader = new JsonReader(new FileReader(batchFile));
             locations = readLocationsArray(reader);
         } catch (Exception e) {
@@ -163,7 +163,7 @@ public class BatchManagerTest {
         Assert.assertEquals(Long.valueOf(49), dao.locationsForSyncCount(1000L));
         BatchManager batchManager = new BatchManager(ctx);
         try {
-            batchManager.createBatch(1000L);
+            batchManager.createBatch(1000L, 0);
             batchManager.setBatchCompleted(1000L);
             Assert.assertEquals(0, dao.getValidLocations().size());
             Assert.assertEquals(Long.valueOf(0), dao.locationsForSyncCount(2000L));

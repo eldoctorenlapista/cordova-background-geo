@@ -1,4 +1,4 @@
-package com.marianhello.cdvbackgroundgeolocation;
+package com.marianhello.backgroundgeolocation;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
