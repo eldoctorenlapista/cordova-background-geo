@@ -25,7 +25,7 @@
     [super tearDown];
 }
 
-- (void)testCreateTableSQLStatemnet {
+- (void)testCreateTableSQLStatement {
     NSString *tableName = @"TEST_TABLE";
     NSArray *columns = @[
         @{ @"name": @"pk_col", @"type": [SQLPrimaryKeyAutoIncColumnType sqlColumnWithType: kInteger]},

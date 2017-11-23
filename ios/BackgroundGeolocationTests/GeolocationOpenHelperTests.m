@@ -10,11 +10,13 @@
 #import "LocationContract.h"
 #import "GeolocationOpenHelper.h"
 
-@interface GeolocationOpenHelperTests : XCTestCase
+
+// Warning: This has to be last test in suite, because it unlinks db file
+@interface xGeolocationOpenHelperTests : XCTestCase
 
 @end
 
-@implementation GeolocationOpenHelperTests
+@implementation xGeolocationOpenHelperTests
 
 - (void)setUp {
     [super setUp];
@@ -47,7 +49,7 @@
 
 - (void)testLocationTableSQLStatement {
     NSString *sql = [LocationContract createTableSQL];
-    XCTAssertEqualObjects(sql, @"CREATE TABLE IF NOT EXISTS location ( id INTEGER PRIMARY KEY AUTOINCREMENT , time REAL , accuracy REAL , speed REAL , bearing REAL , altitude REAL , latitude REAL , longitude REAL , provider TEXT , service_provider TEXT , valid INTEGER );");
+    XCTAssertEqualObjects(sql, @"CREATE TABLE IF NOT EXISTS location ( id INTEGER PRIMARY KEY AUTOINCREMENT , time REAL , accuracy REAL , speed REAL , bearing REAL , altitude REAL , latitude REAL , longitude REAL , provider TEXT , service_provider TEXT , valid INTEGER , recorded_at INTEGER );");
 }
 
 @end
