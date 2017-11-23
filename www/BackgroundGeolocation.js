@@ -15,21 +15,6 @@ var radio = require('./radio');
 
 var emptyFnc = function () { };
 
-var broadcast = function(topic) {
-  return function (args) {
-    radio(topic).broadcast(args);
-  }
-}
-
-var execBroadcast = function (successTopic, failTopic, method, args) {
-  exec(broadcast(successTopic),
-    broadcast(failTopic),
-    'BackgroundGeolocation',
-    method,
-    args
-  );
-};
-
 var eventHandler = function (event) {
   radio(event.name).broadcast(event.payload);
 };
@@ -75,11 +60,11 @@ var BackgroundGeolocation = {
   },
 
   start: function () {
-    execBroadcast('start', 'error', 'start', []);
+    exec(null, null, 'BackgroundGeolocation', 'start');
   },
 
   stop: function (success, failure) {
-    execBroadcast('stop', 'error', 'stop', []);
+    exec(null, null, 'BackgroundGeolocation', 'stop');
   },
 
   switchMode: function (mode, success, failure) {

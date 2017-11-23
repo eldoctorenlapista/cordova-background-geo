@@ -74,8 +74,8 @@
         <source-file src="android/BackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/DistanceFilterLocationProvider.java" target-dir="src/com/tenforwardconsulting/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/org/apache/commons/io/Charsets.java" target-dir="src/org/apache/commons/io" />
         <source-file src="android/BackgroundGeolocation/src/main/java/org/apache/commons/io/input/ReversedLinesFileReader.java" target-dir="src/org/apache/commons/io/input" />
-        <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/cordova/JSONErrorFactory.java" target-dir="src/com/marianhello/cordova" />
-        <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/cordova/PermissionHelper.java" target-dir="src/com/marianhello/cordova" />
+        <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/cordova/JSONErrorFactory.java" target-dir="src/com/marianhello/cordova" />
+        <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/cordova/PermissionHelper.java" target-dir="src/com/marianhello/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/cordova" />
 
         <resource-file src="android/BackgroundGeolocation/src/main/res/xml/syncadapter.xml" target="res/xml/syncadapter.xml" />
