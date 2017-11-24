@@ -17,7 +17,7 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 
 import com.marianhello.bgloc.data.BackgroundLocation;
-import com.marianhello.cordova.JSONErrorFactory;
+import com.marianhello.utils.JSONErrorFactory;
 
 import org.json.JSONObject;
 

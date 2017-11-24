@@ -1,4 +1,4 @@
-package com.marianhello.cdvbackgroundgeolocation;
+package com.marianhello.backgroundgeolocation;
 
 import org.junit.Test;
 

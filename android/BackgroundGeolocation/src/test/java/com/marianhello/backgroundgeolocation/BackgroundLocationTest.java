@@ -1,4 +1,4 @@
-package com.marianhello.cdvbackgroundgeolocation;
+package com.marianhello.backgroundgeolocation;
 
 import android.os.Build;
 import android.test.suitebuilder.annotation.SmallTest;

@@ -16,19 +16,13 @@
        specific language governing permissions and limitations
        under the License.
 */
-package com.marianhello.cordova;
+package org.apache.cordova;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.LOG;
-
 import android.content.pm.PackageManager;
-
-import com.marianhello.bgloc.LocationService;
 
 /**
  * This class provides reflective methods for permission requesting and checking so that plugins

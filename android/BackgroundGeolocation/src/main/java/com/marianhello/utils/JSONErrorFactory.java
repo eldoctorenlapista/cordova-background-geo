@@ -1,6 +1,5 @@
-package com.marianhello.cordova;
+package com.marianhello.utils;
 
-import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
