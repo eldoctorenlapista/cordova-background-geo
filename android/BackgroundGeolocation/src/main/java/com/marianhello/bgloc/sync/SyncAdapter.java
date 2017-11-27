@@ -39,14 +39,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
     private NotificationManager notifyManager;
     private BatchManager batchManager;
 
-    private org.slf4j.Logger log;
+    private org.slf4j.Logger logger;
 
     /**
      * Set up the sync adapter
      */
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
-        log = LoggerManager.getLogger(SyncAdapter.class);
+        logger = LoggerManager.getLogger(SyncAdapter.class);
 
         /*
          * If your app uses a content resolver, get an instance of it
@@ -70,7 +70,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
             boolean allowParallelSyncs) {
         super(context, autoInitialize, allowParallelSyncs);
 
-        log = LoggerManager.getLogger(SyncAdapter.class);
+        logger = LoggerManager.getLogger(SyncAdapter.class);
 
         /*
          * If your app uses a content resolver, get an instance of it
@@ -99,12 +99,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
         try {
             config = configDAO.retrieveConfiguration();
         } catch (JSONException e) {
-            log.error("Error retrieving config: {}", e.getMessage());
+            logger.error("Error retrieving config: {}", e.getMessage());
         }
 
         if (config == null) return;
 
-        log.debug("Sync request: {}", config.toString());
+        logger.debug("Sync request: {}", config.toString());
         if (config.hasUrl() || config.hasSyncUrl()) {
             Long batchStartMillis = System.currentTimeMillis();
 
@@ -112,30 +112,30 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
             try {
                 file = batchManager.createBatch(batchStartMillis, config.getSyncThreshold());
             } catch (IOException e) {
-                log.error("Failed to create batch: {}", e.getMessage());
+                logger.error("Failed to create batch: {}", e.getMessage());
             }
 
             if (file == null) {
-                log.info("Nothing to sync");
+                logger.info("Nothing to sync");
                 return;
             }
 
-            log.info("Syncing startAt: {}", batchStartMillis);
+            logger.info("Syncing startAt: {}", batchStartMillis);
             String url = config.hasSyncUrl() ? config.getSyncUrl() : config.getUrl();
             HashMap<String, String> httpHeaders = new HashMap<String, String>();
             httpHeaders.putAll(config.getHttpHeaders());
             httpHeaders.put("x-batch-id", String.valueOf(batchStartMillis));
 
             if (uploadLocations(file, url, httpHeaders)) {
-                log.info("Batch sync successful");
+                logger.info("Batch sync successful");
                 batchManager.setBatchCompleted(batchStartMillis);
                 if (file.delete()) {
-                    log.info("Batch file has been deleted: {}", file.getAbsolutePath());
+                    logger.info("Batch file has been deleted: {}", file.getAbsolutePath());
                 } else {
-                    log.warn("Batch file has not been deleted: {}", file.getAbsolutePath());
+                    logger.warn("Batch file has not been deleted: {}", file.getAbsolutePath());
                 }
             } else {
-                log.warn("Batch sync failed due server error");
+                logger.warn("Batch sync failed due server error");
                 syncResult.stats.numIoExceptions++;
             }
         }
@@ -159,10 +159,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
 
             return responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED;
         } catch (IOException e) {
-            log.warn("Error uploading locations: {}", e.getMessage());
+            logger.warn("Error uploading locations: {}", e.getMessage());
             builder.setContentText("Sync failed: " + e.getMessage());
         } finally {
-            log.info("Syncing endAt: {}", System.currentTimeMillis());
+            logger.info("Syncing endAt: {}", System.currentTimeMillis());
 
             builder.setOngoing(false);
             builder.setProgress(0, 0, false);
@@ -173,7 +173,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
             long delayInMilliseconds = 5000;
             h.postDelayed(new Runnable() {
                 public void run() {
-                    log.info("Notification cancelledAt: {}", System.currentTimeMillis());
+                    logger.info("Notification cancelledAt: {}", System.currentTimeMillis());
                     notifyManager.cancel(NOTIFICATION_ID);
                 }
             }, delayInMilliseconds);
@@ -183,7 +183,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
     }
 
     public void uploadListener(int progress) {
-        log.debug("Syncing progress: {} updatedAt: {}", progress, System.currentTimeMillis());
+        logger.debug("Syncing progress: {} updatedAt: {}", progress, System.currentTimeMillis());
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext());
         builder.setOngoing(true);
         builder.setContentTitle("Syncing locations");

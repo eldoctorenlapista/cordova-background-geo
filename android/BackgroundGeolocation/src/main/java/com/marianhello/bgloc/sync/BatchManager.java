@@ -21,15 +21,15 @@ import java.io.OutputStreamWriter;
  */
 public class BatchManager {
     private Context context;
-    private org.slf4j.Logger log;
+    private org.slf4j.Logger logger;
 
     public BatchManager(Context context) {
-        log = LoggerManager.getLogger(BatchManager.class);
+        logger = LoggerManager.getLogger(BatchManager.class);
         this.context = context;
     }
 
     public File createBatch(Long batchStartMillis, Integer syncThreshold) throws IOException {
-        log.info("Creating batch {}", batchStartMillis);
+        logger.info("Creating batch {}", batchStartMillis);
 
         SQLiteOpenHelper helper = SQLiteOpenHelper.getHelper(context);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -129,7 +129,7 @@ public class BatchManager {
 
             db.setTransactionSuccessful();
 
-            log.info("Batch file: {} created successfully", file.getName());
+            logger.info("Batch file: {} created successfully", file.getName());
 
             return file;
         } finally {

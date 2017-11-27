@@ -115,7 +115,7 @@ public class LocationService extends Service {
     private Account syncAccount;
     private Boolean hasConnectivity = true;
 
-    private org.slf4j.Logger log;
+    private org.slf4j.Logger logger;
 
     private volatile HandlerThread handlerThread;
     private ServiceHandler serviceHandler;
@@ -169,8 +169,8 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        log = LoggerManager.getLogger(LocationService.class);
-        log.info("Creating LocationService");
+        logger = LoggerManager.getLogger(LocationService.class);
+        logger.info("Creating LocationService");
 
         // An Android handler thread internally operates on a looper.
         handlerThread = new HandlerThread("LocationService.HandlerThread");
@@ -187,7 +187,7 @@ public class LocationService extends Service {
 
     @Override
     public void onDestroy() {
-        log.info("Destroying LocationService");
+        logger.info("Destroying LocationService");
         provider.onDestroy();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             handlerThread.quitSafely();
@@ -202,19 +202,19 @@ public class LocationService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        log.debug("Task has been removed");
+        logger.debug("Task has been removed");
         if (config.getStopOnTerminate()) {
-            log.info("Stopping self");
+            logger.info("Stopping self");
             stopSelf();
         } else {
-            log.info("Continue running in background");
+            logger.info("Continue running in background");
         }
         super.onTaskRemoved(rootIntent);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        log.info("Received start startId: {} intent: {}", startId, intent);
+        logger.info("Received start startId: {} intent: {}", startId, intent);
 
         if (provider != null) {
             provider.onDestroy();
@@ -226,7 +226,7 @@ public class LocationService extends Service {
             try {
                 config = dao.retrieveConfiguration();
             } catch (JSONException e) {
-                log.error("Config exception: {}", e.getMessage());
+                logger.error("Config exception: {}", e.getMessage());
                 config = new Config(); //using default config
             }
         } else {
@@ -237,7 +237,7 @@ public class LocationService extends Service {
             }
         }
 
-        log.debug("Will start service with: {}", config.toString());
+        logger.debug("Will start service with: {}", config.toString());
 
         LocationProviderFactory spf = new LocationProviderFactory(this);
         provider = spf.getInstance(config.getLocationProvider());
@@ -297,7 +297,7 @@ public class LocationService extends Service {
             try {
                 iconColor = Color.parseColor(color);
             } catch (IllegalArgumentException e) {
-                log.error("Couldn't parse color from android options");
+                logger.error("Couldn't parse color from android options");
             }
         }
         return iconColor;
@@ -329,16 +329,16 @@ public class LocationService extends Service {
      * @param location
      */
     public void handleLocation(BackgroundLocation location) {
-        log.debug("New location {}", location.toString());
+        logger.debug("New location {}", location.toString());
 
         location.setBatchStartMillis(System.currentTimeMillis() + ONE_MINUTE); // prevent sync of not yet posted location
         persistLocation(location);
 
         if (config.hasSyncUrl()) {
             Long locationsCount = dao.locationsForSyncCount(System.currentTimeMillis());
-            log.debug("Location to sync: {} threshold: {}", locationsCount, config.getSyncThreshold());
+            logger.debug("Location to sync: {} threshold: {}", locationsCount, config.getSyncThreshold());
             if (locationsCount >= config.getSyncThreshold()) {
-                log.debug("Attempt to sync locations: {} threshold: {}", locationsCount, config.getSyncThreshold());
+                logger.debug("Attempt to sync locations: {} threshold: {}", locationsCount, config.getSyncThreshold());
                 SyncService.sync(syncAccount, getStringResource(Config.CONTENT_AUTHORITY_RESOURCE));
             }
         }
@@ -356,7 +356,7 @@ public class LocationService extends Service {
     }
 
     public void handleStationary(BackgroundLocation location) {
-        log.debug("New stationary {}", location.toString());
+        logger.debug("New stationary {}", location.toString());
 
         Bundle bundle = new Bundle();
         bundle.putParcelable("location", location);
@@ -410,9 +410,9 @@ public class LocationService extends Service {
         try {
             locationId = dao.persistLocationWithLimit(location, config.getMaxLocations());
             location.setLocationId(locationId);
-            log.debug("Persisted location: {}", location.toString());
+            logger.debug("Persisted location: {}", location.toString());
         } catch (SQLException e) {
-            log.error("Failed to persist location: {} error: {}", location.toString(), e.getMessage());
+            logger.error("Failed to persist location: {} error: {}", location.toString(), e.getMessage());
         }
 
         return locationId;
@@ -445,32 +445,32 @@ public class LocationService extends Service {
 
         @Override
         protected Boolean doInBackground(BackgroundLocation... locations) {
-            log.debug("Executing PostLocationTask#doInBackground");
+            logger.debug("Executing PostLocationTask#doInBackground");
             JSONArray jsonLocations = new JSONArray();
             for (BackgroundLocation location : locations) {
                 try {
                     JSONObject jsonLocation = location.toJSONObject();
                     jsonLocations.put(jsonLocation);
                 } catch (JSONException e) {
-                    log.warn("Location to json failed: {}", location.toString());
+                    logger.warn("Location to json failed: {}", location.toString());
                     return false;
                 }
             }
 
             String url = config.getUrl();
-            log.debug("Posting json to url: {} headers: {}", url, config.getHttpHeaders());
+            logger.debug("Posting json to url: {} headers: {}", url, config.getHttpHeaders());
             int responseCode;
 
             try {
                 responseCode = HttpPostService.postJSON(url, jsonLocations, config.getHttpHeaders());
             } catch (Exception e) {
                 hasConnectivity = isNetworkAvailable();
-                log.warn("Error while posting locations: {}", e.getMessage());
+                logger.warn("Error while posting locations: {}", e.getMessage());
                 return false;
             }
 
             if (responseCode != HttpURLConnection.HTTP_OK) {
-                log.warn("Server error while posting locations responseCode: {}", responseCode);
+                logger.warn("Server error while posting locations responseCode: {}", responseCode);
                 return false;
             }
 
@@ -494,7 +494,7 @@ public class LocationService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             hasConnectivity = isNetworkAvailable();
-            log.info("Network condition changed hasConnectivity: {}", hasConnectivity);
+            logger.info("Network condition changed hasConnectivity: {}", hasConnectivity);
         }
     };
 
