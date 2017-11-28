@@ -34,10 +34,10 @@ typedef NS_ENUM(NSInteger, BGErrorCode) {
 
 - (void) onCreate;
 - (void) onDestroy;
-- (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError;
-- (BOOL) start:(NSError * __autoreleasing *)outError;
-- (BOOL) stop:(NSError * __autoreleasing *)outError;
-- (void) switchMode:(BGOperationMode)mode;
+- (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError;
+- (BOOL) onStart:(NSError * __autoreleasing *)outError;
+- (BOOL) onStop:(NSError * __autoreleasing *)outError;
+- (void) onSwitchMode:(BGOperationMode)mode;
 
 @end
 

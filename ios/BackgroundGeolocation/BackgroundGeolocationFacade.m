@@ -165,12 +165,12 @@ FMDBLogger *sqliteLogger;
         }
        
         // trap configuration errors
-        if (![locationProvider configure:_config error:&error]) {
+        if (![locationProvider onConfigure:_config error:&error]) {
             if (outError != nil) *outError = error;
             return;
         }
         
-        isStarted = [locationProvider start:&error];
+        isStarted = [locationProvider onStart:&error];
         locationProvider.delegate = self;
     }];
 
@@ -201,7 +201,7 @@ FMDBLogger *sqliteLogger;
     [reach stopNotifier];
     
     [self runOnMainThread:^{
-        isStarted = ![locationProvider stop:outError];
+        isStarted = ![locationProvider onStop:outError];
     }];
 
     return isStarted;
@@ -223,7 +223,7 @@ FMDBLogger *sqliteLogger;
     }
    
     [self runOnMainThread:^{
-        [locationProvider switchMode:mode];
+        [locationProvider onSwitchMode:mode];
     }];
 }
 

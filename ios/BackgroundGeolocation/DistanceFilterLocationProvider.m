@@ -82,7 +82,7 @@ enum {
  * @param {Config} configuration
  * @param {NSError} optional error
  */
-- (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError
+- (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
     DDLogVerbose(@"DistanceFilterProvider configure");
     _config = config;
@@ -98,7 +98,7 @@ enum {
 /**
  * Turn on background geolocation
  */
-- (BOOL) start:(NSError * __autoreleasing *)outError
+- (BOOL) onStart:(NSError * __autoreleasing *)outError
 {
     DDLogInfo(@"DistanceFilterProvider will start");
     
@@ -147,7 +147,7 @@ enum {
 /**
  * Turn it off
  */
-- (BOOL) stop:(NSError * __autoreleasing *)outError
+- (BOOL) onStop:(NSError * __autoreleasing *)outError
 {
     DDLogInfo(@"DistanceFilterProvider stop");
     
@@ -156,6 +156,11 @@ enum {
     [self stopMonitoringForRegion];
     
     return YES;
+}
+
+- (void) onSwitchMode:(BGOperationMode)mode
+{
+    [self switchMode:mode];
 }
 
 /**

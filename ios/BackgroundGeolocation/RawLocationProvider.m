@@ -39,7 +39,7 @@ static NSString * const Domain = @"com.marianhello";
 
 - (void) onDestroy {/* noop */}
 
-- (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError
+- (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
     DDLogVerbose(@"%@ configure", TAG);
     _config = config;
@@ -52,7 +52,7 @@ static NSString * const Domain = @"com.marianhello";
     return YES;
 }
 
-- (BOOL) start:(NSError * __autoreleasing *)outError
+- (BOOL) onStart:(NSError * __autoreleasing *)outError
 {
     DDLogInfo(@"%@ will start", TAG);
 
@@ -64,7 +64,7 @@ static NSString * const Domain = @"com.marianhello";
     return YES;
 }
 
-- (BOOL) stop:(NSError * __autoreleasing *)outError
+- (BOOL) onStop:(NSError * __autoreleasing *)outError
 {
     DDLogInfo(@"%@ will stop", TAG);
 
@@ -76,7 +76,7 @@ static NSString * const Domain = @"com.marianhello";
     return YES;
 }
 
-- (void) switchMode:(BGOperationMode)mode
+- (void) onSwitchMode:(BGOperationMode)mode
 {
     /* do nothing */
 }

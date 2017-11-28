@@ -30,7 +30,7 @@ static NSString * const Domain = @"com.marianhello";
 
 - (void) onDestroy {/* noop */}
 
-- (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError
+- (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
         NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
@@ -40,7 +40,7 @@ static NSString * const Domain = @"com.marianhello";
     return NO;
 }
 
-- (BOOL) start:(NSError * __autoreleasing *)outError
+- (BOOL) onStart:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
         NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
@@ -50,7 +50,7 @@ static NSString * const Domain = @"com.marianhello";
     return NO;
 }
 
-- (BOOL) stop:(NSError * __autoreleasing *)outError
+- (BOOL) onStop:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
         NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
@@ -60,7 +60,7 @@ static NSString * const Domain = @"com.marianhello";
     return NO;
 }
 
-- (void) switchMode:(BGOperationMode)mode
+- (void) onSwitchMode:(BGOperationMode)mode
 {
     /* do nothing */
 }
