@@ -398,7 +398,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         JSONArray jsonLocationsArray = new JSONArray();
         Collection<BackgroundLocation> locations = facade.getLocations();
         for (BackgroundLocation location : locations) {
-            jsonLocationsArray.put(location.toJSONObject());
+            jsonLocationsArray.put(location.toJSONObjectWithId());
         }
         return jsonLocationsArray;
     }
