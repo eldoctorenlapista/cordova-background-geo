@@ -271,10 +271,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
     }
 
     public void switchMode(int mode) {
-        if (mode == BACKGROUND_MODE) {
-
-
-        } else if (mode == FOREGROUND_MODE) {
+        if (mode == FOREGROUND_MODE) {
             if (LocationService.isRunning()) {
                 if (!mIsBound) {
                     doBindService();
@@ -282,8 +279,10 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
                 if (!locationModeChangeReceiverRegistered) {
                     registerLocationModeChangeReceiver();
                 }
+                // TODO: fix MSG_SWITCH_MODE is not sent when service is not bound yet
             }
         }
+
         Message msg = Message.obtain(null,
                 LocationService.MSG_SWITCH_MODE);
         msg.replyTo = mMessenger;
