@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 public class BackgroundLocation implements Parcelable {
+    public static final String BUNDLE_KEY = "location";
+
     private Long locationId = null;
     private Integer locationProvider = null;
     private Long batchStartMillis = null;

@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.marianhello.logging.LoggerManager;
-import com.tenforwardconsulting.bgloc.DistanceFilterLocationProvider;
+import com.marianhello.utils.Tone;
 
 /**
  * Created by finch on 7.11.2017.
@@ -32,16 +32,55 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
         logger = LoggerManager.getLogger(RawLocationProvider.class);
         logger.debug("Creating RawLocationProvider");
 
-        locationManager = (LocationManager) locationService.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) mLocationService.getSystemService(Context.LOCATION_SERVICE);
+    }
+
+    public void onStart() {
+        if (isStarted) {
+            return;
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setSpeedRequired(true);
+        criteria.setCostAllowed(true);
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setHorizontalAccuracy(translateDesiredAccuracy(mConfig.getDesiredAccuracy()));
+        criteria.setPowerRequirement(Criteria.POWER_HIGH);
+
+        try {
+            locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), mConfig.getInterval(), mConfig.getDistanceFilter(), this);
+            isStarted = true;
+        } catch (SecurityException e) {
+            logger.error("Security exception: {}", e.getMessage());
+            this.handleSecurityException(e);
+        }
+    }
+
+    public void onStop() {
+        if (!isStarted) {
+            return;
+        }
+        try {
+            locationManager.removeUpdates(this);
+        } catch (SecurityException e) {
+            logger.error("Security exception: {}", e.getMessage());
+            this.handleSecurityException(e);
+        }
+    }
+
+    public void onConfigure(Config config) {
+        // TODO: implement reconfigure
     }
 
     @Override
     public void onLocationChanged(Location location) {
         logger.debug("Location change: {}", location.toString());
 
-        if (config.isDebugging()) {
-            Toast.makeText(locationService, "acy:" + location.getAccuracy() + ",v:" + location.getSpeed(), Toast.LENGTH_LONG).show();
-            startTone(Tone.BEEP);
+        if (mConfig.isDebugging()) {
+            Toast.makeText(mLocationService, "acy:" + location.getAccuracy() + ",v:" + location.getSpeed(), Toast.LENGTH_LONG).show();
+            playDebugTone(Tone.BEEP);
         }
         handleLocation(location);
     }
@@ -59,43 +98,6 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
     @Override
     public void onProviderDisabled(String provider) {
         logger.debug("Provider {} was disabled", provider);
-    }
-
-    @Override
-    public void startRecording() {
-        if (isStarted) {
-            return;
-        }
-
-        Criteria criteria = new Criteria();
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setSpeedRequired(true);
-        criteria.setCostAllowed(true);
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setHorizontalAccuracy(translateDesiredAccuracy(config.getDesiredAccuracy()));
-        criteria.setPowerRequirement(Criteria.POWER_HIGH);
-
-        try {
-            locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), config.getInterval(), config.getDistanceFilter(), this);
-            isStarted = true;
-        } catch (SecurityException e) {
-            logger.error("Security exception: {}", e.getMessage());
-            this.handleSecurityException(e);
-        }
-    }
-
-    @Override
-    public void stopRecording() {
-        if (!isStarted) {
-            return;
-        }
-        try {
-            locationManager.removeUpdates(this);
-        } catch (SecurityException e) {
-            logger.error("Security exception: {}", e.getMessage());
-            this.handleSecurityException(e);
-        }
     }
 
     /**
@@ -123,7 +125,7 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
     @Override
     public void onDestroy() {
         logger.debug("Destroying DistanceFilterLocationProvider");
-        this.stopRecording();
+        this.onStop();
         super.onDestroy();
     }
 }

@@ -70,7 +70,7 @@ public class LocationService extends Service {
     public static final int MSG_REGISTER_CLIENT = 2;
 
     /**
-     * Command to the service to unregister a client, ot stop receiving callbacks
+     * Command to the service to unregister a client, to stop receiving callbacks
      * from the service.  The Message's replyTo field must be a Messenger of
      * the client as previously given with MSG_REGISTER_CLIENT.
      */
@@ -90,18 +90,14 @@ public class LocationService extends Service {
 
 
     /**
-     * Command sent by the service to
-     * any registered clients whenever the clients want to change provider operation mode
+     * Command to the service to indicate operation mode has been changed
      */
     public static final int MSG_SWITCH_MODE = 6;
 
-
-    /** background operation mode of location provider */
-    public static final int BACKGROUND_MODE = 0;
-
-    /** foreground operation mode of location provider */
-    public static final int FOREGROUND_MODE = 1;
-
+    /**
+     * Command to the service to that configuration has been changed
+     */
+    public static final int MSG_CONFIGURE = 7;
 
     /** indicate if service is running */
     private static Boolean isRunning = false;
@@ -110,7 +106,7 @@ public class LocationService extends Service {
     private static final int FIVE_MINUTES = 1000 * 60 * 5;
 
     private LocationDAO dao;
-    private Config config;
+    private Config mConfig;
     private LocationProvider provider;
     private Account syncAccount;
     private Boolean hasConnectivity = true;
@@ -145,6 +141,9 @@ public class LocationService extends Service {
                     break;
                 case MSG_SWITCH_MODE:
                     switchMode(msg.arg1);
+                    break;
+                case MSG_CONFIGURE:
+                    configure(msg.getData());
                     break;
                 default:
                     super.handleMessage(msg);
@@ -203,7 +202,7 @@ public class LocationService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         logger.debug("Task has been removed");
-        if (config.getStopOnTerminate()) {
+        if (mConfig.getStopOnTerminate()) {
             logger.info("Stopping self");
             stopSelf();
         } else {
@@ -214,7 +213,7 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        logger.info("Received start startId: {} intent: {}", startId, intent);
+        logger.info("Received start command startId: {} intent: {}", startId, intent);
 
         if (provider != null) {
             provider.onDestroy();
@@ -224,39 +223,39 @@ public class LocationService extends Service {
             //service has been probably restarted so we need to load config from db
             ConfigurationDAO dao = DAOFactory.createConfigurationDAO(this);
             try {
-                config = dao.retrieveConfiguration();
+                mConfig = dao.retrieveConfiguration();
             } catch (JSONException e) {
                 logger.error("Config exception: {}", e.getMessage());
-                config = new Config(); //using default config
+                mConfig = new Config(); //using default config
             }
         } else {
             if (intent.hasExtra("config")) {
-                config = intent.getParcelableExtra("config");
+                mConfig = intent.getParcelableExtra("config");
             } else {
-                config = new Config(); //using default config
+                mConfig = new Config(); //using default config
             }
         }
 
-        logger.debug("Will start service with: {}", config.toString());
+        logger.debug("Will start service with: {}", mConfig.toString());
 
         LocationProviderFactory spf = new LocationProviderFactory(this);
-        provider = spf.getInstance(config.getLocationProvider());
+        provider = spf.getInstance(mConfig.getLocationProvider());
 
-        if (config.getStartForeground()) {
+        if (mConfig.getStartForeground()) {
             // Build a Notification required for running service in foreground.
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-            builder.setContentTitle(config.getNotificationTitle());
-            builder.setContentText(config.getNotificationText());
-            if (config.hasSmallNotificationIcon()) {
-                builder.setSmallIcon(getDrawableResource(config.getSmallNotificationIcon()));
+            builder.setContentTitle(mConfig.getNotificationTitle());
+            builder.setContentText(mConfig.getNotificationText());
+            if (mConfig.hasSmallNotificationIcon()) {
+                builder.setSmallIcon(getDrawableResource(mConfig.getSmallNotificationIcon()));
             } else {
                 builder.setSmallIcon(android.R.drawable.ic_menu_mylocation);
             }
-            if (config.hasLargeNotificationIcon()) {
-                builder.setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), getDrawableResource(config.getLargeNotificationIcon())));
+            if (mConfig.hasLargeNotificationIcon()) {
+                builder.setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), getDrawableResource(mConfig.getLargeNotificationIcon())));
             }
-            if (config.hasNotificationIconColor()) {
-                builder.setColor(this.parseNotificationIconColor(config.getNotificationIconColor()));
+            if (mConfig.hasNotificationIconColor()) {
+                builder.setColor(this.parseNotificationIconColor(mConfig.getNotificationIconColor()));
             }
 
             // Add an onclick handler to the notification
@@ -272,7 +271,7 @@ public class LocationService extends Service {
             startForeground(startId, notification);
         }
 
-        provider.startRecording();
+        provider.onStart();
         isRunning = true;
 
         //We want this service to continue running until it is explicitly stopped
@@ -303,12 +302,13 @@ public class LocationService extends Service {
         return iconColor;
     }
 
-    public void startRecording() {
-        provider.startRecording();
+    private void switchMode(int mode) {
+        provider.onSwitchMode(mode);
     }
 
-    public void stopRecording() {
-        provider.stopRecording();
+    private void configure(Bundle bundle) {
+        Config config = bundle.getParcelable(Config.BUNDLE_KEY);
+        provider.onConfigure(config);
     }
 
 
@@ -334,21 +334,21 @@ public class LocationService extends Service {
         location.setBatchStartMillis(System.currentTimeMillis() + ONE_MINUTE); // prevent sync of not yet posted location
         persistLocation(location);
 
-        if (config.hasSyncUrl()) {
+        if (mConfig.hasSyncUrl()) {
             Long locationsCount = dao.locationsForSyncCount(System.currentTimeMillis());
-            logger.debug("Location to sync: {} threshold: {}", locationsCount, config.getSyncThreshold());
-            if (locationsCount >= config.getSyncThreshold()) {
-                logger.debug("Attempt to sync locations: {} threshold: {}", locationsCount, config.getSyncThreshold());
+            logger.debug("Location to sync: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
+            if (locationsCount >= mConfig.getSyncThreshold()) {
+                logger.debug("Attempt to sync locations: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
                 SyncService.sync(syncAccount, getStringResource(Config.CONTENT_AUTHORITY_RESOURCE));
             }
         }
 
-        if (hasConnectivity && config.hasUrl()) {
+        if (hasConnectivity && mConfig.hasUrl()) {
             postLocationAsync(location);
         }
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable("location", location);
+        bundle.putParcelable(BackgroundLocation.BUNDLE_KEY, location);
         Message msg = Message.obtain(null, MSG_LOCATION_UPDATE);
         msg.setData(bundle);
 
@@ -359,15 +359,11 @@ public class LocationService extends Service {
         logger.debug("New stationary {}", location.toString());
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable("location", location);
+        bundle.putParcelable(BackgroundLocation.BUNDLE_KEY, location);
         Message msg = Message.obtain(null, MSG_ON_STATIONARY);
         msg.setData(bundle);
 
         sendClientMessage(msg);
-    }
-
-    public void switchMode(int mode) {
-        // TODO: implement
     }
 
     public void sendClientMessage(Message msg) {
@@ -395,12 +391,9 @@ public class LocationService extends Service {
         super.unregisterReceiver(receiver);
     }
 
-    public void handleError(JSONObject error) {
-        Bundle bundle = new Bundle();
-        bundle.putString("error", error.toString());
+    public void handleError(PluginError error) {
         Message msg = Message.obtain(null, MSG_ERROR);
-        msg.setData(bundle);
-
+        msg.setData(error.toBundle());
         sendClientMessage(msg);
     }
 
@@ -408,7 +401,7 @@ public class LocationService extends Service {
     public Long persistLocation (BackgroundLocation location) {
         Long locationId = -1L;
         try {
-            locationId = dao.persistLocationWithLimit(location, config.getMaxLocations());
+            locationId = dao.persistLocationWithLimit(location, mConfig.getMaxLocations());
             location.setLocationId(locationId);
             logger.debug("Persisted location: {}", location.toString());
         } catch (SQLException e) {
@@ -434,12 +427,12 @@ public class LocationService extends Service {
     }
 
     public Config getConfig() {
-        return this.config;
+        return this.mConfig;
     }
 
-    public void setConfig(Config config) {
-        this.config = config;
-    }
+//    public void setConfig(Config config) {
+//        this.mConfig = config;
+//    }
 
     private class PostLocationTask extends AsyncTask<BackgroundLocation, Integer, Boolean> {
 
@@ -457,12 +450,12 @@ public class LocationService extends Service {
                 }
             }
 
-            String url = config.getUrl();
-            logger.debug("Posting json to url: {} headers: {}", url, config.getHttpHeaders());
+            String url = mConfig.getUrl();
+            logger.debug("Posting json to url: {} headers: {}", url, mConfig.getHttpHeaders());
             int responseCode;
 
             try {
-                responseCode = HttpPostService.postJSON(url, jsonLocations, config.getHttpHeaders());
+                responseCode = HttpPostService.postJSON(url, jsonLocations, mConfig.getHttpHeaders());
             } catch (Exception e) {
                 hasConnectivity = isNetworkAvailable();
                 logger.warn("Error while posting locations: {}", e.getMessage());

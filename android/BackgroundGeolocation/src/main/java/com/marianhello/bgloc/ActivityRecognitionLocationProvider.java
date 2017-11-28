@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.marianhello.logging.LoggerManager;
+import com.marianhello.utils.Tone;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,7 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     private Boolean startRecordingOnConnect = true;
     private Boolean isTracking = false;
     private Boolean isWatchingActivity = false;
+    private Location lastLocation;
     private DetectedActivity lastActivity = new DetectedActivity(DetectedActivity.UNKNOWN, 100);
 
     private org.slf4j.Logger logger;
@@ -46,19 +48,37 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
         PROVIDER_ID = Config.ACTIVITY_PROVIDER;
     }
 
+    @Override
     public void onCreate() {
         super.onCreate();
 
         logger = LoggerManager.getLogger(ActivityRecognitionLocationProvider.class);
         logger.info("Creating ActivityRecognitionLocationProvider");
 
-        PowerManager pm = (PowerManager) locationService.getSystemService(Context.POWER_SERVICE);
+        PowerManager pm = (PowerManager) mLocationService.getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
         wakeLock.acquire();
 
         Intent detectedActivitiesIntent = new Intent(DETECTED_ACTIVITY_UPDATE);
-        detectedActivitiesPI = PendingIntent.getBroadcast(locationService, 9002, detectedActivitiesIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        detectedActivitiesPI = PendingIntent.getBroadcast(mLocationService, 9002, detectedActivitiesIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         registerReceiver(detectedActivitiesReceiver, new IntentFilter(DETECTED_ACTIVITY_UPDATE));
+    }
+
+    public void onStart() {
+        logger.info("Start recording");
+        this.startRecordingOnConnect = true;
+        attachRecorder();
+    }
+
+    public void onStop() {
+        logger.info("Stop recording");
+        this.startRecordingOnConnect = false;
+        detachRecorder();
+        stopTracking();
+    }
+
+    public void onConfigure(Config config) {
+        // TODO: implement reconfigure
     }
 
     @Override
@@ -71,48 +91,33 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
             return;
         }
 
-        if (config.isDebugging()) {
-            Toast.makeText(locationService, "acy:" + location.getAccuracy() + ",v:" + location.getSpeed() + ",df:" + config.getDistanceFilter(), Toast.LENGTH_LONG).show();
+        if (mConfig.isDebugging()) {
+            Toast.makeText(mLocationService, "acy:" + location.getAccuracy() + ",v:" + location.getSpeed() + ",df:" + mConfig.getDistanceFilter(), Toast.LENGTH_LONG).show();
         }
 
-        // if (lastLocation != null && location.distanceTo(lastLocation) < config.getDistanceFilter()) {
+        // if (lastLocation != null && location.distanceTo(lastLocation) < mConfig.getDistanceFilter()) {
         //     return;
         // }
 
-        if (config.isDebugging()) {
-            startTone(Tone.BEEP);
-        }
+        playDebugTone(Tone.BEEP);
 
         lastLocation = location;
         handleLocation(location);
     }
 
-    public void startRecording() {
-        logger.info("Start recording");
-        this.startRecordingOnConnect = true;
-        attachRecorder();
-    }
-
-    public void stopRecording() {
-        logger.info("Stop recording");
-        this.startRecordingOnConnect = false;
-        detachRecorder();
-        stopTracking();
-    }
-
     public void startTracking() {
         if (isTracking) { return; }
 
-        Integer priority = translateDesiredAccuracy(config.getDesiredAccuracy());
+        Integer priority = translateDesiredAccuracy(mConfig.getDesiredAccuracy());
         LocationRequest locationRequest = LocationRequest.create()
                 .setPriority(priority) // this.accuracy
-                .setFastestInterval(config.getFastestInterval())
-                .setInterval(config.getInterval());
-                // .setSmallestDisplacement(config.getStationaryRadius());
+                .setFastestInterval(mConfig.getFastestInterval())
+                .setInterval(mConfig.getInterval());
+                // .setSmallestDisplacement(mConfig.getStationaryRadius());
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
             isTracking = true;
-            logger.debug("Start tracking with priority={} fastestInterval={} interval={} activitiesInterval={} stopOnStillActivity={}", priority, config.getFastestInterval(), config.getInterval(), config.getActivitiesInterval(), config.getStopOnStillActivity());
+            logger.debug("Start tracking with priority={} fastestInterval={} interval={} activitiesInterval={} stopOnStillActivity={}", priority, mConfig.getFastestInterval(), mConfig.getInterval(), mConfig.getActivitiesInterval(), mConfig.getStopOnStillActivity());
         } catch (SecurityException e) {
             logger.error("Security exception: {}", e.getMessage());
             this.handleSecurityException(e);
@@ -128,7 +133,7 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
 
     private void connectToPlayAPI() {
         logger.debug("Connecting to Google Play Services");
-        googleApiClient =  new GoogleApiClient.Builder(locationService)
+        googleApiClient =  new GoogleApiClient.Builder(mLocationService)
                 .addApi(LocationServices.API)
                 .addApi(ActivityRecognition.API)
                 .addConnectionCallbacks(this)
@@ -149,10 +154,10 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
         } else if (googleApiClient.isConnected()) {
             if (isWatchingActivity) { return; }
             startTracking();
-            if (config.getStopOnStillActivity()) {
+            if (mConfig.getStopOnStillActivity()) {
                 ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
                     googleApiClient,
-                    config.getActivitiesInterval(),
+                    mConfig.getActivitiesInterval(),
                     detectedActivitiesPI
                 );
                 isWatchingActivity = true;
@@ -266,13 +271,13 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
             logger.debug("Detected activity={} confidence={}", getActivityString(lastActivity.getType()), lastActivity.getConfidence());
 
             if (lastActivity.getType() == DetectedActivity.STILL) {
-                if (config.isDebugging()) {
+                if (mConfig.isDebugging()) {
                     Toast.makeText(context, "Detected STILL Activity", Toast.LENGTH_SHORT).show();
                 }
                 // stopTracking();
                 // we will delay stop tracking after position is found
             } else {
-                if (config.isDebugging()) {
+                if (mConfig.isDebugging()) {
                     Toast.makeText(context, "Detected ACTIVE Activity", Toast.LENGTH_SHORT).show();
                 }
                 startTracking();
@@ -281,12 +286,13 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
         }
     };
 
+    @Override
     public void onDestroy() {
-        super.onDestroy();
         logger.info("Destroying ActivityRecognitionLocationProvider");
-        stopRecording();
+        onStop();
         disconnectFromPlayAPI();
         unregisterReceiver(detectedActivitiesReceiver);
         wakeLock.release();
+        super.onDestroy();
     }
 }

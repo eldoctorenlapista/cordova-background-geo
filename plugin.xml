@@ -35,9 +35,10 @@
         <framework src="android/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
         <framework src="com.android.support:support-v4:+" />
-        <!-- Generated with gen_sources.sh @ 2017-11-24 20:39:37 -->
+        <!-- Generated with gen_sources.sh @ 2017-11-28 09:49:11 -->
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/AbstractLocationProvider.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/ActivityRecognitionLocationProvider.java" target-dir="src/com/marianhello/bgloc" />
+        <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/BackgroundGeolocationFacade.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/BootCompletedReceiver.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/Config.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/data/BackgroundLocation.java" target-dir="src/com/marianhello/bgloc/data" />
@@ -53,6 +54,8 @@
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/LocationProviderFactory.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/LocationProvider.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/LocationService.java" target-dir="src/com/marianhello/bgloc" />
+        <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/PluginDelegate.java" target-dir="src/com/marianhello/bgloc" />
+        <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/PluginError.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/RawLocationProvider.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/ResourceResolver.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/bgloc/sync/AccountHelper.java" target-dir="src/com/marianhello/bgloc/sync" />
@@ -71,12 +74,11 @@
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/logging/SQLBuilder.java" target-dir="src/com/marianhello/logging" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/logging/SQLiteAppender.java" target-dir="src/com/marianhello/logging" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/utils/Convert.java" target-dir="src/com/marianhello/utils" />
-        <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/utils/JSONErrorFactory.java" target-dir="src/com/marianhello/utils" />
+        <source-file src="android/BackgroundGeolocation/src/main/java/com/marianhello/utils/Tone.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/BackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/DistanceFilterLocationProvider.java" target-dir="src/com/tenforwardconsulting/bgloc" />
         <source-file src="android/BackgroundGeolocation/src/main/java/org/apache/commons/io/Charsets.java" target-dir="src/org/apache/commons/io" />
         <source-file src="android/BackgroundGeolocation/src/main/java/org/apache/commons/io/input/ReversedLinesFileReader.java" target-dir="src/org/apache/commons/io/input" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/cordova" />
-        <source-file src="android/CDVBackgroundGeolocation/src/main/java/org/apache/cordova/PermissionHelper.java" target-dir="src/org/apache/cordova" />
 
         <resource-file src="android/BackgroundGeolocation/src/main/res/xml/syncadapter.xml" target="res/xml/syncadapter.xml" />
         <resource-file src="android/BackgroundGeolocation/src/main/res/xml/authenticator.xml" target="res/xml/authenticator.xml" />

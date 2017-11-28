@@ -11,42 +11,18 @@ Differences to original version:
 
 package com.tenforwardconsulting.cordova;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-import android.text.TextUtils;
 
+import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.LocationService;
-import com.marianhello.bgloc.ResourceResolver;
+import com.marianhello.bgloc.PluginDelegate;
+import com.marianhello.bgloc.PluginError;
 import com.marianhello.bgloc.data.BackgroundLocation;
-import com.marianhello.bgloc.data.ConfigurationDAO;
-import com.marianhello.bgloc.data.DAOFactory;
-import com.marianhello.bgloc.data.LocationDAO;
-import com.marianhello.utils.JSONErrorFactory;
-import org.apache.cordova.PermissionHelper;
-import com.marianhello.logging.DBLogReader;
 import com.marianhello.logging.LogEntry;
-import com.marianhello.logging.LogReader;
 import com.marianhello.logging.LoggerManager;
 
 import org.apache.cordova.CallbackContext;
@@ -57,18 +33,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class BackgroundGeolocationPlugin extends CordovaPlugin {
+public class BackgroundGeolocationPlugin extends CordovaPlugin implements PluginDelegate {
 
     public static final String LOCATION_EVENT = "location";
     public static final String STATIONARY_EVENT = "stationary";
-    public static final String START_EVENT = "start";
-    public static final String STOP_EVENT = "stop";
-    public static final String AUTHORIZATION_EVENT = "authorization";
     public static final String FOREGROUND_EVENT = "foreground";
     public static final String BACKGROUND_EVENT = "background";
+    public static final String AUTHORIZATION_EVENT = "authorization";
+    public static final String START_EVENT = "start";
+    public static final String STOP_EVENT = "stop";
 
     public static final String ACTION_START = "start";
     public static final String ACTION_STOP = "stop";
@@ -89,191 +63,72 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
     public static final String ACTION_START_TASK = "startTask";
     public static final String ACTION_END_TASK = "endTask";
 
-    private static final int AUTHORIZATION_AUTHORIZED = 1;
-    private static final int AUTHORIZATION_DENIED = 0;
+    private BackgroundGeolocationFacade facade;
 
-    public static final int START_REQ_CODE = 0;
-    public static final int PERMISSION_DENIED_ERROR_CODE = 2;
-    public static final String[] PERMISSIONS = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
-
-    /** Messenger for communicating with the service. */
-    private Messenger mService = null;
-    /** Flag indicating whether we have called bind on the service. */
-    private Boolean mIsBound = false;
-    private Boolean locationModeChangeReceiverRegistered = false;
-
-    private Config mConfig;
     private CallbackContext callbackContext;
-    private ExecutorService executorService;
-    private BackgroundLocation stationaryLocation;
 
-    private org.slf4j.Logger log;
-
-    /**
-     * Handler of incoming messages from service.
-     */
-    class IncomingHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case LocationService.MSG_LOCATION_UPDATE:
-                    try {
-                        log.debug("Sending location to webview");
-                        Bundle bundle = msg.getData();
-                        bundle.setClassLoader(LocationService.class.getClassLoader());
-                        JSONObject location = ((BackgroundLocation) bundle.getParcelable("location")).toJSONObject();
-                        sendEvent(LOCATION_EVENT, location);
-                    } catch (JSONException e) {
-                        log.warn("Error converting message to json");
-                        sendError(e);
-                    }
-                    break;
-                case LocationService.MSG_ON_STATIONARY:
-                    try {
-                        log.debug("Sending stationary location to webview");
-                        Bundle bundle = msg.getData();
-                        bundle.setClassLoader(LocationService.class.getClassLoader());
-                        stationaryLocation = (BackgroundLocation) bundle.getParcelable("location");
-                        JSONObject location = stationaryLocation.toJSONObject();
-                        sendEvent(STATIONARY_EVENT, location);
-                    } catch (JSONException e) {
-                        log.warn("Error converting message to json");
-                        sendError(e);
-                    }
-                    break;
-                case LocationService.MSG_ERROR:
-                    log.debug("Sending error to webview");
-                    Bundle bundle = msg.getData();
-                    bundle.setClassLoader(LocationService.class.getClassLoader());
-                    String errorMessage = bundle.getString("error");
-                    sendError(errorMessage);
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
-        }
-    }
-
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
-
-    /**
-     * Class for interacting with the main interface of the service.
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            // This is called when the connection with the service has been
-            // established, giving us the object we can use to
-            // interact with the service.  We are communicating with the
-            // service using a Messenger, so here we get a client-side
-            // representation of that from the raw IBinder object.
-            mService = new Messenger(service);
-            mIsBound = true;
-
-            // We want to monitor the service for as long as we are
-            // connected to it.
-            try {
-                Message msg = Message.obtain(null,
-                        LocationService.MSG_REGISTER_CLIENT);
-                msg.replyTo = mMessenger;
-                mService.send(msg);
-            } catch (RemoteException e) {
-                // In this case the service has crashed before we could even
-                // do anything with it; we can count on soon being
-                // disconnected (and then reconnected if it can be restarted)
-                // so there is no need to do anything here.
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
-            mService = null;
-            mIsBound = false;
-        }
-    };
-
-    private BroadcastReceiver locationModeChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            log.debug("Received AUTHORIZATION_EVENT");
-            try {
-                sendEvent(AUTHORIZATION_EVENT, getAuthorizationStatus());
-            } catch (SettingNotFoundException e) {
-                log.error("Error checking isLocationEnabled", e.getMessage());
-                sendError("Error occured while determining location mode");
-            }
-        }
-    };
+    private org.slf4j.Logger logger;
 
     @Override
     protected void pluginInitialize() {
         super.pluginInitialize();
 
-        log = LoggerManager.getLogger(BackgroundGeolocationPlugin.class);
-        LoggerManager.enableDBLogging();
-        log.info("initializing plugin");
+        facade = new BackgroundGeolocationFacade(this);
 
-        final ResourceResolver res = ResourceResolver.newInstance(getApplication());
-        final String authority = res.getStringResource(Config.CONTENT_AUTHORITY_RESOURCE);
-
-        executorService =  Executors.newSingleThreadExecutor();
+        logger = LoggerManager.getLogger(BackgroundGeolocationPlugin.class);
     }
 
     public boolean execute(String action, final JSONArray data, final CallbackContext callbackContext) {
         Context context = getContext();
 
         if (ACTION_REGISTER_EVENT_LISTENER.equals(action)) {
-            log.debug("Registering event listeners");
+            logger.debug("Registering event listeners");
             this.callbackContext = callbackContext;
 
             return true;
         }
         else if (ACTION_START.equals(action)) {
-            executorService.execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
-                    if (hasPermissions(PERMISSIONS)) {
-                        log.debug("Permissions granted");
-                        startAndBindBackgroundService();
-                        // watch location mode changes
-                        registerLocationModeChangeReceiver();
-                    } else {
-                        log.debug("Permissions not granted");
-                        PermissionHelper.requestPermissions(getSelf(), START_REQ_CODE, PERMISSIONS);
+                    try {
+                        facade.start();
+                    } catch (JSONException e) {
+                        logger.error("Configuration error: {}", e.getMessage());
+                        sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
                     }
                 }
             });
 
             return true;
         } else if (ACTION_STOP.equals(action)) {
-            executorService.execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
-                    unregisterLocationModeChangeReceiver();
-                    doUnbindService();
-                    stopBackgroundService();
+                    facade.stop();
                 }
             });
 
             return true;
         } else if (ACTION_SWITCH_MODE.equals(action)) {
-            Message msg = Message.obtain(null, LocationService.MSG_SWITCH_MODE);
             try {
-                msg.arg1 = data.getInt(0);
-                mService.send(msg);
-            } catch (Exception e) {
-                log.error("Switch mode failed: {}", e.getMessage());
+                int mode = data.getInt(0);
+                facade.switchMode(mode);
+            } catch (JSONException e) {
+                logger.error("Switch mode error: {}", e.getMessage());
+                sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
             }
 
             return true;
         } else if (ACTION_CONFIGURE.equals(action)) {
-            executorService.execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
-                        mConfig = Config.fromJSONObject(data.getJSONObject(0));
-                        persistConfiguration(mConfig);
-                        log.debug("Service configured with: {}", mConfig.toString());
+                        Config config = Config.fromJSONObject(data.getJSONObject(0));
+//                        persistConfiguration(mConfig);
+                        facade.configure(config);
+                        logger.debug("Service configured with: {}", config.toString());
                         callbackContext.success();
                     } catch (Exception e) {
-                        log.error("Configuration error: {}", e.getMessage());
+                        logger.error("Configuration error: {}", e.getMessage());
                         callbackContext.error("Configuration error: " + e.getMessage());
                     }
                 }
@@ -281,46 +136,44 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
 
             return true;
         } else if (ACTION_LOCATION_ENABLED_CHECK.equals(action)) {
-            log.debug("Location services enabled check");
+            logger.debug("Location services enabled check");
             try {
-                int isLocationEnabled = BackgroundGeolocationPlugin.isLocationEnabled(context) ? 1 : 0;
-                callbackContext.success(isLocationEnabled);
+                callbackContext.success(getAuthorizationStatus());
             } catch (SettingNotFoundException e) {
-                log.error("Location service checked failed: {}", e.getMessage());
+                logger.error("Location service checked failed: {}", e.getMessage());
                 callbackContext.error("Location setting error occured");
             }
 
             return true;
         } else if (ACTION_SHOW_LOCATION_SETTINGS.equals(action)) {
-            showLocationSettings();
-            // TODO: call success/fail callback
+            BackgroundGeolocationFacade.showLocationSettings(context);
 
             return true;
         } else if (ACTION_SHOW_APP_SETTINGS.equals(action)) {
-            showAppSettings();
-            // TODO: call success/fail callback
+            BackgroundGeolocationFacade.showAppSettings(context);
 
             return true;
         } else if (ACTION_GET_STATIONARY.equals(action)) {
             try {
+                BackgroundLocation stationaryLocation = facade.getStationaryLocation();
                 if (stationaryLocation != null) {
                     callbackContext.success(stationaryLocation.toJSONObject());
                 } else {
                     callbackContext.success();
                 }
             } catch (JSONException e) {
-                log.error("Getting stationary location failed: {}", e.getMessage());
+                logger.error("Getting stationary location failed: {}", e.getMessage());
                 callbackContext.error("Getting stationary location failed");
             }
 
             return true;
         } else if (ACTION_GET_ALL_LOCATIONS.equals(action)) {
-            cordova.getThreadPool().execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
                         callbackContext.success(getAllLocations());
                     } catch (JSONException e) {
-                        log.error("Getting all locations failed: {}", e.getMessage());
+                        logger.error("Getting all locations failed: {}", e.getMessage());
                         callbackContext.error("Converting locations to JSON failed.");
                     }
                 }
@@ -328,12 +181,12 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
 
             return true;
         } else if (ACTION_GET_VALID_LOCATIONS.equals(action)) {
-            cordova.getThreadPool().execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
                         callbackContext.success(getValidLocations());
                     } catch (JSONException e) {
-                        log.error("Getting valid locations failed: {}", e.getMessage());
+                        logger.error("Getting valid locations failed: {}", e.getMessage());
                         callbackContext.error("Converting locations to JSON failed.");
                     }
                 }
@@ -341,14 +194,14 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
 
             return true;
         } else if (ACTION_DELETE_LOCATION.equals(action)) {
-            cordova.getThreadPool().execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
                         Long locationId = data.getLong(0);
-                        deleteLocation(locationId);
+                        facade.deleteLocation(locationId);
                         callbackContext.success();
                     } catch (JSONException e) {
-                        log.error("Delete location failed: {}", e.getMessage());
+                        logger.error("Delete location failed: {}", e.getMessage());
                         callbackContext.error("Deleting location failed: " + e.getMessage());
                     }
                 }
@@ -356,33 +209,30 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
 
             return true;
         } else if (ACTION_DELETE_ALL_LOCATIONS.equals(action)) {
-            cordova.getThreadPool().execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
-                    deleteAllLocations();
+                    facade.deleteAllLocations();
                     callbackContext.success();
                 }
             });
 
             return true;
         } else if (ACTION_GET_CONFIG.equals(action)) {
-            cordova.getThreadPool().execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
-                    Config config = mConfig;
                     try {
-                        if (config == null) {
-                            config = getStoredOrDefaultConfig();
-                        }
+                        Config config = facade.getConfig();
                         callbackContext.success(config.toJSONObject());
                     } catch (JSONException e) {
-                        log.error("Error getting config: {}", e.getMessage());
-                        callbackContext.error("Error getting config: " + e.getMessage());
+                        logger.error("Error getting mConfig: {}", e.getMessage());
+                        callbackContext.error("Error getting mConfig: " + e.getMessage());
                     }
                 }
             });
 
             return true;
         } else if (ACTION_GET_LOG_ENTRIES.equals(action)) {
-            cordova.getThreadPool().execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
                         callbackContext.success(getLogs(data.getInt(0)));
@@ -394,7 +244,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
 
             return true;
         } else if (ACTION_CHECK_STATUS.equals(action)) {
-            cordova.getThreadPool().execute(new Runnable() {
+            runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
                         callbackContext.success(checkStatus());
@@ -422,7 +272,8 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
      * @param multitasking		Flag indicating if multitasking is turned on for app
      */
     public void onPause(boolean multitasking) {
-        log.info("App will be paused multitasking={}", multitasking);
+        logger.info("App will be paused multitasking={}", multitasking);
+        facade.switchMode(BackgroundGeolocationFacade.BACKGROUND_MODE);
         sendEvent(BACKGROUND_EVENT);
     }
 
@@ -432,15 +283,8 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
      * @param multitasking		Flag indicating if multitasking is turned on for app
      */
     public void onResume(boolean multitasking) {
-        log.info("App will be resumed multitasking={}", multitasking);
-        if (LocationService.isRunning()) {
-            if (!mIsBound) {
-                doBindService();
-            }
-            if (!locationModeChangeReceiverRegistered) {
-                registerLocationModeChangeReceiver();
-            }
-        }
+        logger.info("App will be resumed multitasking={}", multitasking);
+        facade.switchMode(BackgroundGeolocationFacade.FOREGROUND_MODE);
         sendEvent(FOREGROUND_EVENT);
     }
 
@@ -448,14 +292,14 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
      * Called when the activity is becoming visible to the user.
      */
     public void onStart() {
-        log.info("App is visible");
+        logger.info("App is visible");
     }
 
     /**
      * Called when the activity is no longer visible to the user.
      */
     public void onStop() {
-        log.info("App is no longer visible");
+        logger.info("App is no longer visible");
     }
 
     /**
@@ -464,42 +308,22 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
      */
      @Override
     public void onDestroy() {
-        log.info("Destroying plugin");
-        unregisterLocationModeChangeReceiver();
-        doUnbindService();
-        if (mConfig != null && mConfig.getStopOnTerminate()) {
-            stopBackgroundService();
-        }
+        logger.info("Destroying plugin");
+        facade.onAppDestroy();
         super.onDestroy();
     }
 
-    protected BackgroundGeolocationPlugin getSelf() {
-        return this;
+    @Override
+    public Activity getActivity() {
+        return cordova.getActivity();
     }
 
-    protected Activity getActivity() {
-        return this.cordova.getActivity();
+    public Context getContext() {
+        return getActivity().getApplicationContext();
     }
 
     protected Application getApplication() {
         return getActivity().getApplication();
-    }
-
-    protected Context getContext() {
-        return getActivity().getApplicationContext();
-    }
-
-    protected Config getStoredOrDefaultConfig() throws JSONException {
-        Config config = getStoredConfig();
-        if (config == null) {
-            config = new Config();
-        }
-        return config;
-    }
-
-    protected Config getStoredConfig() throws JSONException {
-        ConfigurationDAO dao = DAOFactory.createConfigurationDAO(getContext());
-        return dao.retrieveConfiguration();
     }
 
     private void sendEvent(String name) {
@@ -513,7 +337,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
         } catch (JSONException e) {
-            log.error("Error sending event {}: {}", name, e.getMessage());
+            logger.error("Error sending event {}: {}", name, e.getMessage());
         }
     }
 
@@ -529,7 +353,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
         } catch (JSONException e) {
-            log.error("Error sending event {}: {}", name, e.getMessage());
+            logger.error("Error sending event {}: {}", name, e.getMessage());
         }
     }
 
@@ -545,267 +369,108 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin {
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
         } catch (JSONException e) {
-            log.error("Error sending event {}: {}", name, e.getMessage());
+            logger.error("Error sending event {}: {}", name, e.getMessage());
         }
     }
 
-    private void sendError(Exception e) {
+    private void sendError(PluginError error) {
         if (callbackContext == null) {
             return;
         }
-        JSONObject error = new JSONObject();
         try {
-            error.put("message", e.getMessage());
-            PluginResult result = new PluginResult(PluginResult.Status.ERROR, error);
+            PluginResult result = new PluginResult(PluginResult.Status.ERROR, error.toJSONObject());
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
         } catch(JSONException je) {
-            log.error("Error sending error {}: {}", je.getMessage());
+            logger.error("Error sending error {}: {}", je.getMessage());
         }
     }
 
-    private void sendError(JSONObject error) {
-        if (callbackContext == null) {
-            return;
-        }
-        PluginResult result = new PluginResult(PluginResult.Status.ERROR, error);
-        result.setKeepCallback(true);
-        callbackContext.sendPluginResult(result);
+    private void runOnUiThread(Runnable runnable) {
+        getActivity().runOnUiThread(runnable);
     }
 
-    private void sendError(String message) {
-        if (callbackContext == null) {
-            return;
-        }
-        JSONObject error = new JSONObject();
-        try {
-            error.put("message", message);
-            PluginResult result = new PluginResult(PluginResult.Status.ERROR, error);
-            result.setKeepCallback(true);
-            callbackContext.sendPluginResult(result);
-        } catch(JSONException je) {
-            log.error("Error sending error {}: {}", je.getMessage());
-        }
+    private void runOnWebViewThread(Runnable runnable) {
+        cordova.getThreadPool().execute(runnable);
     }
 
-    protected void runOnUiThread(Runnable action) {
-        getActivity().runOnUiThread(action);
-    }
-
-    protected void startAndBindBackgroundService () {
-        try {
-            startBackgroundService();
-            doBindService();
-        } catch(Exception e) {
-//            JSONObject error = new JSONObject();
-//            error.put("message", "Error occured while starting service");
-//            error.put("detail", e.getMessage());
-
-            sendError(e);
-        }
-    }
-
-    protected void startBackgroundService () throws Exception {
-        if (LocationService.isRunning()) return;
-
-        log.info("Starting bg service");
-        Activity activity = getActivity();
-        Intent locationServiceIntent = new Intent(activity, LocationService.class);
-
-        if (mConfig == null) {
-            log.warn("Attempt to start unconfigured service. Will use stored or default.");
-            mConfig = getStoredOrDefaultConfig();
-        }
-
-        locationServiceIntent.putExtra("config", mConfig);
-        locationServiceIntent.addFlags(Intent.FLAG_FROM_BACKGROUND);
-        // start service to keep service running even if no clients are bound to it
-        activity.startService(locationServiceIntent);
-        sendEvent(START_EVENT);
-    }
-
-    protected void stopBackgroundService() {
-        if (!LocationService.isRunning()) return;
-
-        log.info("Stopping bg service");
-        Activity activity = getActivity();
-        activity.stopService(new Intent(activity, LocationService.class));
-        sendEvent(STOP_EVENT);
-    }
-
-    void doBindService () {
-        // Establish a connection with the service.  We use an explicit
-        // class name because there is no reason to be able to let other
-        // applications replace our component.
-
-        if (mIsBound) return;
-
-        log.info("Binding to service");
-        Activity activity = getActivity();
-        Intent locationServiceIntent = new Intent(activity, LocationService.class);
-//        locationServiceIntent.putExtra("config", mConfig);
-        activity.bindService(locationServiceIntent, mConnection, Context.BIND_IMPORTANT);
-    }
-
-    void doUnbindService () {
-        if (mIsBound == false) return;
-        log.info("Unbinding from bg service");
-        // If we have received the service, and hence registered with
-        // it, then now is the time to unregister.
-        if (mService != null) {
-            try {
-                Message msg = Message.obtain(null,
-                        LocationService.MSG_UNREGISTER_CLIENT);
-                msg.replyTo = mMessenger;
-                //msg.arg1 = MESSENGER_CLIENT_ID;
-                mService.send(msg);
-            } catch (RemoteException e) {
-                // There is nothing special we need to do if the service
-                // has crashed.
-            }
-
-            // Detach our existing connection.
-            Activity activity = getActivity();
-            activity.unbindService(mConnection);
-            mIsBound = false;
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void registerLocationModeChangeReceiver () {
-        if (locationModeChangeReceiverRegistered) return;
-        getContext().registerReceiver(locationModeChangeReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
-        locationModeChangeReceiverRegistered = true;
-    }
-
-    private void unregisterLocationModeChangeReceiver () {
-        if (locationModeChangeReceiverRegistered == false) return;
-        getContext().unregisterReceiver(locationModeChangeReceiver);
-        locationModeChangeReceiverRegistered = false;
-    }
-
-    public void showLocationSettings() {
-        Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        cordova.getActivity().startActivity(settingsIntent);
-    }
-
-    public void showAppSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.setData(Uri.parse("package:" + getContext().getPackageName()));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        getContext().startActivity(intent);
-    }
-
-    public static boolean isLocationEnabled(Context context) throws SettingNotFoundException {
-        int locationMode = 0;
-        String locationProviders;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
-
-        } else {
-            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-            return !TextUtils.isEmpty(locationProviders);
-        }
-    }
-
-    public JSONArray getAllLocations() throws JSONException {
+    private JSONArray getAllLocations() throws JSONException {
         JSONArray jsonLocationsArray = new JSONArray();
-        LocationDAO dao = DAOFactory.createLocationDAO(getContext());
-        Collection<BackgroundLocation> locations = dao.getAllLocations();
+        Collection<BackgroundLocation> locations = facade.getLocations();
         for (BackgroundLocation location : locations) {
             jsonLocationsArray.put(location.toJSONObject());
         }
         return jsonLocationsArray;
     }
 
-    public JSONArray getValidLocations() throws JSONException {
+    private JSONArray getValidLocations() throws JSONException {
         JSONArray jsonLocationsArray = new JSONArray();
-        LocationDAO dao = DAOFactory.createLocationDAO(getContext());
-        Collection<BackgroundLocation> locations = dao.getValidLocations();
+        Collection<BackgroundLocation> locations = facade.getValidLocations();
         for (BackgroundLocation location : locations) {
             jsonLocationsArray.put(location.toJSONObjectWithId());
         }
         return jsonLocationsArray;
     }
 
-    public void deleteLocation(Long locationId) {
-        LocationDAO dao = DAOFactory.createLocationDAO(getContext());
-        dao.deleteLocation(locationId);
-    }
-
-    public void deleteAllLocations() {
-        LocationDAO dao = DAOFactory.createLocationDAO(getContext());
-        dao.deleteAllLocations();
-    }
-
-    public void persistConfiguration(Config config) throws NullPointerException {
-        ConfigurationDAO dao = DAOFactory.createConfigurationDAO(getContext());
-
-        dao.persistConfiguration(config);
-    }
-
-    public JSONObject retrieveConfiguration() throws JSONException {
-        ConfigurationDAO dao = DAOFactory.createConfigurationDAO(getContext());
-        Config config = dao.retrieveConfiguration();
-        if (config != null) {
-            return config.toJSONObject();
-        }
-        return null;
-    }
-
-    public JSONArray getLogs(Integer limit) throws Exception {
+    private JSONArray getLogs(Integer limit) throws Exception {
         JSONArray jsonLogsArray = new JSONArray();
-        LogReader logReader = new DBLogReader();
-        Collection<LogEntry> logEntries = logReader.getEntries(limit);
+        Collection<LogEntry> logEntries = facade.getLogEntries(limit);
         for (LogEntry logEntry : logEntries) {
             jsonLogsArray.put(logEntry.toJSONObject());
         }
         return jsonLogsArray;
     }
 
-    public JSONObject checkStatus() throws Exception {
+    private JSONObject checkStatus() throws Exception {
         JSONObject json = new JSONObject();
         json.put("isRunning", LocationService.isRunning());
-        json.put("hasPermissions", hasPermissions(PERMISSIONS));
+        json.put("hasPermissions", facade.hasPermissions());
         json.put("authorization", getAuthorizationStatus());
 
         return json;
     }
 
-    public boolean hasPermissions(String[] permissions) {
-        for(String p : permissions) {
-            if(!PermissionHelper.hasPermission(this, p)) {
-                return false;
-            }
-        }
-        return true;
+    private int getAuthorizationStatus() throws SettingNotFoundException {
+        return facade.getAuthorizationStatus();
     }
 
-    public int getAuthorizationStatus() throws SettingNotFoundException {
-        boolean enabled = isLocationEnabled(getContext());
-        return enabled ? AUTHORIZATION_AUTHORIZED : AUTHORIZATION_DENIED;
+    @Override
+    public void onAuthorizationChanged(int authStatus) {
+        sendEvent(AUTHORIZATION_EVENT, authStatus);
     }
 
-    public void onRequestPermissionResult(int requestCode, String[] permissions,
-        int[] grantResults) throws JSONException {
-        for (int r : grantResults) {
-            if (r == PackageManager.PERMISSION_DENIED) {
-                log.info("Permission Denied!");
-                JSONObject error = JSONErrorFactory.getJSONError(PERMISSION_DENIED_ERROR_CODE, "Permission denied by user");
-                sendEvent("authorization", error);
-                return;
-            }
+    @Override
+    public void onLocationChanged(BackgroundLocation location) {
+        try {
+            sendEvent(LOCATION_EVENT, location.toJSONObject());
+        } catch (JSONException e) {
+            logger.error("Error converting location to json: {}", e.getMessage());
+            sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
         }
-        switch (requestCode) {
-            case START_REQ_CODE:
-                startAndBindBackgroundService();
-                sendEvent("start");
-                break;
+    }
+
+    @Override
+    public void onStationaryChanged(BackgroundLocation location) {
+        try {
+            sendEvent(STATIONARY_EVENT, location.toJSONObject());
+        } catch (JSONException e) {
+            logger.error("Error converting location to json: {}", e.getMessage());
+            sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
         }
+    }
+
+    @Override
+    public void onLocationPause() {
+        sendEvent(STOP_EVENT);
+    }
+
+    @Override
+    public void onLocationResume() {
+        sendEvent(START_EVENT);
+    }
+
+    @Override
+    public void onError(PluginError error) {
+        sendError(error);
     }
 }

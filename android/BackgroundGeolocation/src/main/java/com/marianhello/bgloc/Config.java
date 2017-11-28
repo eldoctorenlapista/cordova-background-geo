@@ -27,6 +27,8 @@ import java.util.Iterator;
  */
 public class Config implements Parcelable
 {
+    public static final String BUNDLE_KEY = "config";
+
     public static final int DISTANCE_FILTER_PROVIDER = 0;
     public static final int ACTIVITY_PROVIDER = 1;
     public static final int RAW_PROVIDER = 2;
@@ -402,6 +404,12 @@ public class Config implements Parcelable
         this.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         return parcel;
+    }
+
+    public Bundle toBundle () {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(BUNDLE_KEY, this);
+        return bundle;
     }
 
     public static Config fromByteArray (byte[] byteArray) {
