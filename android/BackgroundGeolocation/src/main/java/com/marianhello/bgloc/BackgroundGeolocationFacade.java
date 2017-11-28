@@ -39,16 +39,17 @@ import org.json.JSONException;
 
 import java.util.Collection;
 
-public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class BackgroundGeolocationFacade {
 
     public static final int BACKGROUND_MODE = 0;
     public static final int FOREGROUND_MODE = 1;
+
+    public static final int AUTHORIZATION_AUTHORIZED = 1;
+    public static final int AUTHORIZATION_DENIED = 0;
+
     public static final String[] PERMISSIONS = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
 
-    private static final int PERMISSIONS_REQUEST = 1;
     private static final int MESSENGER_CLIENT_ID = 666;
-    private static final int AUTHORIZATION_AUTHORIZED = 1;
-    private static final int AUTHORIZATION_DENIED = 0;
 
     /** Messenger for communicating with the service. */
     private Messenger mService = null;
@@ -87,38 +88,6 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length == 0) {
-                    // permission denied
-                    logger.info("User denied requested permissions");
-                    mDelegate.onAuthorizationChanged(AUTHORIZATION_DENIED);
-                    return;
-                }
-                for (int grant : grantResults) {
-                    if (grant != PackageManager.PERMISSION_GRANTED) {
-                        // permission denied
-                        logger.info("User denied requested permissions");
-                        mDelegate.onAuthorizationChanged(AUTHORIZATION_DENIED);
-                        return;
-                    }
-                }
-
-                // permission was granted
-                // start service
-                logger.info("User granted requested permissions");
-                startAndBindBackgroundService();
-                // watch location mode changes
-                registerLocationModeChangeReceiver();
-
-                return;
-            }
-        }
-    }
-
     /**
      * Handler of incoming messages from service.
      */
@@ -141,6 +110,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
                     bundle = msg.getData();
                     bundle.setClassLoader(LocationService.class.getClassLoader());
                     location = (BackgroundLocation) bundle.getParcelable(BackgroundLocation.BUNDLE_KEY);
+                    mStationaryLocation = location;
                     mDelegate.onStationaryChanged(location);
 
                     break;
@@ -227,18 +197,14 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
     }
 
     public void start() throws JSONException {
-        if (hasPermissions(getContext(), PERMISSIONS)) {
-            logger.debug("Permissions granted");
-            startAndBindBackgroundService();
-            // watch location mode changes
-            registerLocationModeChangeReceiver();
-        } else {
-            logger.debug("Permissions not granted");
-            requestPermissions(PERMISSIONS);
-        }
+        logger.debug("Starting service");
+        startAndBindBackgroundService();
+        // watch location mode changes
+        registerLocationModeChangeReceiver();
     }
 
     public void stop() {
+        logger.debug("Stopping service");
         unregisterLocationModeChangeReceiver();
         safeUnbindService();
         stopBackgroundService();
@@ -325,10 +291,6 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
         return logReader.getEntries(limit);
     }
 
-    public boolean hasPermissions() {
-        return hasPermissions(getContext(), PERMISSIONS);
-    }
-
     public int getAuthorizationStatus() throws SettingNotFoundException {
         boolean enabled = isLocationEnabled(getContext());
         return enabled ? AUTHORIZATION_AUTHORIZED : AUTHORIZATION_DENIED;
@@ -345,11 +307,6 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
     private Config getStoredConfig() throws JSONException {
         ConfigurationDAO dao = DAOFactory.createConfigurationDAO(getContext());
         return dao.retrieveConfiguration();
-    }
-
-    private void requestPermissions(String[] permissions) {
-        logger.debug("Requesting permissions");
-        ActivityCompat.requestPermissions(mDelegate.getActivity(), permissions, PERMISSIONS_REQUEST);
     }
 
     private void startAndBindBackgroundService() {
@@ -512,14 +469,5 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
             locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
             return !TextUtils.isEmpty(locationProviders);
         }
-    }
-
-    public static boolean hasPermissions(Context context, String[] permissions) {
-        for (String perm: permissions) {
-            if (ContextCompat.checkSelfPermission(context, perm) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
     }
 }

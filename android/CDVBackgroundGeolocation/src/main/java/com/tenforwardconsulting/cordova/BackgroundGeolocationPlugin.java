@@ -11,10 +11,13 @@ Differences to original version:
 
 package com.tenforwardconsulting.cordova;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.provider.Settings.SettingNotFoundException;
+import android.support.v4.content.ContextCompat;
 
 import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
@@ -63,6 +66,8 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     public static final String ACTION_START_TASK = "startTask";
     public static final String ACTION_END_TASK = "endTask";
 
+    private static final int PERMISSIONS_REQUEST_CODE = 1;
+
     private BackgroundGeolocationFacade facade;
 
     private CallbackContext callbackContext;
@@ -90,12 +95,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         else if (ACTION_START.equals(action)) {
             runOnWebViewThread(new Runnable() {
                 public void run() {
-                    try {
-                        facade.start();
-                    } catch (JSONException e) {
-                        logger.error("Configuration error: {}", e.getMessage());
-                        sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
-                    }
+                    start();
                 }
             });
 
@@ -266,6 +266,20 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         return false;
     }
 
+    private void start() {
+        if (hasPermissions()) {
+            try {
+                facade.start();
+            } catch (JSONException e) {
+                logger.error("Configuration error: {}", e.getMessage());
+                sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
+            }
+        } else {
+            logger.debug("Permissions not granted");
+            cordova.requestPermissions(this, PERMISSIONS_REQUEST_CODE, BackgroundGeolocationFacade.PERMISSIONS);
+        }
+    }
+
     /**
      * Called when the system is about to start resuming a previous activity.
      *
@@ -424,7 +438,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     private JSONObject checkStatus() throws Exception {
         JSONObject json = new JSONObject();
         json.put("isRunning", LocationService.isRunning());
-        json.put("hasPermissions", facade.hasPermissions());
+        json.put("hasPermissions", hasPermissions());
         json.put("authorization", getAuthorizationStatus());
 
         return json;
@@ -472,5 +486,48 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     @Override
     public void onError(PluginError error) {
         sendError(error);
+    }
+
+    public boolean hasPermissions() {
+        return hasPermissions(getContext(), BackgroundGeolocationFacade.PERMISSIONS);
+    }
+
+    @Override
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 0) {
+                    // permission denied
+                    logger.info("User denied requested permissions");
+                    onAuthorizationChanged(BackgroundGeolocationFacade.AUTHORIZATION_DENIED);
+                    return;
+                }
+                for (int grant : grantResults) {
+                    if (grant != PackageManager.PERMISSION_GRANTED) {
+                        // permission denied
+                        logger.info("User denied requested permissions");
+                        onAuthorizationChanged(BackgroundGeolocationFacade.AUTHORIZATION_DENIED);
+                        return;
+                    }
+                }
+
+                // permission was granted
+                // start service
+                logger.info("User granted requested permissions");
+                facade.start();
+
+                return;
+            }
+        }
+    }
+
+    public static boolean hasPermissions(Context context, String[] permissions) {
+        for (String perm: permissions) {
+            if (ContextCompat.checkSelfPermission(context, perm) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 }
