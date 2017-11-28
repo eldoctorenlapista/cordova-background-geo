@@ -81,7 +81,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
 
         unregisterLocationModeChangeReceiver();
         // Unbind from the service
-        doUnbindService();
+        safeUnbindService();
         if (mConfig == null || mConfig.getStopOnTerminate()) {
             stopBackgroundService();
         }
@@ -240,7 +240,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
 
     public void stop() {
         unregisterLocationModeChangeReceiver();
-        doUnbindService();
+        safeUnbindService();
         stopBackgroundService();
     }
 
@@ -274,7 +274,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
         if (mode == FOREGROUND_MODE) {
             if (LocationService.isRunning()) {
                 if (!mIsBound) {
-                    doBindService();
+                    safeBindService();
                 }
                 if (!locationModeChangeReceiverRegistered) {
                     registerLocationModeChangeReceiver();
@@ -355,7 +355,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
     private void startAndBindBackgroundService() {
         try {
             startBackgroundService();
-            doBindService();
+            safeBindService();
         } catch (JSONException e) {
             logger.error("Error starting service: {}", e.getMessage());
             mDelegate.onError(new PluginError(PluginError.SERVICE_ERROR, e.getMessage()));
@@ -390,7 +390,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
         mDelegate.onLocationPause();
     }
 
-    private void doBindService() {
+    private void safeBindService() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -399,7 +399,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
         });
     }
 
-    private void doUnbindService() {
+    private void safeUnbindService() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
