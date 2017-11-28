@@ -69,7 +69,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
 
         logger = LoggerManager.getLogger(BackgroundGeolocationFacade.class);
         LoggerManager.enableDBLogging();
-        logger.info("initializing plugin");
+        logger.info("Initializing plugin");
 
         // TODO: investigate if we can enable background sync conditionally
 //        final ResourceResolver res = ResourceResolver.newInstance(getApplication());
@@ -129,7 +129,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
             BackgroundLocation location;
             switch (msg.what) {
                 case LocationService.MSG_LOCATION_UPDATE:
-                    logger.debug("Sending location to webview");
+                    logger.debug("Received MSG_LOCATION_UPDATE");
                     bundle = msg.getData();
                     bundle.setClassLoader(LocationService.class.getClassLoader());
                     location = (BackgroundLocation) bundle.getParcelable(BackgroundLocation.BUNDLE_KEY);
@@ -137,7 +137,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
 
                     break;
                 case LocationService.MSG_ON_STATIONARY:
-                    logger.debug("Sending stationary location to webview");
+                    logger.debug("Received MSG_ON_STATIONARY");
                     bundle = msg.getData();
                     bundle.setClassLoader(LocationService.class.getClassLoader());
                     location = (BackgroundLocation) bundle.getParcelable(BackgroundLocation.BUNDLE_KEY);
@@ -145,7 +145,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
 
                     break;
                 case LocationService.MSG_ERROR:
-                    logger.warn("Sending error to webview");
+                    logger.debug("Received MSG_ERROR");
                     bundle = msg.getData();
                     bundle.setClassLoader(LocationService.class.getClassLoader());
                     Integer errorCode = bundle.getInt("code");
@@ -199,7 +199,7 @@ public class BackgroundGeolocationFacade implements ActivityCompat.OnRequestPerm
     private BroadcastReceiver locationModeChangeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            logger.debug("Received AUTHORIZATION_EVENT");
+            logger.debug("Authorization has changed");
             try {
                 mDelegate.onAuthorizationChanged(getAuthorizationStatus());
             } catch (SettingNotFoundException e) {
