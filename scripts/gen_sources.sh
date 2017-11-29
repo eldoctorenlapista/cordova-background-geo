@@ -13,7 +13,7 @@ if [[ "$platform" == android ]]; then
   sources_regexp=".*BackgroundGeolocation/src/main/java/.*\.java"
 elif [[ "$platform" ==  ios ]]; then
   src_root="ios"
-  sources_regexp=".*BackgroundGeolocation/\.[h,m]"
+  sources_regexp=".*BackgroundGeolocation/.*\.[h,m]"
 else
   echo "Missing or wrong parameter. Must be either: ios or android"
   exit 1;
