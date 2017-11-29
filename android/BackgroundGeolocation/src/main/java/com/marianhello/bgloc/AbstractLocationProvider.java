@@ -35,21 +35,25 @@ public abstract class AbstractLocationProvider implements LocationProvider {
         this.mConfig = locationService.getConfig();
     }
 
+    @Override
     public void onCreate() {
         toneGenerator = new android.media.ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
     }
 
+    @Override
     public void onDestroy() {
         toneGenerator.release();
         toneGenerator = null;
     }
 
+    @Override
     public void onConfigure(Config config) {
         mConfig = config;
         onStop();
         onStart();
     }
 
+    @Override
     public void onSwitchMode(int mode) {
         // override in child class
     }

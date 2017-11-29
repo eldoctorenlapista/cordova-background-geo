@@ -43,7 +43,6 @@ public class LocationProviderFactory {
                 throw new IllegalArgumentException("Provider not found");
         }
 
-        provider.onCreate();
         return provider;
     }
 }

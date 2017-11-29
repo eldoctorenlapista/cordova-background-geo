@@ -125,6 +125,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
         criteria.setCostAllowed(true);
     }
 
+    @Override
     public void onStart() {
         if (isStarted) {
             return;
@@ -136,6 +137,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
         isStarted = true;
     }
 
+    @Override
     public void onStop() {
         if (!isStarted) {
             return;
@@ -149,6 +151,20 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
         } finally {
             isStarted = false;
         }
+    }
+
+//    @Override
+//    public void onSwitchMode(int mode) {
+//        if (mode == BackgroundGeolocationFacade.BACKGROUND_MODE) {
+//            setPace(false);
+//        } else if (mode == BackgroundGeolocationFacade.FOREGROUND_MODE) {
+//            setPace(true);
+//        }
+//    }
+
+    @Override
+    public boolean isStarted() {
+        return isStarted;
     }
 
     /**

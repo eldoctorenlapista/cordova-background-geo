@@ -35,9 +35,9 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     private GoogleApiClient googleApiClient;
     private PendingIntent detectedActivitiesPI;
 
-    private Boolean startRecordingOnConnect = true;
-    private Boolean isTracking = false;
-    private Boolean isWatchingActivity = false;
+    private boolean isStarted = false;
+    private boolean startRecordingOnConnect = true;
+    private boolean isWatchingActivity = false;
     private Location lastLocation;
     private DetectedActivity lastActivity = new DetectedActivity(DetectedActivity.UNKNOWN, 100);
 
@@ -64,17 +64,24 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
         registerReceiver(detectedActivitiesReceiver, new IntentFilter(DETECTED_ACTIVITY_UPDATE));
     }
 
+    @Override
     public void onStart() {
         logger.info("Start recording");
         this.startRecordingOnConnect = true;
         attachRecorder();
     }
 
+    @Override
     public void onStop() {
         logger.info("Stop recording");
         this.startRecordingOnConnect = false;
         detachRecorder();
         stopTracking();
+    }
+
+    @Override
+    public boolean isStarted() {
+        return isStarted;
     }
 
     @Override
@@ -102,7 +109,7 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     }
 
     public void startTracking() {
-        if (isTracking) { return; }
+        if (isStarted) { return; }
 
         Integer priority = translateDesiredAccuracy(mConfig.getDesiredAccuracy());
         LocationRequest locationRequest = LocationRequest.create()
@@ -112,7 +119,7 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
                 // .setSmallestDisplacement(mConfig.getStationaryRadius());
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-            isTracking = true;
+            isStarted = true;
             logger.debug("Start tracking with priority={} fastestInterval={} interval={} activitiesInterval={} stopOnStillActivity={}", priority, mConfig.getFastestInterval(), mConfig.getInterval(), mConfig.getActivitiesInterval(), mConfig.getStopOnStillActivity());
         } catch (SecurityException e) {
             logger.error("Security exception: {}", e.getMessage());
@@ -121,10 +128,10 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     }
 
     public void stopTracking() {
-        if (!isTracking) { return; }
+        if (!isStarted) { return; }
 
         LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-        isTracking = false;
+        isStarted = false;
     }
 
     private void connectToPlayAPI() {

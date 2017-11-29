@@ -35,6 +35,7 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
         locationManager = (LocationManager) mLocationService.getSystemService(Context.LOCATION_SERVICE);
     }
 
+    @Override
     public void onStart() {
         if (isStarted) {
             return;
@@ -58,6 +59,7 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
         }
     }
 
+    @Override
     public void onStop() {
         if (!isStarted) {
             return;
@@ -70,6 +72,11 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
         } finally {
             isStarted = false;
         }
+    }
+
+    @Override
+    public boolean isStarted() {
+        return isStarted;
     }
 
     @Override

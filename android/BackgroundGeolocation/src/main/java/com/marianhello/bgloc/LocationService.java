@@ -11,6 +11,7 @@ package com.marianhello.bgloc;
 
 import android.accounts.Account;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -101,14 +102,15 @@ public class LocationService extends Service {
 
     /** indicate if service is running */
     private static Boolean isRunning = false;
+    /** notification id */
+    private static int NOTIF_ID = 1;
 
-    private static final int ONE_MINUTE = 1000 * 60;
-    private static final int FIVE_MINUTES = 1000 * 60 * 5;
+    private static final int ONE_MINUTE_IN_MILLIS = 1000 * 60;
 
     private LocationDAO dao;
     private Config mConfig;
-    private LocationProvider provider;
-    private Account syncAccount;
+    private LocationProvider mProvider;
+    private Account mSyncAccount;
     private Boolean hasConnectivity = true;
 
     private org.slf4j.Logger logger;
@@ -178,7 +180,7 @@ public class LocationService extends Service {
         serviceHandler = new ServiceHandler(handlerThread.getLooper());
 
         dao = (DAOFactory.createLocationDAO(this));
-        syncAccount = AccountHelper.CreateSyncAccount(this,
+        mSyncAccount = AccountHelper.CreateSyncAccount(this,
                 AuthenticatorService.getAccount(getStringResource(Config.ACCOUNT_TYPE_RESOURCE)));
 
         registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -187,7 +189,7 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         logger.info("Destroying LocationService");
-        provider.onDestroy();
+        mProvider.onDestroy();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             handlerThread.quitSafely();
         } else {
@@ -215,8 +217,8 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         logger.info("Received start command startId: {} intent: {}", startId, intent);
 
-        if (provider != null) {
-            provider.onDestroy();
+        if (mProvider != null) {
+            mProvider.onDestroy();
         }
 
         if (intent == null) {
@@ -239,23 +241,66 @@ public class LocationService extends Service {
         logger.debug("Will start service with: {}", mConfig.toString());
 
         LocationProviderFactory spf = new LocationProviderFactory(this);
-        provider = spf.getInstance(mConfig.getLocationProvider());
+        mProvider = spf.getInstance(mConfig.getLocationProvider());
 
         if (mConfig.getStartForeground()) {
+            Notification notification = new NotificationFactory().getNotification(
+                    mConfig.getNotificationTitle(),
+                    mConfig.getNotificationText(),
+                    mConfig.getLargeNotificationIcon(),
+                    mConfig.getSmallNotificationIcon(),
+                    mConfig.getNotificationIconColor());
+            startForeground(NOTIF_ID, notification);
+        }
+
+        mProvider.onCreate();
+        mProvider.onStart();
+        isRunning = true;
+
+        //We want this service to continue running until it is explicitly stopped
+        return START_STICKY;
+    }
+
+    private int getAppResource(String name, String type) {
+        return getApplication().getResources().getIdentifier(name, type, getApplication().getPackageName());
+    }
+
+    private String getStringResource(String name) {
+        return getApplication().getString(getAppResource(name, "string"));
+    }
+
+    private Integer getDrawableResource(String resourceName) {
+        return getAppResource(resourceName, "drawable");
+    }
+
+    private class NotificationFactory {
+        private Integer parseNotificationIconColor(String color) {
+            int iconColor = 0;
+            if (color != null) {
+                try {
+                    iconColor = Color.parseColor(color);
+                } catch (IllegalArgumentException e) {
+                    logger.error("Couldn't parse color from android options");
+                }
+            }
+            return iconColor;
+        }
+
+        public Notification getNotification(String title, String text, String largeIcon, String smallIcon, String color) {
             // Build a Notification required for running service in foreground.
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-            builder.setContentTitle(mConfig.getNotificationTitle());
-            builder.setContentText(mConfig.getNotificationText());
-            if (mConfig.hasSmallNotificationIcon()) {
-                builder.setSmallIcon(getDrawableResource(mConfig.getSmallNotificationIcon()));
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(LocationService.this);
+            builder.setContentTitle(title);
+            builder.setContentText(text);
+            if (smallIcon != null && !smallIcon.isEmpty()) {
+                builder.setSmallIcon(getDrawableResource(smallIcon));
             } else {
                 builder.setSmallIcon(android.R.drawable.ic_menu_mylocation);
             }
-            if (mConfig.hasLargeNotificationIcon()) {
-                builder.setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), getDrawableResource(mConfig.getLargeNotificationIcon())));
+            if (largeIcon != null && !largeIcon.isEmpty()) {
+                builder.setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), getDrawableResource(largeIcon)));
             }
-            if (mConfig.hasNotificationIconColor()) {
-                builder.setColor(this.parseNotificationIconColor(mConfig.getNotificationIconColor()));
+            if (color != null && !color.isEmpty()) {
+                builder.setColor(this.parseNotificationIconColor(color));
             }
 
             // Add an onclick handler to the notification
@@ -268,69 +313,60 @@ public class LocationService extends Service {
 
             Notification notification = builder.build();
             notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_FOREGROUND_SERVICE | Notification.FLAG_NO_CLEAR;
-            startForeground(startId, notification);
+
+            return notification;
         }
-
-        provider.onStart();
-        isRunning = true;
-
-        //We want this service to continue running until it is explicitly stopped
-        return START_STICKY;
-    }
-
-    protected int getAppResource(String name, String type) {
-        return getApplication().getResources().getIdentifier(name, type, getApplication().getPackageName());
-    }
-
-    protected Integer getDrawableResource(String resourceName) {
-        return getAppResource(resourceName, "drawable");
-    }
-
-    protected String getStringResource(String name) {
-        return getApplication().getString(getAppResource(name, "string"));
-    }
-
-    private Integer parseNotificationIconColor(String color) {
-        int iconColor = 0;
-        if (color != null) {
-            try {
-                iconColor = Color.parseColor(color);
-            } catch (IllegalArgumentException e) {
-                logger.error("Couldn't parse color from android options");
-            }
-        }
-        return iconColor;
     }
 
     private void switchMode(int mode) {
-        provider.onSwitchMode(mode);
+        mProvider.onSwitchMode(mode);
     }
 
-    private void configure(Bundle bundle) {
+    private void configure(Config config) {
         Config currentConfig = mConfig;
-        mConfig = bundle.getParcelable(Config.BUNDLE_KEY);
+        mConfig = config;
 
         if (currentConfig.getStartForeground() == true && mConfig.getStartForeground() == false) {
-            // TODO: implement
+            stopForeground(true);
         }
 
-        if (currentConfig.getStartForeground() == false && mConfig.getStartForeground() == true) {
-            // TODO: implement
+        if (mConfig.getStartForeground() == true) {
+            Notification notification = new NotificationFactory().getNotification(
+                    mConfig.getNotificationTitle(),
+                    mConfig.getNotificationText(),
+                    mConfig.getLargeNotificationIcon(),
+                    mConfig.getSmallNotificationIcon(),
+                    mConfig.getNotificationIconColor());
+
+            if (currentConfig.getStartForeground() == false) {
+                startForeground(NOTIF_ID, notification);
+            } else {
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(NOTIF_ID, notification);
+            }
         }
 
         if (currentConfig.getLocationProvider() != mConfig.getLocationProvider()) {
-            provider.onDestroy();
+            mProvider.onDestroy();
+            boolean shouldStart = mProvider.isStarted();
             LocationProviderFactory spf = new LocationProviderFactory(this);
-            provider = spf.getInstance(mConfig.getLocationProvider());
-            provider.onStart();
+            mProvider = spf.getInstance(mConfig.getLocationProvider());
+            mProvider.onCreate();
+            if (shouldStart) {
+                mProvider.onStart();
+            }
+        } else {
+            mProvider.onConfigure(mConfig);
         }
-
-        provider.onConfigure(mConfig);
     }
 
+    private void configure(Bundle bundle) {
+        Config config = bundle.getParcelable(Config.BUNDLE_KEY);
+        configure(config);
+    }
 
     /**
-     * Handle location from location location provider
+     * Handle location from location location mProvider
      *
      * All locations updates are recorded in local db at all times.
      * Also location is also send to all messenger clients.
@@ -348,7 +384,7 @@ public class LocationService extends Service {
     public void handleLocation(BackgroundLocation location) {
         logger.debug("New location {}", location.toString());
 
-        location.setBatchStartMillis(System.currentTimeMillis() + ONE_MINUTE); // prevent sync of not yet posted location
+        location.setBatchStartMillis(System.currentTimeMillis() + ONE_MINUTE_IN_MILLIS); // prevent sync of not yet posted location
         persistLocation(location);
 
         if (mConfig.hasSyncUrl()) {
@@ -356,7 +392,7 @@ public class LocationService extends Service {
             logger.debug("Location to sync: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
             if (locationsCount >= mConfig.getSyncThreshold()) {
                 logger.debug("Attempt to sync locations: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
-                SyncService.sync(syncAccount, getStringResource(Config.CONTENT_AUTHORITY_RESOURCE));
+                SyncService.sync(mSyncAccount, getStringResource(Config.CONTENT_AUTHORITY_RESOURCE));
             }
         }
 
