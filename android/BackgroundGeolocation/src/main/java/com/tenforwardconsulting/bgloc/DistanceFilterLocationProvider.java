@@ -27,6 +27,7 @@ import android.os.PowerManager;
 import android.widget.Toast;
 
 import com.marianhello.bgloc.AbstractLocationProvider;
+import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.LocationService;
 import com.marianhello.logging.LoggerManager;
@@ -79,6 +80,8 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 
     private org.slf4j.Logger logger;
 
+    private boolean isStarted = false;
+
     public DistanceFilterLocationProvider(LocationService context) {
         super(context);
         PROVIDER_ID = Config.DISTANCE_FILTER_PROVIDER;
@@ -123,17 +126,29 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     }
 
     public void onStart() {
+        if (isStarted) {
+            return;
+        }
+
         logger.info("Start recording");
         scaledDistanceFilter = mConfig.getDistanceFilter();
         setPace(false);
+        isStarted = true;
     }
 
     public void onStop() {
-        logger.info("onStop not implemented yet");
-    }
+        if (!isStarted) {
+            return;
+        }
 
-    public void onConfigure(Config config) {
-        // TODO: implement reconfigure
+        try {
+            locationManager.removeUpdates(this);
+            locationManager.removeProximityAlert(stationaryRegionPI);
+        } catch (SecurityException e) {
+            //noop
+        } finally {
+            isStarted = false;
+        }
     }
 
     /**
@@ -506,12 +521,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     public void onDestroy() {
         logger.info("Destroying DistanceFilterLocationProvider");
 
-        try {
-            locationManager.removeUpdates(this);
-            locationManager.removeProximityAlert(stationaryRegionPI);
-        } catch (SecurityException e) {
-            //noop
-        }
+        this.onStop();
         alarmManager.cancel(stationaryAlarmPI);
         alarmManager.cancel(stationaryLocationPollingPI);
 

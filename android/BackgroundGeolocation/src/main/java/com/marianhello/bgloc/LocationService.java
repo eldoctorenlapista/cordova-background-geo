@@ -226,13 +226,13 @@ public class LocationService extends Service {
                 mConfig = dao.retrieveConfiguration();
             } catch (JSONException e) {
                 logger.error("Config exception: {}", e.getMessage());
-                mConfig = new Config(); //using default config
+                mConfig = Config.getDefault(); //using default config
             }
         } else {
             if (intent.hasExtra("config")) {
                 mConfig = intent.getParcelableExtra("config");
             } else {
-                mConfig = new Config(); //using default config
+                mConfig = Config.getDefault(); //using default config
             }
         }
 
@@ -307,8 +307,25 @@ public class LocationService extends Service {
     }
 
     private void configure(Bundle bundle) {
-        Config config = bundle.getParcelable(Config.BUNDLE_KEY);
-        provider.onConfigure(config);
+        Config currentConfig = mConfig;
+        mConfig = bundle.getParcelable(Config.BUNDLE_KEY);
+
+        if (currentConfig.getStartForeground() == true && mConfig.getStartForeground() == false) {
+            // TODO: implement
+        }
+
+        if (currentConfig.getStartForeground() == false && mConfig.getStartForeground() == true) {
+            // TODO: implement
+        }
+
+        if (currentConfig.getLocationProvider() != mConfig.getLocationProvider()) {
+            provider.onDestroy();
+            LocationProviderFactory spf = new LocationProviderFactory(this);
+            provider = spf.getInstance(mConfig.getLocationProvider());
+            provider.onStart();
+        }
+
+        provider.onConfigure(mConfig);
     }
 
 

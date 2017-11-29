@@ -37,30 +37,84 @@ public class Config implements Parcelable
     public static final String ACCOUNT_TYPE_RESOURCE = "account_type";
     public static final String CONTENT_AUTHORITY_RESOURCE = "content_authority";
 
-    private float stationaryRadius = 50;
-    private Integer distanceFilter = 500;
-    private Integer desiredAccuracy = 100;
-    private Boolean debug = false;
-    private String notificationTitle = "Background tracking";
-    private String notificationText = "ENABLED";
-    private String notificationIconLarge = "";
-    private String notificationIconSmall = "";
-    private String notificationIconColor = "";
-    private Integer locationProvider = DISTANCE_FILTER_PROVIDER;
-    private Integer interval = 600000; //milliseconds
-    private Integer fastestInterval = 120000; //milliseconds
-    private Integer activitiesInterval = 10000; //milliseconds
-    private Boolean stopOnTerminate = true;
-    private Boolean startOnBoot = false;
-    private Boolean startForeground = true;
-    private Boolean stopOnStillActivity = true;
-    private String url = "";
-    private String syncUrl = "";
-    private Integer syncThreshold = 100;
-    private HashMap httpHeaders = new HashMap<String, String>();
-    private Integer maxLocations = 10000;
+    private Float stationaryRadius;
+    private Integer distanceFilter;
+    private Integer desiredAccuracy;
+    private Boolean debug;
+    private String notificationTitle;
+    private String notificationText;
+    private String notificationIconLarge;
+    private String notificationIconSmall;
+    private String notificationIconColor;
+    private Integer locationProvider;
+    private Integer interval; //milliseconds
+    private Integer fastestInterval; //milliseconds
+    private Integer activitiesInterval; //milliseconds
+    private Boolean stopOnTerminate;
+    private Boolean startOnBoot;
+    private Boolean startForeground;
+    private Boolean stopOnStillActivity;
+    private String url;
+    private String syncUrl;
+    private Integer syncThreshold;
+    private HashMap httpHeaders;
+    private Integer maxLocations;
 
     public Config () {
+    }
+
+    private Config(Parcel in) {
+        setStationaryRadius(in.readFloat());
+        setDistanceFilter(in.readInt());
+        setDesiredAccuracy(in.readInt());
+        setDebugging((Boolean) in.readValue(null));
+        setNotificationTitle(in.readString());
+        setNotificationText(in.readString());
+        setLargeNotificationIcon(in.readString());
+        setSmallNotificationIcon(in.readString());
+        setNotificationIconColor(in.readString());
+        setStopOnTerminate((Boolean) in.readValue(null));
+        setStartOnBoot((Boolean) in.readValue(null));
+        setStartForeground((Boolean) in.readValue(null));
+        setLocationProvider(in.readInt());
+        setInterval(in.readInt());
+        setFastestInterval(in.readInt());
+        setActivitiesInterval(in.readInt());
+        setStopOnStillActivity((Boolean) in.readValue(null));
+        setUrl(in.readString());
+        setSyncUrl(in.readString());
+        setSyncThreshold(in.readInt());
+        setMaxLocations(in.readInt());
+        Bundle bundle = in.readBundle();
+        setHttpHeaders((HashMap<String, String>) bundle.getSerializable("httpHeaders"));
+    }
+
+    public static Config getDefault () {
+        Config config = new Config();
+        config.stationaryRadius = 50f;
+        config.distanceFilter = 500;
+        config.desiredAccuracy = 100;
+        config.debug = false;
+        config.notificationTitle = "Background tracking";
+        config.notificationText = "ENABLED";
+        config.notificationIconLarge = "";
+        config.notificationIconSmall = "";
+        config.notificationIconColor = "";
+        config.locationProvider = DISTANCE_FILTER_PROVIDER;
+        config.interval = 600000; //milliseconds
+        config.fastestInterval = 120000; //milliseconds
+        config.activitiesInterval = 10000; //milliseconds
+        config.stopOnTerminate = true;
+        config.startOnBoot = false;
+        config.startForeground = true;
+        config.stopOnStillActivity = true;
+        config.url = "";
+        config.syncUrl = "";
+        config.syncThreshold = 100;
+        config.httpHeaders = new HashMap<String, String>();
+        config.maxLocations = 10000;
+
+        return config;
     }
 
     public int describeContents() {
@@ -106,30 +160,8 @@ public class Config implements Parcelable
         }
     };
 
-    private Config(Parcel in) {
-        setStationaryRadius(in.readFloat());
-        setDistanceFilter(in.readInt());
-        setDesiredAccuracy(in.readInt());
-        setDebugging((Boolean) in.readValue(null));
-        setNotificationTitle(in.readString());
-        setNotificationText(in.readString());
-        setLargeNotificationIcon(in.readString());
-        setSmallNotificationIcon(in.readString());
-        setNotificationIconColor(in.readString());
-        setStopOnTerminate((Boolean) in.readValue(null));
-        setStartOnBoot((Boolean) in.readValue(null));
-        setStartForeground((Boolean) in.readValue(null));
-        setLocationProvider(in.readInt());
-        setInterval(in.readInt());
-        setFastestInterval(in.readInt());
-        setActivitiesInterval(in.readInt());
-        setStopOnStillActivity((Boolean) in.readValue(null));
-        setUrl(in.readString());
-        setSyncUrl(in.readString());
-        setSyncThreshold(in.readInt());
-        setMaxLocations(in.readInt());
-        Bundle bundle = in.readBundle();
-        setHttpHeaders((HashMap<String, String>) bundle.getSerializable("httpHeaders"));
+    public boolean hasStationaryRadius() {
+        return stationaryRadius != null;
     }
 
     public float getStationaryRadius() {
@@ -140,6 +172,14 @@ public class Config implements Parcelable
         this.stationaryRadius = stationaryRadius;
     }
 
+    public void setStationaryRadius(double stationaryRadius) {
+        this.stationaryRadius = (float) stationaryRadius;
+    }
+
+    public boolean hasDesiredAccuracy() {
+        return desiredAccuracy != null;
+    }
+
     public Integer getDesiredAccuracy() {
         return desiredAccuracy;
     }
@@ -148,12 +188,20 @@ public class Config implements Parcelable
         this.desiredAccuracy = desiredAccuracy;
     }
 
+    public boolean hasDistanceFilter() {
+        return distanceFilter != null;
+    }
+
     public Integer getDistanceFilter() {
         return distanceFilter;
     }
 
     public void setDistanceFilter(Integer distanceFilter) {
         this.distanceFilter = distanceFilter;
+    }
+
+    public boolean hasDebug() {
+        return debug != null;
     }
 
     public Boolean isDebugging() {
@@ -180,6 +228,10 @@ public class Config implements Parcelable
         }
     }
 
+    public boolean hasNotificationTitle() {
+        return notificationTitle != null;
+    }
+
     public String getNotificationTitle() {
         return notificationTitle;
     }
@@ -190,6 +242,10 @@ public class Config implements Parcelable
         } else {
             this.notificationTitle = notificationTitle;
         }
+    }
+
+    public boolean hasNotificationText() {
+        return notificationText != null;
     }
 
     public String getNotificationText() {
@@ -236,12 +292,20 @@ public class Config implements Parcelable
         }
     }
 
+    public boolean hasStopOnTerminate() {
+        return stopOnTerminate != null;
+    }
+
     public Boolean getStopOnTerminate() {
         return stopOnTerminate;
     }
 
     public void setStopOnTerminate(Boolean stopOnTerminate) {
         this.stopOnTerminate = stopOnTerminate;
+    }
+
+    public boolean hasStartOnBoot() {
+        return startOnBoot != null;
     }
 
     public Boolean getStartOnBoot() {
@@ -252,12 +316,20 @@ public class Config implements Parcelable
         this.startOnBoot = startOnBoot;
     }
 
+    public boolean hasStartForeground() {
+        return startForeground != null;
+    }
+
     public Boolean getStartForeground() {
         return startForeground;
     }
 
     public void setStartForeground(Boolean startForeground) {
         this.startForeground = startForeground;
+    }
+
+    public boolean hasLocationProvider() {
+        return locationProvider != null;
     }
 
     public Integer getLocationProvider() {
@@ -268,12 +340,20 @@ public class Config implements Parcelable
         this.locationProvider = locationProvider;
     }
 
+    public boolean hasInterval() {
+        return interval != null;
+    }
+
     public Integer getInterval() {
         return interval;
     }
 
     public void setInterval(Integer interval) {
         this.interval = interval;
+    }
+
+    public boolean hasFastestInterval() {
+        return fastestInterval != null;
     }
 
     public Integer getFastestInterval() {
@@ -284,12 +364,20 @@ public class Config implements Parcelable
         this.fastestInterval = fastestInterval;
     }
 
+    public boolean hasActivitiesInterval() {
+        return activitiesInterval != null;
+    }
+
     public Integer getActivitiesInterval() {
         return activitiesInterval;
     }
 
     public void setActivitiesInterval(Integer activitiesInterval) {
         this.activitiesInterval = activitiesInterval;
+    }
+
+    public boolean hasStopOnStillActivity() {
+        return stopOnStillActivity != null;
     }
 
     public Boolean getStopOnStillActivity() {
@@ -332,12 +420,20 @@ public class Config implements Parcelable
         }
     }
 
+    public boolean hasSyncThreshold() {
+        return syncThreshold != null;
+    }
+
     public Integer getSyncThreshold() {
         return syncThreshold;
     }
 
     public void setSyncThreshold(Integer syncThreshold) {
         this.syncThreshold = syncThreshold;
+    }
+
+    public boolean hasHttpHeaders() {
+        return httpHeaders != null;
     }
 
     public HashMap<String, String> getHttpHeaders() {
@@ -362,12 +458,87 @@ public class Config implements Parcelable
         }
     }
 
+    public boolean hasMaxLocations() {
+        return maxLocations != null;
+    }
+
     public Integer getMaxLocations() {
         return maxLocations;
     }
 
     public void setMaxLocations(Integer maxLocations) {
         this.maxLocations = maxLocations;
+    }
+
+    public Config mergeWith(Config config) {
+        if (config.hasStationaryRadius()) {
+            this.setStationaryRadius(config.getStationaryRadius());
+        }
+        if (config.hasDistanceFilter()) {
+            this.setDistanceFilter(config.getDistanceFilter());
+        }
+        if (config.hasDesiredAccuracy()) {
+            this.setDesiredAccuracy(config.getDesiredAccuracy());
+        }
+        if (config.hasDebug()) {
+            this.setDebugging(config.isDebugging());
+        }
+        if (config.hasNotificationTitle()) {
+            this.setNotificationTitle(config.getNotificationTitle());
+        }
+        if (config.hasNotificationText()) {
+            this.setNotificationText(config.getNotificationText());
+        }
+        if (config.hasStopOnTerminate()) {
+            this.setStopOnTerminate(config.getStopOnTerminate());
+        }
+        if (config.hasStartOnBoot()) {
+            this.setStartOnBoot(config.getStartOnBoot());
+        }
+        if (config.hasLocationProvider()) {
+            this.setLocationProvider(config.getLocationProvider());
+        }
+        if (config.hasInterval()) {
+            this.setInterval(config.getInterval());
+        }
+        if (config.hasFastestInterval()) {
+            this.setFastestInterval(config.getFastestInterval());
+        }
+        if (config.hasActivitiesInterval()) {
+            this.setActivitiesInterval(config.getActivitiesInterval());
+        }
+        if (config.hasNotificationIconColor()) {
+            this.setNotificationIconColor(config.getNotificationIconColor());
+        }
+        if (config.hasLargeNotificationIcon()) {
+            this.setLargeNotificationIcon(config.getLargeNotificationIcon());
+        }
+        if (config.hasSmallNotificationIcon()) {
+            this.setSmallNotificationIcon(config.getSmallNotificationIcon());
+        }
+        if (config.hasStartForeground()) {
+            this.setStartForeground(config.getStartForeground());
+        }
+        if (config.hasStopOnStillActivity()) {
+            this.setStopOnStillActivity(config.getStopOnStillActivity());
+        }
+        if (config.hasUrl()) {
+            this.setUrl(config.getUrl());
+        }
+        if (config.hasSyncUrl()) {
+            this.setSyncUrl(config.getSyncUrl());
+        }
+        if (config.hasSyncThreshold()) {
+            this.setSyncThreshold(config.getSyncThreshold());
+        }
+        if (config.hasHttpHeaders()) {
+            this.setHttpHeaders(config.getHttpHeaders());
+        }
+        if (config.hasMaxLocations()) {
+            this.setMaxLocations(config.getMaxLocations());
+        }
+
+        return this;
     }
 
     @Override
@@ -418,60 +589,4 @@ public class Config implements Parcelable
         parcel.setDataPosition(0);
         return Config.CREATOR.createFromParcel(parcel);
     }
-
-    public static Config fromJSONObject (JSONObject jObject) throws JSONException {
-        Config config = new Config();
-        config.setStationaryRadius((float) jObject.optDouble("stationaryRadius", config.getStationaryRadius()));
-        config.setDistanceFilter(jObject.optInt("distanceFilter", config.getDistanceFilter()));
-        config.setDesiredAccuracy(jObject.optInt("desiredAccuracy", config.getDesiredAccuracy()));
-        config.setDebugging(jObject.optBoolean("debug", config.isDebugging()));
-        config.setNotificationTitle(jObject.optString("notificationTitle", config.getNotificationTitle()));
-        config.setNotificationText(jObject.optString("notificationText", config.getNotificationText()));
-        config.setStopOnTerminate(jObject.optBoolean("stopOnTerminate", config.getStopOnTerminate()));
-        config.setStartOnBoot(jObject.optBoolean("startOnBoot", config.getStartOnBoot()));
-        config.setLocationProvider(jObject.optInt("locationProvider", config.getLocationProvider()));
-        config.setInterval(jObject.optInt("interval", config.getInterval()));
-        config.setFastestInterval(jObject.optInt("fastestInterval", config.getFastestInterval()));
-        config.setActivitiesInterval(jObject.optInt("activitiesInterval", config.getActivitiesInterval()));
-        config.setNotificationIconColor(jObject.optString("notificationIconColor", config.getNotificationIconColor()));
-        config.setLargeNotificationIcon(jObject.optString("notificationIconLarge", config.getLargeNotificationIcon()));
-        config.setSmallNotificationIcon(jObject.optString("notificationIconSmall", config.getSmallNotificationIcon()));
-        config.setStartForeground(jObject.optBoolean("startForeground", config.getStartForeground()));
-        config.setStopOnStillActivity(jObject.optBoolean("stopOnStillActivity", config.getStopOnStillActivity()));
-        config.setUrl(jObject.optString("url"));
-        config.setSyncUrl(jObject.optString("syncUrl"));
-        config.setSyncThreshold(jObject.optInt("syncThreshold", config.getSyncThreshold()));
-        config.setHttpHeaders(jObject.optJSONObject("httpHeaders"));
-        config.setMaxLocations(jObject.optInt("maxLocations", config.getMaxLocations()));
-
-        return config;
-    }
-
-    public JSONObject toJSONObject() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put("stationaryRadius", getStationaryRadius());
-        json.put("distanceFilter", getDistanceFilter());
-        json.put("desiredAccuracy", getDesiredAccuracy());
-        json.put("debug", isDebugging());
-        json.put("notificationTitle", getNotificationTitle());
-        json.put("notificationText", getNotificationText());
-        json.put("notificationIconLarge", getLargeNotificationIcon());
-        json.put("notificationIconSmall", getSmallNotificationIcon());
-        json.put("notificationIconColor", getNotificationIconColor());
-        json.put("stopOnTerminate", getStopOnTerminate());
-        json.put("startOnBoot", getStartOnBoot());
-        json.put("startForeground", getStartForeground());
-        json.put("locationProvider", getLocationProvider());
-        json.put("interval", getInterval());
-        json.put("fastestInterval", getFastestInterval());
-        json.put("activitiesInterval", getActivitiesInterval());
-        json.put("stopOnStillActivity", getStopOnStillActivity());
-        json.put("url", getUrl());
-        json.put("syncUrl", getSyncUrl());
-        json.put("syncThreshold", getSyncThreshold());
-        json.put("httpHeaders", new JSONObject(getHttpHeaders()));
-        json.put("maxLocations", getMaxLocations());
-
-        return json;
-  	}
 }

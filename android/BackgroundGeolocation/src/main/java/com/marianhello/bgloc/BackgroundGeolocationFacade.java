@@ -256,8 +256,17 @@ public class BackgroundGeolocationFacade {
         serviceSend(msg);
     }
 
-    public void configure(Config config) {
+    public void configure(Config newConfig) {
+        Config config;
+
         try {
+            config = getConfig();
+        } catch (JSONException e) {
+            config = Config.getDefault();
+        }
+
+        try {
+            config.mergeWith(newConfig);
             persistConfiguration(config);
             logger.debug("Service configured with: {}", config.toString());
             mConfig = config;
@@ -268,7 +277,7 @@ public class BackgroundGeolocationFacade {
 
             serviceSend(msg);
         } catch (NullPointerException e) {
-            logger.error("Configuration error: {}", e.getMessage());
+            logger.error("Configuration persist error: {}", e.getMessage());
             mDelegate.onError(new PluginError(PluginError.CONFIGURE_ERROR, e.getMessage()));
         }
     }
@@ -281,7 +290,7 @@ public class BackgroundGeolocationFacade {
             }
             return config;
         } catch (JSONException e) {
-            logger.error("Error getting config: {}", e.getMessage());
+            logger.error("Error getting stored config: {}", e.getMessage());
             throw e;
         }
     }
@@ -299,7 +308,7 @@ public class BackgroundGeolocationFacade {
     private Config getStoredOrDefaultConfig() throws JSONException {
         Config config = getStoredConfig();
         if (config == null) {
-            config = new Config();
+            config = Config.getDefault();
         }
         return config;
     }
@@ -328,7 +337,7 @@ public class BackgroundGeolocationFacade {
 
         if (mConfig == null) {
             logger.warn("Attempt to start unconfigured service. Will use stored or default.");
-            mConfig = getStoredOrDefaultConfig();
+            mConfig = getConfig();
         }
 
         locationServiceIntent.putExtra("config", mConfig);
@@ -457,7 +466,7 @@ public class BackgroundGeolocationFacade {
         context.startActivity(intent);
     }
 
-    public static boolean isLocationEnabled(Context context) throws SettingNotFoundException {
+    private static boolean isLocationEnabled(Context context) throws SettingNotFoundException {
         int locationMode = 0;
         String locationProviders;
 

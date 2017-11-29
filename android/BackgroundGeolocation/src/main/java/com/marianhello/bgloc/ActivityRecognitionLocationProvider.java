@@ -77,10 +77,6 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
         stopTracking();
     }
 
-    public void onConfigure(Config config) {
-        // TODO: implement reconfigure
-    }
-
     @Override
     public void onLocationChanged(Location location) {
         logger.debug("Location change: {}", location.toString());

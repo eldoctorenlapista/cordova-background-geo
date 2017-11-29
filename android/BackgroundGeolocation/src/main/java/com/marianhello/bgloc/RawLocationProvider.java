@@ -18,7 +18,7 @@ import com.marianhello.utils.Tone;
 public class RawLocationProvider extends AbstractLocationProvider implements LocationListener {
     private org.slf4j.Logger logger;
     private LocationManager locationManager;
-    private Boolean isStarted = false;
+    private boolean isStarted = false;
 
     public RawLocationProvider(LocationService context) {
         super(context);
@@ -67,11 +67,9 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
         } catch (SecurityException e) {
             logger.error("Security exception: {}", e.getMessage());
             this.handleSecurityException(e);
+        } finally {
+            isStarted = false;
         }
-    }
-
-    public void onConfigure(Config config) {
-        // TODO: implement reconfigure
     }
 
     @Override

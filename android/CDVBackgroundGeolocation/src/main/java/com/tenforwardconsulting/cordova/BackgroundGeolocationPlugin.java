@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.content.ContextCompat;
 
+import com.marianhello.ConfigMapper;
 import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.LocationService;
@@ -122,8 +123,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
-                        Config config = Config.fromJSONObject(data.getJSONObject(0));
-//                        persistConfiguration(mConfig);
+                        Config config = ConfigMapper.fromJSONObject(data.getJSONObject(0));
                         facade.configure(config);
                         logger.debug("Service configured with: {}", config.toString());
                         callbackContext.success();
@@ -222,7 +222,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
                 public void run() {
                     try {
                         Config config = facade.getConfig();
-                        callbackContext.success(config.toJSONObject());
+                        callbackContext.success(ConfigMapper.toJSONObject(config));
                     } catch (JSONException e) {
                         logger.error("Error getting mConfig: {}", e.getMessage());
                         callbackContext.error("Error getting mConfig: " + e.getMessage());

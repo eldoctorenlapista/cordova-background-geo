@@ -44,6 +44,12 @@ public abstract class AbstractLocationProvider implements LocationProvider {
         toneGenerator = null;
     }
 
+    public void onConfigure(Config config) {
+        mConfig = config;
+        onStop();
+        onStart();
+    }
+
     public void onSwitchMode(int mode) {
         // override in child class
     }

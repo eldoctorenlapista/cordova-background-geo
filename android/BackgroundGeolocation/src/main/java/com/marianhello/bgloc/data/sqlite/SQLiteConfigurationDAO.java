@@ -95,7 +95,7 @@ public class SQLiteConfigurationDAO implements ConfigurationDAO {
   }
 
   private Config hydrate(Cursor c) throws JSONException {
-    Config config = new Config();
+    Config config = Config.getDefault();
     config.setStationaryRadius(c.getFloat(c.getColumnIndex(ConfigurationEntry.COLUMN_NAME_RADIUS)));
     config.setDistanceFilter(c.getInt(c.getColumnIndex(ConfigurationEntry.COLUMN_NAME_DISTANCE_FILTER)));
     config.setDesiredAccuracy(c.getInt(c.getColumnIndex(ConfigurationEntry.COLUMN_NAME_DESIRED_ACCURACY)));
