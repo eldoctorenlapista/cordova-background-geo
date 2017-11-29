@@ -266,7 +266,7 @@ public class BackgroundGeolocationFacade {
         }
 
         try {
-            config.mergeWith(newConfig);
+            config = config.mergeWith(newConfig);
             persistConfiguration(config);
             logger.debug("Service configured with: {}", config.toString());
             mConfig = config;
@@ -276,7 +276,7 @@ public class BackgroundGeolocationFacade {
             msg.setData(config.toBundle());
 
             serviceSend(msg);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             logger.error("Configuration persist error: {}", e.getMessage());
             mDelegate.onError(new PluginError(PluginError.CONFIGURE_ERROR, e.getMessage()));
         }

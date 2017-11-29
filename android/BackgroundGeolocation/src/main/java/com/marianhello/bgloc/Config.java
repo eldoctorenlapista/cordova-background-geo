@@ -25,7 +25,7 @@ import java.util.Iterator;
 /**
  * Config class
  */
-public class Config implements Parcelable
+public class Config implements Parcelable, Cloneable
 {
     public static final String BUNDLE_KEY = "config";
 
@@ -470,75 +470,77 @@ public class Config implements Parcelable
         this.maxLocations = maxLocations;
     }
 
-    public Config mergeWith(Config config) {
+    public Config mergeWith(Config config) throws CloneNotSupportedException {
+        Config merger = (Config) this.clone();
+
         if (config.hasStationaryRadius()) {
-            this.setStationaryRadius(config.getStationaryRadius());
+            merger.setStationaryRadius(config.getStationaryRadius());
         }
         if (config.hasDistanceFilter()) {
-            this.setDistanceFilter(config.getDistanceFilter());
+            merger.setDistanceFilter(config.getDistanceFilter());
         }
         if (config.hasDesiredAccuracy()) {
-            this.setDesiredAccuracy(config.getDesiredAccuracy());
+            merger.setDesiredAccuracy(config.getDesiredAccuracy());
         }
         if (config.hasDebug()) {
-            this.setDebugging(config.isDebugging());
+            merger.setDebugging(config.isDebugging());
         }
         if (config.hasNotificationTitle()) {
-            this.setNotificationTitle(config.getNotificationTitle());
+            merger.setNotificationTitle(config.getNotificationTitle());
         }
         if (config.hasNotificationText()) {
-            this.setNotificationText(config.getNotificationText());
+            merger.setNotificationText(config.getNotificationText());
         }
         if (config.hasStopOnTerminate()) {
-            this.setStopOnTerminate(config.getStopOnTerminate());
+            merger.setStopOnTerminate(config.getStopOnTerminate());
         }
         if (config.hasStartOnBoot()) {
-            this.setStartOnBoot(config.getStartOnBoot());
+            merger.setStartOnBoot(config.getStartOnBoot());
         }
         if (config.hasLocationProvider()) {
-            this.setLocationProvider(config.getLocationProvider());
+            merger.setLocationProvider(config.getLocationProvider());
         }
         if (config.hasInterval()) {
-            this.setInterval(config.getInterval());
+            merger.setInterval(config.getInterval());
         }
         if (config.hasFastestInterval()) {
-            this.setFastestInterval(config.getFastestInterval());
+            merger.setFastestInterval(config.getFastestInterval());
         }
         if (config.hasActivitiesInterval()) {
-            this.setActivitiesInterval(config.getActivitiesInterval());
+            merger.setActivitiesInterval(config.getActivitiesInterval());
         }
         if (config.hasNotificationIconColor()) {
-            this.setNotificationIconColor(config.getNotificationIconColor());
+            merger.setNotificationIconColor(config.getNotificationIconColor());
         }
         if (config.hasLargeNotificationIcon()) {
-            this.setLargeNotificationIcon(config.getLargeNotificationIcon());
+            merger.setLargeNotificationIcon(config.getLargeNotificationIcon());
         }
         if (config.hasSmallNotificationIcon()) {
-            this.setSmallNotificationIcon(config.getSmallNotificationIcon());
+            merger.setSmallNotificationIcon(config.getSmallNotificationIcon());
         }
         if (config.hasStartForeground()) {
-            this.setStartForeground(config.getStartForeground());
+            merger.setStartForeground(config.getStartForeground());
         }
         if (config.hasStopOnStillActivity()) {
-            this.setStopOnStillActivity(config.getStopOnStillActivity());
+            merger.setStopOnStillActivity(config.getStopOnStillActivity());
         }
         if (config.hasUrl()) {
-            this.setUrl(config.getUrl());
+            merger.setUrl(config.getUrl());
         }
         if (config.hasSyncUrl()) {
-            this.setSyncUrl(config.getSyncUrl());
+            merger.setSyncUrl(config.getSyncUrl());
         }
         if (config.hasSyncThreshold()) {
-            this.setSyncThreshold(config.getSyncThreshold());
+            merger.setSyncThreshold(config.getSyncThreshold());
         }
         if (config.hasHttpHeaders()) {
-            this.setHttpHeaders(config.getHttpHeaders());
+            merger.setHttpHeaders(config.getHttpHeaders());
         }
         if (config.hasMaxLocations()) {
-            this.setMaxLocations(config.getMaxLocations());
+            merger.setMaxLocations(config.getMaxLocations());
         }
 
-        return this;
+        return merger;
     }
 
     @Override

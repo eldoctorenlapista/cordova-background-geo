@@ -9,9 +9,8 @@ Differences to original version:
 1. new methods isLocationEnabled, mMessageReciever, handleMessage
 */
 
-package com.tenforwardconsulting.cordova;
+package com.tenforwardconsulting.bgloc.cordova;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -19,12 +18,12 @@ import android.content.pm.PackageManager;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.content.ContextCompat;
 
-import com.marianhello.ConfigMapper;
 import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.LocationService;
 import com.marianhello.bgloc.PluginDelegate;
 import com.marianhello.bgloc.PluginError;
+import com.marianhello.bgloc.cordova.ConfigMapper;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.logging.LogEntry;
 import com.marianhello.logging.LoggerManager;
@@ -125,7 +124,6 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
                     try {
                         Config config = ConfigMapper.fromJSONObject(data.getJSONObject(0));
                         facade.configure(config);
-                        logger.debug("Service configured with: {}", config.toString());
                         callbackContext.success();
                     } catch (Exception e) {
                         logger.error("Configuration error: {}", e.getMessage());

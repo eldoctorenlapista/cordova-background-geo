@@ -25,7 +25,7 @@ import com.marianhello.utils.Tone;
 import java.util.ArrayList;
 
 public class ActivityRecognitionLocationProvider extends AbstractLocationProvider implements GoogleApiClient.ConnectionCallbacks,
-    GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = ActivityRecognitionLocationProvider.class.getSimpleName();
     private static final String P_NAME = " com.marianhello.bgloc";
@@ -35,8 +35,8 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     private GoogleApiClient googleApiClient;
     private PendingIntent detectedActivitiesPI;
 
-    private boolean isStarted = false;
-    private boolean startRecordingOnConnect = true;
+    private boolean isStarted = true;
+    private boolean isTracking = false;
     private boolean isWatchingActivity = false;
     private Location lastLocation;
     private DetectedActivity lastActivity = new DetectedActivity(DetectedActivity.UNKNOWN, 100);
@@ -67,14 +67,14 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     @Override
     public void onStart() {
         logger.info("Start recording");
-        this.startRecordingOnConnect = true;
+        this.isStarted = true;
         attachRecorder();
     }
 
     @Override
     public void onStop() {
         logger.info("Stop recording");
-        this.startRecordingOnConnect = false;
+        this.isStarted = false;
         detachRecorder();
         stopTracking();
     }
@@ -109,17 +109,17 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     }
 
     public void startTracking() {
-        if (isStarted) { return; }
+        if (isTracking) { return; }
 
         Integer priority = translateDesiredAccuracy(mConfig.getDesiredAccuracy());
         LocationRequest locationRequest = LocationRequest.create()
                 .setPriority(priority) // this.accuracy
                 .setFastestInterval(mConfig.getFastestInterval())
                 .setInterval(mConfig.getInterval());
-                // .setSmallestDisplacement(mConfig.getStationaryRadius());
+        // .setSmallestDisplacement(mConfig.getStationaryRadius());
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-            isStarted = true;
+            isTracking = true;
             logger.debug("Start tracking with priority={} fastestInterval={} interval={} activitiesInterval={} stopOnStillActivity={}", priority, mConfig.getFastestInterval(), mConfig.getInterval(), mConfig.getActivitiesInterval(), mConfig.getStopOnStillActivity());
         } catch (SecurityException e) {
             logger.error("Security exception: {}", e.getMessage());
@@ -128,10 +128,10 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     }
 
     public void stopTracking() {
-        if (!isStarted) { return; }
+        if (!isTracking) { return; }
 
         LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-        isStarted = false;
+        isTracking = false;
     }
 
     private void connectToPlayAPI() {
@@ -159,9 +159,9 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
             startTracking();
             if (mConfig.getStopOnStillActivity()) {
                 ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
-                    googleApiClient,
-                    mConfig.getActivitiesInterval(),
-                    detectedActivitiesPI
+                        googleApiClient,
+                        mConfig.getActivitiesInterval(),
+                        detectedActivitiesPI
                 );
                 isWatchingActivity = true;
             }
@@ -181,7 +181,7 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     @Override
     public void onConnected(Bundle connectionHint) {
         logger.debug("Connected to Google Play Services");
-        if (this.startRecordingOnConnect) {
+        if (this.isStarted) {
             attachRecorder();
         }
     }
@@ -198,10 +198,10 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     }
 
     /**
-    * Translates a number representing desired accuracy of Geolocation system from set [0, 10, 100, 1000].
-    * 0:  most aggressive, most accurate, worst battery drain
-    * 1000:  least aggressive, least accurate, best for battery.
-    */
+     * Translates a number representing desired accuracy of Geolocation system from set [0, 10, 100, 1000].
+     * 0:  most aggressive, most accurate, worst battery drain
+     * 1000:  least aggressive, least accurate, best for battery.
+     */
     private Integer translateDesiredAccuracy(Integer accuracy) {
         if (accuracy >= 10000) {
             return LocationRequest.PRIORITY_NO_POWER;
@@ -240,26 +240,26 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
     }
 
     public static String getActivityString(int detectedActivityType) {
-          switch(detectedActivityType) {
-              case DetectedActivity.IN_VEHICLE:
-                  return "IN_VEHICLE";
-              case DetectedActivity.ON_BICYCLE:
-                  return "ON_BICYCLE";
-              case DetectedActivity.ON_FOOT:
-                  return "ON_FOOT";
-              case DetectedActivity.RUNNING:
-                  return "RUNNING";
-              case DetectedActivity.STILL:
-                  return "STILL";
-              case DetectedActivity.TILTING:
-                  return "TILTING";
-              case DetectedActivity.UNKNOWN:
-                  return "UNKNOWN";
-              case DetectedActivity.WALKING:
-                  return "WALKING";
-              default:
-                  return "Unknown";
-          }
+        switch(detectedActivityType) {
+            case DetectedActivity.IN_VEHICLE:
+                return "IN_VEHICLE";
+            case DetectedActivity.ON_BICYCLE:
+                return "ON_BICYCLE";
+            case DetectedActivity.ON_FOOT:
+                return "ON_FOOT";
+            case DetectedActivity.RUNNING:
+                return "RUNNING";
+            case DetectedActivity.STILL:
+                return "STILL";
+            case DetectedActivity.TILTING:
+                return "TILTING";
+            case DetectedActivity.UNKNOWN:
+                return "UNKNOWN";
+            case DetectedActivity.WALKING:
+                return "WALKING";
+            default:
+                return "Unknown";
+        }
     }
 
     private BroadcastReceiver detectedActivitiesReceiver = new BroadcastReceiver() {

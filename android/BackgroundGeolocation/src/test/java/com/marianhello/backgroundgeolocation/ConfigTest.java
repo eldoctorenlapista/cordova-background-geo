@@ -8,6 +8,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+
 /**
  * Created by finch on 29.11.2017.
  */
@@ -71,17 +73,45 @@ public class ConfigTest {
     }
 
     @Test
-    public void testMergeConfig() {
+    public void testMergeConfig() throws CloneNotSupportedException {
         Config config = new Config();
+
         config.setSyncThreshold(10);
         config.setMaxLocations(1000);
+        config.setDesiredAccuracy(5);
 
         Config newConfig = new Config();
         newConfig.setSyncThreshold(100);
+        newConfig.setDesiredAccuracy(500);
 
-        config.mergeWith(newConfig);
+        Config merged = config.mergeWith(newConfig);
 
-        Assert.assertEquals(config.getSyncThreshold().intValue(), 100);
+        Assert.assertEquals(merged.getSyncThreshold().intValue(), 100);
+        Assert.assertEquals(merged.getMaxLocations().intValue(), 1000);
+        Assert.assertEquals(merged.getDesiredAccuracy().intValue(), 500);
+
+        Assert.assertEquals(config.getSyncThreshold().intValue(), 10);
         Assert.assertEquals(config.getMaxLocations().intValue(), 1000);
+        Assert.assertEquals(config.getDesiredAccuracy().intValue(), 5);
+
+        Assert.assertNotSame(config, merged);
+        Assert.assertNotSame(config.getSyncThreshold(), merged.getSyncThreshold());
+        Assert.assertNotSame(config.getDesiredAccuracy(), merged.getDesiredAccuracy());
+    }
+
+    @Test
+    public void testMergeHttpHeaders() throws CloneNotSupportedException {
+        HashMap httpHeaders = new HashMap<String, String>();
+        httpHeaders.put("key1", "value1");
+        httpHeaders.put("key2", "value2");
+
+        Config config = new Config();
+        config.setHttpHeaders(httpHeaders);
+
+        Config merged = config.mergeWith(new Config());
+
+        Assert.assertNotSame(config, merged);
+        // TODO: we should probably clone httpHeaders too (leaving for now)
+        //Assert.assertNotSame(config.getHttpHeaders(), merged.getHttpHeaders());
     }
 }

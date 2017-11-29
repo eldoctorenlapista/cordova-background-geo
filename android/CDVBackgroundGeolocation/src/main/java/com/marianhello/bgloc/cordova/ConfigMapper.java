@@ -1,4 +1,4 @@
-package com.marianhello;
+package com.marianhello.bgloc.cordova;
 
 import com.marianhello.bgloc.Config;
 

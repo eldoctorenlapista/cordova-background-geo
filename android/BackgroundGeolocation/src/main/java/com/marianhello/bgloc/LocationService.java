@@ -347,8 +347,8 @@ public class LocationService extends Service {
         }
 
         if (currentConfig.getLocationProvider() != mConfig.getLocationProvider()) {
-            mProvider.onDestroy();
             boolean shouldStart = mProvider.isStarted();
+            mProvider.onDestroy();
             LocationProviderFactory spf = new LocationProviderFactory(this);
             mProvider = spf.getInstance(mConfig.getLocationProvider());
             mProvider.onCreate();
