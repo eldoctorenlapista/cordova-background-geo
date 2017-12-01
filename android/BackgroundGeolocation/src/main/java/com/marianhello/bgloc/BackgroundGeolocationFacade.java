@@ -70,11 +70,22 @@ public class BackgroundGeolocationFacade {
 
         logger = LoggerManager.getLogger(BackgroundGeolocationFacade.class);
         LoggerManager.enableDBLogging();
-        logger.info("Initializing plugin");
+
+        if (LocationService.isRunning()) {
+            if (!mIsBound) {
+                safeBindService();
+            }
+            if (!locationModeChangeReceiverRegistered) {
+                registerLocationModeChangeReceiver();
+            }
+        }
+
 
         // TODO: investigate if we can enable background sync conditionally
 //        final ResourceResolver res = ResourceResolver.newInstance(getApplication());
 //        final String authority = res.getStringResource(Config.CONTENT_AUTHORITY_RESOURCE);
+
+        logger.info("Initializing plugin");
     }
 
     public void onAppDestroy() {
@@ -237,20 +248,7 @@ public class BackgroundGeolocationFacade {
     }
 
     public void switchMode(int mode) {
-        if (mode == FOREGROUND_MODE) {
-            if (LocationService.isRunning()) {
-                if (!mIsBound) {
-                    safeBindService();
-                }
-                if (!locationModeChangeReceiverRegistered) {
-                    registerLocationModeChangeReceiver();
-                }
-                // TODO: fix MSG_SWITCH_MODE is not sent when service is not bound yet
-            }
-        }
-
-        Message msg = Message.obtain(null,
-                LocationService.MSG_SWITCH_MODE);
+        Message msg = Message.obtain(null, LocationService.MSG_SWITCH_MODE);
         msg.replyTo = mMessenger;
         msg.arg1 = mode;
         serviceSend(msg);
