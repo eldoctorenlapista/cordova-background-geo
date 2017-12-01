@@ -124,7 +124,7 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
 
     @Override
     public void onDestroy() {
-        logger.debug("Destroying DistanceFilterLocationProvider");
+        logger.debug("Destroying RawLocationProvider");
         this.onStop();
         super.onDestroy();
     }
