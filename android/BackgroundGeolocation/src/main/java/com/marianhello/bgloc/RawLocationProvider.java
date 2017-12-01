@@ -6,10 +6,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.marianhello.logging.LoggerManager;
-import com.marianhello.utils.Tone;
 
 /**
  * Created by finch on 7.11.2017.
@@ -83,10 +81,7 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
     public void onLocationChanged(Location location) {
         logger.debug("Location change: {}", location.toString());
 
-        if (mConfig.isDebugging()) {
-            Toast.makeText(mLocationService, "acy:" + location.getAccuracy() + ",v:" + location.getSpeed(), Toast.LENGTH_LONG).show();
-            playDebugTone(Tone.BEEP);
-        }
+        showDebugToast("acy:" + location.getAccuracy() + ",v:" + location.getSpeed());
         handleLocation(location);
     }
 

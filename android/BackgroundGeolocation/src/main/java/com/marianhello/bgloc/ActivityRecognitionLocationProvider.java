@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,7 +19,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.marianhello.logging.LoggerManager;
-import com.marianhello.utils.Tone;
 
 import java.util.ArrayList;
 
@@ -94,15 +92,11 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
             return;
         }
 
-        if (mConfig.isDebugging()) {
-            Toast.makeText(mLocationService, "acy:" + location.getAccuracy() + ",v:" + location.getSpeed() + ",df:" + mConfig.getDistanceFilter(), Toast.LENGTH_LONG).show();
-        }
+        showDebugToast("acy:" + location.getAccuracy() + ",v:" + location.getSpeed() + ",df:" + mConfig.getDistanceFilter());
 
         // if (lastLocation != null && location.distanceTo(lastLocation) < mConfig.getDistanceFilter()) {
         //     return;
         // }
-
-        playDebugTone(Tone.BEEP);
 
         lastLocation = location;
         handleLocation(location);
@@ -274,15 +268,11 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
             logger.debug("Detected activity={} confidence={}", getActivityString(lastActivity.getType()), lastActivity.getConfidence());
 
             if (lastActivity.getType() == DetectedActivity.STILL) {
-                if (mConfig.isDebugging()) {
-                    Toast.makeText(context, "Detected STILL Activity", Toast.LENGTH_SHORT).show();
-                }
+                showDebugToast("Detected STILL Activity");
                 // stopTracking();
                 // we will delay stop tracking after position is found
             } else {
-                if (mConfig.isDebugging()) {
-                    Toast.makeText(context, "Detected ACTIVE Activity", Toast.LENGTH_SHORT).show();
-                }
+                showDebugToast("Detected ACTIVE Activity");
                 startTracking();
             }
             //else do nothing

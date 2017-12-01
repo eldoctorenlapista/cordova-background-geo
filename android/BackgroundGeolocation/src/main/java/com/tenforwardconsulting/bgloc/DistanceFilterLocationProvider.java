@@ -24,10 +24,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.widget.Toast;
 
 import com.marianhello.bgloc.AbstractLocationProvider;
-import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.LocationService;
 import com.marianhello.logging.LoggerManager;
@@ -292,9 +290,8 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
             setPace(false);
         }
 
-        if (mConfig.isDebugging()) {
-            Toast.makeText(mLocationService, "mv:" + isMoving + ",acy:" + location.getAccuracy() + ",v:" + location.getSpeed() + ",df:" + scaledDistanceFilter, Toast.LENGTH_LONG).show();
-        }
+        showDebugToast( "mv:" + isMoving + ",acy:" + location.getAccuracy() + ",v:" + location.getSpeed() + ",df:" + scaledDistanceFilter);
+
         if (isAcquiringStationaryLocation) {
             if (stationaryLocation == null || stationaryLocation.getAccuracy() > location.getAccuracy()) {
                 stationaryLocation = location;
@@ -302,7 +299,8 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
             if (++locationAcquisitionAttempts == MAX_STATIONARY_ACQUISITION_ATTEMPTS) {
                 isAcquiringStationaryLocation = false;
                 startMonitoringStationaryRegion(stationaryLocation);
-                playDebugTone(Tone.LONG_BEEP);
+                handleStationary(stationaryLocation);
+                return;
             } else {
                 // Unacceptable stationary-location: bail-out and wait for another.
                 playDebugTone(Tone.BEEP);
@@ -425,9 +423,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 
         float distance = abs(location.distanceTo(stationaryLocation) - stationaryLocation.getAccuracy() - location.getAccuracy());
 
-        if (mConfig.isDebugging()) {
-            Toast.makeText(mLocationService, "Stationary exit in " + (stationaryRadius-distance) + "m", Toast.LENGTH_LONG).show();
-        }
+        showDebugToast("Stationary exit in " + (stationaryRadius-distance) + "m");
 
         // TODO http://www.cse.buffalo.edu/~demirbas/publications/proximity.pdf
         // determine if we're almost out of stationary-distance and increase monitoring-rate.

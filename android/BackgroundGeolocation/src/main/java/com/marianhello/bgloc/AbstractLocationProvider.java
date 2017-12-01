@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.widget.Toast;
 
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.utils.Tone;
@@ -79,6 +80,7 @@ public abstract class AbstractLocationProvider implements LocationProvider {
      * @param location
      */
     protected void handleLocation (Location location) {
+        playDebugTone(Tone.BEEP);
         mLocationService.handleLocation(new BackgroundLocation(PROVIDER_ID, location));
     }
 
@@ -89,6 +91,7 @@ public abstract class AbstractLocationProvider implements LocationProvider {
      * @param radius radius of stationary region
      */
     protected void handleStationary (Location location, float radius) {
+        playDebugTone(Tone.LONG_BEEP);
         mLocationService.handleStationary(new BackgroundLocation(PROVIDER_ID, location, radius));
     }
 
@@ -98,6 +101,7 @@ public abstract class AbstractLocationProvider implements LocationProvider {
      * @param location
      */
     protected void handleStationary (Location location) {
+        playDebugTone(Tone.LONG_BEEP);
         mLocationService.handleStationary(new BackgroundLocation(PROVIDER_ID, location));
     }
 
@@ -110,11 +114,17 @@ public abstract class AbstractLocationProvider implements LocationProvider {
         mLocationService.handleError(error);
     }
 
+    protected void showDebugToast (String text) {
+        if (mConfig.isDebugging()) {
+            Toast.makeText(mLocationService, text, Toast.LENGTH_LONG).show();
+        }
+    }
+
     /**
      * Plays debug sound
      * @param name toneGenerator
      */
-    protected void playDebugTone(int name) {
+    protected void playDebugTone (int name) {
         if (toneGenerator == null || !mConfig.isDebugging()) return;
 
         int duration = 1000;
