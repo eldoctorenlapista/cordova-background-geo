@@ -1,6 +1,6 @@
 //
 //  SQLiteLocationDAO.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 10/06/16.
 //
@@ -366,8 +366,9 @@
         if (![database executeStatements:sql]) {
             NSLog(@"%@ failed code: %d: message: %@", sql, [database lastErrorCode], [database lastErrorMessage]);
             success = NO;
+        } else {
+            success = YES;
         }
-        success = YES;
     }];
 
     return success;

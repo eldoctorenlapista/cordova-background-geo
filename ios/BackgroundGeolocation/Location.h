@@ -1,6 +1,6 @@
 //
 //  Location.h
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 10/06/16.
 //
@@ -8,6 +8,7 @@
 #ifndef Location_h
 #define Location_h
 
+#import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
 @interface Location : NSObject <NSCopying>

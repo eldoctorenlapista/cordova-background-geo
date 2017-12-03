@@ -1,6 +1,6 @@
 //
-//  CDVBackgroundGeolocationTests.m
-//  CDVBackgroundGeolocationTests
+//  SQLiteLocationDAOTest.m
+//  BackgroundGeolocationTests
 //
 //  Created by Marian Hello on 10/06/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -9,11 +9,11 @@
 #import <XCTest/XCTest.h>
 #import "SQLiteLocationDAO.h"
 
-@interface SQLiteLocationDAOTests : XCTestCase
+@interface SQLiteLocationDAOTest : XCTestCase
 
 @end
 
-@implementation SQLiteLocationDAOTests
+@implementation SQLiteLocationDAOTest
 
 - (void)setUp {
     [super setUp];

@@ -1,6 +1,6 @@
 //
-//  LocationUploaderTests.m
-//  CDVBackgroundGeolocation
+//  LocationUploaderTest.m
+//  BackgroundGeolocationTests
 //
 //  Created by Marian Hello on 07/07/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -10,11 +10,11 @@
 #import "BackgroundSync.h"
 #import "SQLiteLocationDAO.h"
 
-@interface BackgroundSyncTests : XCTestCase
+@interface BackgroundSyncTest : XCTestCase
 
 @end
 
-@implementation BackgroundSyncTests
+@implementation BackgroundSyncTest
 
 - (void)setUp {
     [super setUp];

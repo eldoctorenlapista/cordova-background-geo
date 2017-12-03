@@ -1,6 +1,6 @@
 //
 //  Config.h
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 11/06/16.
 //
@@ -8,6 +8,7 @@
 #ifndef Config_h
 #define Config_h
 
+#import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
 enum {
@@ -16,28 +17,47 @@ enum {
     RAW_PROVIDER = 2
 };
 
-@interface Config : NSObject
+@interface Config : NSObject <NSCopying>
 
-@property NSInteger stationaryRadius;
-@property NSInteger distanceFilter;
-@property NSInteger desiredAccuracy;
-@property BOOL isDebugging;
-@property NSString* activityType;
-@property BOOL stopOnTerminate;
-@property NSString* url;
-@property NSString* syncUrl;
-@property NSInteger syncThreshold;
+@property NSNumber *stationaryRadius;
+@property NSNumber *distanceFilter;
+@property NSNumber *desiredAccuracy;
+@property NSNumber *_debug;
+@property NSString *activityType;
+@property NSNumber *_stopOnTerminate;
+@property NSString *url;
+@property NSString *syncUrl;
+@property NSNumber *syncThreshold;
 @property NSMutableDictionary* httpHeaders;
-@property BOOL saveBatteryOnBackground;
-@property NSInteger maxLocations;
-@property BOOL pauseLocationUpdates;
-@property NSInteger locationProvider;
+@property NSNumber *_saveBatteryOnBackground;
+@property NSNumber *maxLocations;
+@property NSNumber *_pauseLocationUpdates;
+@property NSNumber *locationProvider;
 
+- (instancetype) initWithDefaults;
 + (instancetype) fromDictionary:(NSDictionary*)config;
-- (CLActivityType) decodeActivityType;
-- (NSInteger) decodeDesiredAccuracy;
++ (instancetype) merge:(Config*)config withConfig:(Config*)newConfig;
+
+- (BOOL) hasStationaryRadius;
+- (BOOL) hasDistanceFilter;
+- (BOOL) hasDesiredAccuracy;
+- (BOOL) hasDebug;
+- (BOOL) hasActivityType;
+- (BOOL) hasStopOnTerminate;
 - (BOOL) hasUrl;
 - (BOOL) hasSyncUrl;
+- (BOOL) hasSyncThreshold;
+- (BOOL) hasHttpHeaders;
+- (BOOL) hasSaveBatteryOnBackground;
+- (BOOL) hasMaxLocations;
+- (BOOL) hasPauseLocationUpdates;
+- (BOOL) hasLocationProvider;
+- (BOOL) isDebugging;
+- (BOOL) stopOnTerminate;
+- (BOOL) saveBatteryOnBackground;
+- (BOOL) pauseLocationUpdates;
+- (CLActivityType) decodeActivityType;
+- (NSInteger) decodeDesiredAccuracy;
 - (NSDictionary*) toDictionary;
 
 @end;

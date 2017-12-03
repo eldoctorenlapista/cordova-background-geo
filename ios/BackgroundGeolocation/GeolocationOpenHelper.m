@@ -1,6 +1,6 @@
 //
 //  GeolocationOpenHelper.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 27/06/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -9,11 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "GeolocationOpenHelper.h"
 #import "LocationContract.h"
+#import "ConfigurationContract.h"
 
 @implementation GeolocationOpenHelper
 
 static NSString *const kDatabaseName = @"cordova_bg_geolocation.db";
-static NSInteger const kDatabaseVersion = 2;
+static NSInteger const kDatabaseVersion = 3;
 
 - (instancetype)init
 {
@@ -34,11 +35,12 @@ static NSInteger const kDatabaseVersion = 2;
     [queue inDatabase:^(FMDatabase *database) {
         // because of some legacy code we have to drop table
         [self drop:@LC_TABLE_NAME inDatabase:database];
-
+        
         NSString *sql = [@[
-            [LocationContract createTableSQL],
-            @"CREATE INDEX recorded_at_idx ON " @LC_TABLE_NAME @" (" @LC_COLUMN_NAME_RECORDED_AT @")"
-        ]  componentsJoinedByString:@";"];
+                           [LocationContract createTableSQL],
+                           [ConfigurationContract createTableSQL],
+                           @"CREATE INDEX recorded_at_idx ON " @LC_TABLE_NAME @" (" @LC_COLUMN_NAME_RECORDED_AT @")"
+                           ]  componentsJoinedByString:@";"];
         if (![database executeStatements:sql]) {
             NSLog(@"%@ failed code: %d: message: %@", sql, [database lastErrorCode], [database lastErrorMessage]);
         }
@@ -65,23 +67,28 @@ static NSInteger const kDatabaseVersion = 2;
 - (void) onUpgrade:(FMDatabaseQueue*)queue fromVersion:(NSInteger)oldVersion toVersion:(NSInteger)newVersion
 {
     NSLog(@"Upgrading geolocation db oldVersion: %ld, newVersion: %ld", oldVersion, newVersion);
-    NSString *sql;
-
+    NSMutableArray *sql = [[NSMutableArray alloc] init];
+    
     switch (oldVersion) {
         case 1:
-            sql = [@[
+            [sql addObjectsFromArray: @[
                 @"ALTER TABLE " @LC_TABLE_NAME @" ADD COLUMN " @LC_COLUMN_NAME_RECORDED_AT @" INTEGER",
                 @"UPDATE " @LC_TABLE_NAME @" SET " @LC_COLUMN_NAME_RECORDED_AT @" =" @LC_COLUMN_NAME_TIME,
                 @"CREATE INDEX recorded_at_idx ON " @LC_TABLE_NAME @" (" @LC_COLUMN_NAME_RECORDED_AT @")",
                 @"DROP INDEX IF EXISTS time_idx"
-            ] componentsJoinedByString:@";"];
-            break;
+            ]];
+        case 2:
+            [sql addObjectsFromArray: @[
+                [ConfigurationContract createTableSQL]
+            ]];
+            break; // break only for previous db version (cascade statements)
         default:
             return;
     }
 
     [queue inDatabase:^(FMDatabase *database) {
-        if (![database executeStatements:sql]) {
+        NSString *stmt = [sql componentsJoinedByString:@";"];
+        if (![database executeStatements:stmt]) {
             NSLog(@"Db upgrade failed code: %d: message: %@", [database lastErrorCode], [database lastErrorMessage]);
         }
     }];

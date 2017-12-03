@@ -1,6 +1,6 @@
 //
 //  BackgroundTaskManager.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Joel and Vomako (http://stackoverflow.com/a/27664620)
 //

@@ -1,6 +1,6 @@
 //
-//  SQLiteHelper.m
-//  CDVBackgroundGeolocation
+//  SQLiteHelperTest.m
+//  BackgroundGeolocationTests
 //
 //  Created by Marian Hello on 27/06/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -9,11 +9,11 @@
 #import <XCTest/XCTest.h>
 #import "SQLiteHelper.h"
 
-@interface SQLiteHelperTests : XCTestCase
+@interface SQLiteHelperTest : XCTestCase
 
 @end
 
-@implementation SQLiteHelperTests
+@implementation SQLiteHelperTest
 
 - (void)setUp {
     [super setUp];

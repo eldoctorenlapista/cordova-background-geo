@@ -1,6 +1,6 @@
 //
-//  BackgroundLocationTests.m
-//  CDVBackgroundGeolocation
+//  BackgroundLocationTest.m
+//  BackgroundGeolocationTests
 //
 //  Created by Marian Hello on 12/06/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -9,11 +9,11 @@
 #import <XCTest/XCTest.h>
 #import "Location.h"
 
-@interface BackgroundLocationTests : XCTestCase
+@interface BackgroundLocationTest : XCTestCase
 
 @end
 
-@implementation BackgroundLocationTests
+@implementation BackgroundLocationTest
 
 - (void)setUp {
     [super setUp];

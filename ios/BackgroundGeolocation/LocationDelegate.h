@@ -1,6 +1,6 @@
 //
 //  LocationDelegate.h
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 14/09/2016.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -14,8 +14,8 @@
 
 typedef NS_ENUM(NSInteger, BGAuthorizationStatus) {
     NOT_DETERMINED = 0,
-    ALLOWED,
-    DENIED
+    ALLOWED = 1,
+    DENIED = 2
 };
 
 @protocol LocationDelegate <NSObject>

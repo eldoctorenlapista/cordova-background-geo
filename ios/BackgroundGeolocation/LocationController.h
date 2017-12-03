@@ -19,7 +19,7 @@
 - (void) onLocationResume:(CLLocationManager*)manager;
 @end
 
-@interface LocationController : NSObject  {
+@interface LocationController : NSObject <CLLocationManagerDelegate>  {
     
     CLLocationManager* locationManager;
     CLLocation* location;

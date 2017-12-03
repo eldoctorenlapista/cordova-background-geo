@@ -1,6 +1,6 @@
 //
 //  DistanceFilterLocationProvider.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 14/09/2016.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -19,7 +19,9 @@
 #define LOCATION_RESTRICTED     "Application's use of location services is restricted."
 #define LOCATION_NOT_DETERMINED "User undecided on application's use of location services."
 
+static NSString * const TAG = @"DistanceFilterLocationProvider";
 static NSString * const Domain = @"com.marianhello";
+
 
 enum {
     maxLocationWaitTimeInSeconds = 15,
@@ -60,7 +62,7 @@ enum {
     locationManager = [[CLLocationManager alloc] init];
 
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        DDLogDebug(@"DistanceFilterProvider iOS9 detected");
+        DDLogDebug(@"%@ iOS9 detected", TAG);
         locationManager.allowsBackgroundLocationUpdates = YES;
     }
     
@@ -84,12 +86,12 @@ enum {
  */
 - (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
-    DDLogVerbose(@"DistanceFilterProvider configure");
+    DDLogVerbose(@"%@ configure", TAG);
     _config = config;
 
-    locationManager.pausesLocationUpdatesAutomatically = _config.pauseLocationUpdates;
+    locationManager.pausesLocationUpdatesAutomatically = [_config pauseLocationUpdates];
     locationManager.activityType = [_config decodeActivityType];
-    locationManager.distanceFilter = _config.distanceFilter; // meters
+    locationManager.distanceFilter = _config.distanceFilter.integerValue; // meters
     locationManager.desiredAccuracy = [_config decodeDesiredAccuracy];
     
     return YES;
@@ -100,7 +102,7 @@ enum {
  */
 - (BOOL) onStart:(NSError * __autoreleasing *)outError
 {
-    DDLogInfo(@"DistanceFilterProvider will start");
+    DDLogInfo(@"%@ will start", TAG);
     
     NSUInteger authStatus;
     
@@ -132,7 +134,7 @@ enum {
         
         if (authStatus == kCLAuthorizationStatusNotDetermined) {
             if ([locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {  //iOS 8.0+
-                DDLogVerbose(@"DistanceFilterProvider requestAlwaysAuthorization");
+                DDLogVerbose(@"%@ requestAlwaysAuthorization", TAG);
                 [locationManager requestAlwaysAuthorization];
             }
         }
@@ -149,7 +151,7 @@ enum {
  */
 - (BOOL) onStop:(NSError * __autoreleasing *)outError
 {
-    DDLogInfo(@"DistanceFilterProvider stop");
+    DDLogInfo(@"%@ stop", TAG);
     
     [self stopUpdatingLocation];
     [self stopMonitoringSignificantLocationChanges];
@@ -168,7 +170,7 @@ enum {
  */
 - (void) switchMode:(BGOperationMode)mode
 {
-    DDLogInfo(@"DistanceFilterProvider switchMode %lu", (unsigned long)mode);
+    DDLogInfo(@"%@ switchMode %lu", TAG, (unsigned long)mode);
     
     operationMode = mode;
     
@@ -194,12 +196,12 @@ enum {
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    DDLogDebug(@"DistanceFilterProvider didUpdateLocations (operationMode: %lu)", (unsigned long)operationMode);
+    DDLogDebug(@"%@ didUpdateLocations (operationMode: %lu)", TAG, (unsigned long)operationMode);
     
     BGOperationMode actAsInMode = operationMode;
     
     if (actAsInMode == BACKGROUND) {
-        if (_config.saveBatteryOnBackground == NO) actAsInMode = FOREGROUND;
+        if ([_config saveBatteryOnBackground] == NO) actAsInMode = FOREGROUND;
     }
     
     if (actAsInMode == FOREGROUND) {
@@ -242,13 +244,13 @@ enum {
     
     // test the measurement to see if it is more accurate than the previous measurement
     if (isAcquiringStationaryLocation) {
-        DDLogDebug(@"Acquiring stationary location, accuracy: %@", bestLocation.accuracy);
-        if (_config.isDebugging) {
+        DDLogDebug(@"%@ acquiring stationary location, accuracy: %@", TAG, bestLocation.accuracy);
+        if ([_config isDebugging]) {
             AudioServicesPlaySystemSound (acquiringLocationSound);
         }
         
-        if ([bestLocation.accuracy doubleValue] <= [[NSNumber numberWithInteger:_config.desiredAccuracy] doubleValue]) {
-            DDLogDebug(@"DistanceFilterProvider found most accurate stationary before timeout");
+        if ([bestLocation.accuracy doubleValue] <= [_config.desiredAccuracy doubleValue]) {
+            DDLogDebug(@"%@ found most accurate stationary before timeout", TAG);
         } else if (-[aquireStartTime timeIntervalSinceNow] < maxLocationWaitTimeInSeconds) {
             // we still have time to aquire better location
             return;
@@ -258,30 +260,30 @@ enum {
         [self stopUpdatingLocation]; //saving power while monitoring region
         
         Location *stationaryLocation = [bestLocation copy];
-        stationaryLocation.radius = [NSNumber numberWithInteger:_config.stationaryRadius];
+        stationaryLocation.radius = _config.stationaryRadius;
         stationaryLocation.time = stationarySince;
         [self startMonitoringStationaryRegion:stationaryLocation];
         // fire onStationary @event for Javascript.
         [super.delegate onStationaryChanged:stationaryLocation];
     } else if (isAcquiringSpeed) {
-        if (_config.isDebugging) {
+        if ([_config isDebugging]) {
             AudioServicesPlaySystemSound (acquiringLocationSound);
         }
         
-        if ([bestLocation.accuracy doubleValue] <= [[NSNumber numberWithInteger:_config.desiredAccuracy] doubleValue]) {
-            DDLogDebug(@"DistanceFilterProvider found most accurate location before timeout");
+        if ([bestLocation.accuracy doubleValue] <= [_config.desiredAccuracy doubleValue]) {
+            DDLogDebug(@"%@ found most accurate location before timeout", TAG);
         } else if (-[aquireStartTime timeIntervalSinceNow] < maxLocationWaitTimeInSeconds) {
             // we still have time to aquire better location
             return;
         }
         
-        if (_config.isDebugging) {
+        if ([_config isDebugging]) {
             [self notify:@"Aggressive monitoring engaged"];
         }
         
         // We should have a good sample for speed now, power down our GPS as configured by user.
         isAcquiringSpeed = NO;
-        locationManager.desiredAccuracy = _config.desiredAccuracy;
+        locationManager.desiredAccuracy = _config.desiredAccuracy.integerValue;
         locationManager.distanceFilter = [self calculateDistanceFilter:[bestLocation.speed floatValue]];
         [self startUpdatingLocation];
         
@@ -289,12 +291,12 @@ enum {
         // Adjust distanceFilter incrementally based upon current speed
         float newDistanceFilter = [self calculateDistanceFilter:[bestLocation.speed floatValue]];
         if (newDistanceFilter != locationManager.distanceFilter) {
-            DDLogInfo(@"DistanceFilterProvider updated distanceFilter, new: %f, old: %f", newDistanceFilter, locationManager.distanceFilter);
+            DDLogInfo(@"%@ updated distanceFilter, new: %f, old: %f", TAG, newDistanceFilter, locationManager.distanceFilter);
             locationManager.distanceFilter = newDistanceFilter;
             [self startUpdatingLocation];
         }
     } else if ([self locationIsBeyondStationaryRegion:bestLocation]) {
-        if (_config.isDebugging) {
+        if ([_config isDebugging]) {
             [self notify:@"Manual stationary exit-detection"];
         }
         [self switchMode:operationMode];
@@ -312,8 +314,8 @@ enum {
     CLLocationDistance radius = [region radius];
     CLLocationCoordinate2D coordinate = [region center];
     
-    DDLogDebug(@"DistanceFilterProvider didExitRegion {%f,%f,%f}", coordinate.latitude, coordinate.longitude, radius);
-    if (_config.isDebugging) {
+    DDLogDebug(@"%@ didExitRegion {%f,%f,%f}", TAG, coordinate.latitude, coordinate.longitude, radius);
+    if ([_config isDebugging]) {
         AudioServicesPlaySystemSound (exitRegionSound);
         [self notify:@"Exit stationary region"];
     }
@@ -322,24 +324,24 @@ enum {
 
 - (void) locationManagerDidPauseLocationUpdates:(CLLocationManager *)manager
 {
-    DDLogDebug(@"DistanceFilterProvider location updates paused");
-    if (_config.isDebugging) {
+    DDLogDebug(@"%@ location updates paused", TAG);
+    if ([_config isDebugging]) {
         [self notify:@"Location updates paused"];
     }
 }
 
 - (void) locationManagerDidResumeLocationUpdates:(CLLocationManager *)manager
 {
-    DDLogDebug(@"DistanceFilterProvider location updates resumed");
-    if (_config.isDebugging) {
+    DDLogDebug(@"%@ location updates resumed", TAG);
+    if ([_config isDebugging]) {
         [self notify:@"Location updates resumed b"];
     }
 }
 
 - (void) locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    DDLogError(@"DistanceFilterProvider didFailWithError: %@", error);
-    if (_config.isDebugging) {
+    DDLogError(@"%@ didFailWithError: %@", TAG, error);
+    if ([_config isDebugging]) {
         AudioServicesPlaySystemSound (locationErrorSound);
         [self notify:[NSString stringWithFormat:@"Location error: %@", error.localizedDescription]];
     }
@@ -366,7 +368,7 @@ enum {
 - (void) locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
     DDLogInfo(@"LocationManager didChangeAuthorizationStatus %u", status);
-    if (_config.isDebugging) {
+    if ([_config isDebugging]) {
         [self notify:[NSString stringWithFormat:@"Authorization status changed %u", status]];
     }
     
@@ -418,15 +420,15 @@ enum {
  */
 - (void) startMonitoringStationaryRegion:(Location*)location {
     CLLocationCoordinate2D coord = [location coordinate];
-    DDLogDebug(@"DistanceFilterProvider startMonitoringStationaryRegion {%f,%f,%ld}", coord.latitude, coord.longitude, (long)_config.stationaryRadius);
+    DDLogDebug(@"%@ startMonitoringStationaryRegion {%f,%f,%@}", TAG, coord.latitude, coord.longitude, _config.stationaryRadius);
     
-    if (_config.isDebugging) {
+    if ([_config isDebugging]) {
         AudioServicesPlaySystemSound (acquiredLocationSound);
-        [self notify:[NSString stringWithFormat:@"Monitoring region {%f,%f,%ld}", location.coordinate.latitude, location.coordinate.longitude, (long)_config.stationaryRadius]];
+        [self notify:[NSString stringWithFormat:@"Monitoring region {%f,%f,%@}", location.coordinate.latitude, location.coordinate.longitude, _config.stationaryRadius]];
     }
     
     [self stopMonitoringForRegion];
-    stationaryRegion = [[CLCircularRegion alloc] initWithCenter: coord radius:_config.stationaryRadius identifier:@"DistanceFilterProvider stationary region"];
+    stationaryRegion = [[CLCircularRegion alloc] initWithCenter: coord radius:_config.stationaryRadius.integerValue identifier:@"DistanceFilterProvider stationary region"];
     stationaryRegion.notifyOnExit = YES;
     [locationManager startMonitoringForRegion:stationaryRegion];
     stationarySince = [NSDate date];
@@ -446,11 +448,11 @@ enum {
  */
 - (float) calculateDistanceFilter:(float)speed
 {
-    float newDistanceFilter = _config.distanceFilter;
+    float newDistanceFilter = _config.distanceFilter.integerValue;
     if (speed < 100) {
         // (rounded-speed-to-nearest-5) / 2)^2
         // eg 5.2 becomes (5/2)^2
-        newDistanceFilter = pow((5.0 * floorf(fabsf(speed) / 5.0 + 0.5f)), 2) + _config.distanceFilter;
+        newDistanceFilter = pow((5.0 * floorf(fabsf(speed) / 5.0 + 0.5f)), 2) + _config.distanceFilter.integerValue;
     }
     return (newDistanceFilter < 1000) ? newDistanceFilter : 1000;
 }
@@ -463,7 +465,8 @@ enum {
     CLLocationCoordinate2D regionCenter = [stationaryRegion center];
     BOOL containsCoordinate = [stationaryRegion containsCoordinate:[location coordinate]];
     
-    DDLogVerbose(@"DistanceFilterProvider location {%@,%@} region {%f,%f,%f} contains: %d",
+    DDLogVerbose(@"%@ location {%@,%@} region {%f,%f,%f} contains: %d",
+                 TAG,
                  location.latitude, location.longitude, regionCenter.latitude, regionCenter.longitude,
                  [stationaryRegion radius], containsCoordinate);
     
@@ -475,10 +478,14 @@ enum {
     [super notify:message];
 }
 
-- (void) onDestroy
+- (void) onDestroy {
+    DDLogInfo(@"Destroying %@ ", TAG);
+    [self onStop:nil];
+}
+
+- (void) dealloc
 {
-    locationManager.delegate = nil;
-    //    [super dealloc];
+    //    locationController.delegate = nil;
 }
 
 @end

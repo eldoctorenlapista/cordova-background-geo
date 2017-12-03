@@ -266,12 +266,12 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     }
 
     NSDictionary *event = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%@", name], @"name", nil];
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
-    [result setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
+    [cordovaResult setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:cordovaResult callbackId:callbackId];
 }
 
--(void) sendEvent:(NSString*)name resultAsNSInteger:(NSInteger)resultAsNSInteger
+-(void) sendEvent:(NSString*)name resultAsNumber:(NSNumber*)result
 {
     if (callbackId == nil) {
         return;
@@ -279,14 +279,14 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 
     NSDictionary *event = [[NSDictionary alloc] initWithObjectsAndKeys:
                            [NSString stringWithFormat:@"%@", name], @"name",
-                           [NSNumber numberWithInteger:resultAsNSInteger], @"payload",
+                           result, @"payload",
                            nil];
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
-    [result setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
+    [cordovaResult setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:cordovaResult callbackId:callbackId];
 }
 
--(void) sendEvent:(NSString*)name resultAsDictionary:(NSDictionary*)resultAsDictionary
+-(void) sendEvent:(NSString*)name resultAsDictionary:(NSDictionary*)result
 {
     if (callbackId == nil) {
         return;
@@ -294,11 +294,11 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 
     NSDictionary *event = [[NSDictionary alloc] initWithObjectsAndKeys:
                            [NSString stringWithFormat:@"%@", name], @"name",
-                           resultAsDictionary, @"payload",
+                           result, @"payload",
                            nil];
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
-    [result setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:event];
+    [cordovaResult setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:cordovaResult callbackId:callbackId];
 }
 
 - (void) sendError:(NSError*)error
@@ -308,16 +308,15 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         return;
     }
 
-    CDVPluginResult* result = nil;
-    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[error userInfo]];
-    [result setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[error userInfo]];
+    [cordovaResult setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:cordovaResult callbackId:callbackId];
 }
 
 - (void) onAuthorizationChanged:(BGAuthorizationStatus)authStatus
 {
     NSLog(@"%@ #%@", TAG, @"onAuthorizationChanged");
-    [self sendEvent:@"authorization" resultAsNSInteger:authStatus];
+    [self sendEvent:@"authorization" resultAsNumber:[NSNumber numberWithInt:authStatus]];
 }
 
 - (void) onLocationChanged:(Location*)location

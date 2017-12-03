@@ -178,14 +178,14 @@ static NSString * const Domain = @"com.marianhello";
 
 - (void) locationManagerDidPauseLocationUpdates:(CLLocationManager *)manager
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(onPause:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onLocationPause:)]) {
         [self.delegate onLocationPause:manager];
     }
 }
 
 - (void) locationManagerDidResumeLocationUpdates:(CLLocationManager *)manager
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(onResume:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onLocationResume:)]) {
         [self.delegate onLocationResume:manager];
     }
 }
