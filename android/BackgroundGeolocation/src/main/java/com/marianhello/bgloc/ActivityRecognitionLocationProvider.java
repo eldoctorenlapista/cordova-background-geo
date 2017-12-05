@@ -92,11 +92,7 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
             return;
         }
 
-        showDebugToast("acy:" + location.getAccuracy() + ",v:" + location.getSpeed() + ",df:" + mConfig.getDistanceFilter());
-
-        // if (lastLocation != null && location.distanceTo(lastLocation) < mConfig.getDistanceFilter()) {
-        //     return;
-        // }
+        showDebugToast("acy:" + location.getAccuracy() + ",v:" + location.getSpeed());
 
         lastLocation = location;
         handleLocation(location);
