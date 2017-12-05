@@ -26,6 +26,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
+import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.bgloc.data.ConfigurationDAO;
 import com.marianhello.bgloc.data.DAOFactory;
@@ -107,6 +108,7 @@ public class BackgroundGeolocationFacade {
         public void handleMessage(Message msg) {
             Bundle bundle;
             BackgroundLocation location;
+            BackgroundActivity activity;
             switch (msg.what) {
                 case LocationService.MSG_LOCATION_UPDATE:
                     logger.debug("Received MSG_LOCATION_UPDATE");
@@ -123,6 +125,14 @@ public class BackgroundGeolocationFacade {
                     location = (BackgroundLocation) bundle.getParcelable(BackgroundLocation.BUNDLE_KEY);
                     mStationaryLocation = location;
                     mDelegate.onStationaryChanged(location);
+
+                    break;
+                case LocationService.MSG_ON_ACTIVITY:
+                    logger.debug("Received MSG_ON_ACTIVITY");
+                    bundle = msg.getData();
+                    bundle.setClassLoader(LocationService.class.getClassLoader());
+                    activity = (BackgroundActivity) bundle.getParcelable(BackgroundActivity.BUNDLE_KEY);
+                    mDelegate.onActitivyChanged(activity);
 
                     break;
                 case LocationService.MSG_ERROR:

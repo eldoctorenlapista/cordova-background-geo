@@ -35,6 +35,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 
+import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.bgloc.data.ConfigurationDAO;
 import com.marianhello.bgloc.data.DAOFactory;
@@ -89,7 +90,6 @@ public class LocationService extends Service {
      */
     public static final int MSG_ON_STATIONARY = 5;
 
-
     /**
      * Command to the service to indicate operation mode has been changed
      */
@@ -99,6 +99,12 @@ public class LocationService extends Service {
      * Command to the service to that configuration has been changed
      */
     public static final int MSG_CONFIGURE = 7;
+
+    /**
+     * Command sent by the service to
+     * any registered clients with new detected activity.
+     */
+    public static final int MSG_ON_ACTIVITY = 8;
 
     /** indicate if service is running */
     private static Boolean isRunning = false;
@@ -414,6 +420,17 @@ public class LocationService extends Service {
         Bundle bundle = new Bundle();
         bundle.putParcelable(BackgroundLocation.BUNDLE_KEY, location);
         Message msg = Message.obtain(null, MSG_ON_STATIONARY);
+        msg.setData(bundle);
+
+        sendClientMessage(msg);
+    }
+
+    public void handleActivity(BackgroundActivity activity) {
+        logger.debug("New activity {}", activity.toString());
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(BackgroundActivity.BUNDLE_KEY, activity);
+        Message msg = Message.obtain(null, MSG_ON_ACTIVITY);
         msg.setData(bundle);
 
         sendClientMessage(msg);

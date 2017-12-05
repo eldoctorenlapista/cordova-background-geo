@@ -18,6 +18,7 @@ import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.logging.LoggerManager;
 
 import java.util.ArrayList;
@@ -229,29 +230,6 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
         return mostLikelyActivity;
     }
 
-    public static String getActivityString(int detectedActivityType) {
-        switch(detectedActivityType) {
-            case DetectedActivity.IN_VEHICLE:
-                return "IN_VEHICLE";
-            case DetectedActivity.ON_BICYCLE:
-                return "ON_BICYCLE";
-            case DetectedActivity.ON_FOOT:
-                return "ON_FOOT";
-            case DetectedActivity.RUNNING:
-                return "RUNNING";
-            case DetectedActivity.STILL:
-                return "STILL";
-            case DetectedActivity.TILTING:
-                return "TILTING";
-            case DetectedActivity.UNKNOWN:
-                return "UNKNOWN";
-            case DetectedActivity.WALKING:
-                return "WALKING";
-            default:
-                return "Unknown";
-        }
-    }
-
     private BroadcastReceiver detectedActivitiesReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -261,7 +239,9 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
             //Find the activity with the highest percentage
             lastActivity = getProbableActivity(detectedActivities);
 
-            logger.debug("Detected activity={} confidence={}", getActivityString(lastActivity.getType()), lastActivity.getConfidence());
+            logger.debug("Detected activity={} confidence={}", BackgroundActivity.getActivityString(lastActivity.getType()), lastActivity.getConfidence());
+
+            handleActivity(lastActivity);
 
             if (lastActivity.getType() == DetectedActivity.STILL) {
                 showDebugToast("Detected STILL Activity");

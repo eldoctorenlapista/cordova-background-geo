@@ -27,6 +27,7 @@ var BackgroundGeolocation = {
   events: [
     'location',
     'stationary',
+    'activity',
     'start',
     'stop',
     'error',

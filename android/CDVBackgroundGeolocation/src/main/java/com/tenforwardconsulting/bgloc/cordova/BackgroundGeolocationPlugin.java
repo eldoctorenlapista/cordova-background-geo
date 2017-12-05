@@ -24,6 +24,7 @@ import com.marianhello.bgloc.LocationService;
 import com.marianhello.bgloc.PluginDelegate;
 import com.marianhello.bgloc.PluginError;
 import com.marianhello.bgloc.cordova.ConfigMapper;
+import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.logging.LogEntry;
 import com.marianhello.logging.LoggerManager;
@@ -41,6 +42,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
 
     public static final String LOCATION_EVENT = "location";
     public static final String STATIONARY_EVENT = "stationary";
+    public static final String ACTIVITY_EVENT = "activity";
     public static final String FOREGROUND_EVENT = "foreground";
     public static final String BACKGROUND_EVENT = "background";
     public static final String AUTHORIZATION_EVENT = "authorization";
@@ -467,6 +469,16 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             sendEvent(STATIONARY_EVENT, location.toJSONObject());
         } catch (JSONException e) {
             logger.error("Error converting location to json: {}", e.getMessage());
+            sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
+        }
+    }
+
+    @Override
+    public void onActitivyChanged(BackgroundActivity activity) {
+        try {
+            sendEvent(ACTIVITY_EVENT, activity.toJSONObject());
+        } catch (JSONException e) {
+            logger.error("Error converting activity to json: {}", e.getMessage());
             sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
         }
     }

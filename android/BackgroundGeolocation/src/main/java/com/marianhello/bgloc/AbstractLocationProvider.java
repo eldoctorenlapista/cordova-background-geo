@@ -9,6 +9,7 @@ This is a new class
 
 package com.marianhello.bgloc;
 
+import android.app.Activity;
 import android.location.Location;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,6 +18,8 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.widget.Toast;
 
+import com.google.android.gms.location.DetectedActivity;
+import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.utils.Tone;
 
@@ -103,6 +106,10 @@ public abstract class AbstractLocationProvider implements LocationProvider {
     protected void handleStationary (Location location) {
         playDebugTone(Tone.LONG_BEEP);
         mLocationService.handleStationary(new BackgroundLocation(PROVIDER_ID, location));
+    }
+
+    protected void handleActivity(DetectedActivity activity) {
+        mLocationService.handleActivity(new BackgroundActivity(PROVIDER_ID, activity));
     }
 
     /**
