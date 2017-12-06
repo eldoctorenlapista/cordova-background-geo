@@ -12,7 +12,7 @@
 
 @implementation Config 
 
-@synthesize stationaryRadius, distanceFilter, desiredAccuracy, _debug, activityType, _stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, _saveBatteryOnBackground, maxLocations, _pauseLocationUpdates, locationProvider;
+@synthesize stationaryRadius, distanceFilter, desiredAccuracy, _debug, activityType, _stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, _saveBatteryOnBackground, maxLocations, _pauseLocationUpdates, locationProvider, _template;
 
 -(instancetype) initWithDefaults {
     self = [super init];
@@ -32,6 +32,7 @@
     syncThreshold = [NSNumber numberWithInt:100];
     _pauseLocationUpdates = [NSNumber numberWithBool:NO];
     locationProvider = [NSNumber numberWithInt:DISTANCE_FILTER_PROVIDER];
+//    template =
     
     return self;
 }
@@ -81,6 +82,9 @@
     }
     if (isNotNull(config[@"locationProvider"])) {
         instance.locationProvider = config[@"locationProvider"];
+    }
+    if (isNotNull(config[@"template"])) {
+        instance._template = config[@"template"];
     }
 
     return instance;
@@ -139,6 +143,9 @@
     }
     if ([newConfig hasLocationProvider]) {
         merger.locationProvider = newConfig.locationProvider;
+    }
+    if ([newConfig hasTemplate]) {
+        merger._template = newConfig._template;
     }
 
     return merger;
@@ -237,6 +244,11 @@
     return locationProvider != nil;
 }
 
+- (BOOL) hasTemplate
+{
+    return _template != nil;
+}
+
 - (BOOL) isDebugging
 {
     return _debug.boolValue;
@@ -292,6 +304,46 @@
     return kCLLocationAccuracyHundredMeters;
 }
 
+- (NSString*) getHttpHeadersAsString:(NSError * __autoreleasing *)outError;
+{
+    NSError *error = nil;
+    NSString *httpHeadersString;
+    
+    if ([self hasHttpHeaders]) {
+        NSData *jsonHttpHeaders = [NSJSONSerialization dataWithJSONObject:httpHeaders options:NSJSONWritingPrettyPrinted error:&error];
+        if (jsonHttpHeaders) {
+            httpHeadersString = [[NSString alloc] initWithData:jsonHttpHeaders encoding:NSUTF8StringEncoding];
+        } else {
+            if (outError != nil) {
+                NSLog(@"Http headers serialization error: %@", error);
+                *outError = error;
+            }
+        }
+    }
+
+    return httpHeadersString;
+}
+
+- (NSString*) getTemplateAsString:(NSError * __autoreleasing *)outError;
+{
+    NSError *error = nil;
+    NSString *templateAsString;
+
+    if ([self hasTemplate]) {
+        NSData *jsonTemplate = [NSJSONSerialization dataWithJSONObject:_template options:0 error:&error];
+        if (jsonTemplate) {
+            templateAsString = [[NSString alloc] initWithData:jsonTemplate encoding:NSUTF8StringEncoding];
+        } else {
+            if (outError != nil) {
+                NSLog(@"Template serialization error: %@", error);
+                *outError = error;
+            }
+        }
+    }
+
+    return templateAsString;
+}
+
 - (NSDictionary*) toDictionary
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:10];
@@ -300,6 +352,7 @@
     if (url != nil) [dict setObject:url forKey:@"url"];
     if (syncUrl != nil) [dict setObject:syncUrl forKey:@"syncUrl"];
     if (httpHeaders != nil) [dict setObject:httpHeaders forKey:@"httpHeaders"];
+    if (_template != nil) [dict setObject:_template forKey:@"template"];
 
     [dict setObject:stationaryRadius forKey:@"stationaryRadius"];
     [dict setObject:distanceFilter forKey:@"distanceFilter"];
@@ -317,7 +370,7 @@
 
 - (NSString *) description
 {
-    return [NSString stringWithFormat:@"Config: distanceFilter=%@ stationaryRadius=%@ desiredAccuracy=%@ activityType=%@ isDebugging=%@ stopOnTerminate=%@ url=%@ syncThreshold=%@ maxLocations=%@ httpHeaders=%@ pauseLocationUpdates=%@ saveBatteryOnBackground=%@ locationProvider=%@", distanceFilter, stationaryRadius, desiredAccuracy, activityType, _debug, _stopOnTerminate, url, syncThreshold, maxLocations, httpHeaders, _pauseLocationUpdates, _saveBatteryOnBackground, locationProvider];
+    return [NSString stringWithFormat:@"Config: distanceFilter=%@ stationaryRadius=%@ desiredAccuracy=%@ activityType=%@ isDebugging=%@ stopOnTerminate=%@ url=%@ syncThreshold=%@ maxLocations=%@ httpHeaders=%@ pauseLocationUpdates=%@ saveBatteryOnBackground=%@ locationProvider=%@ template=%@", distanceFilter, stationaryRadius, desiredAccuracy, activityType, _debug, _stopOnTerminate, url, syncThreshold, maxLocations, httpHeaders, _pauseLocationUpdates, _saveBatteryOnBackground, locationProvider, _template];
 
 }
 

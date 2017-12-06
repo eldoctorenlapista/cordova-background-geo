@@ -72,4 +72,23 @@
     XCTAssertNotEqual(config1.distanceFilter, config2.distanceFilter);
 }
 
+- (void)testArrayTemplateToString {
+    Config *config = [[Config alloc] init];
+    config._template = @[@"latitude", @"longitude", @"custom"];
+    
+    XCTAssertEqualObjects([config getTemplateAsString:nil], @"[\"latitude\",\"longitude\",\"custom\"]");
+}
+
+- (void)testDictionaryTemplateToString {
+    Config *config = [[Config alloc] init];
+    config._template = @{
+                           @"lat": @"latitude",
+                           @"lon": @"longitude",
+                           @"foo": @"bar"
+                        };
+    
+    XCTAssertEqualObjects([config getTemplateAsString:nil], @"{\"lat\":\"latitude\",\"lon\":\"longitude\",\"foo\":\"bar\"}");
+}
+
+
 @end

@@ -21,6 +21,7 @@
 		4148983C1FB593E300323454 /* GeolocationOpenHelperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 414898351FB593E300323454 /* GeolocationOpenHelperTest.m */; };
 		4148983D1FB593E300323454 /* SQLiteOpenHelperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 414898361FB593E300323454 /* SQLiteOpenHelperTest.m */; };
 		4148983E1FB593E300323454 /* BackgroundLocationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 414898371FB593E300323454 /* BackgroundLocationTest.m */; };
+		418E0B6E1FD84D6200E24CB0 /* LocationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 418E0B6D1FD84D6200E24CB0 /* LocationTest.m */; };
 		41B1803B1FD1D8B200951D67 /* SQLiteConfigurationDAOTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 41B1803A1FD1D8B200951D67 /* SQLiteConfigurationDAOTest.m */; };
 		41B1803D1FD2952400951D67 /* ConfigTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 41B1803C1FD2952400951D67 /* ConfigTest.m */; };
 		41B180451FD2E05C00951D67 /* GeolocationOpenHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E82E711D5E351900F65575 /* GeolocationOpenHelper.m */; };
@@ -93,6 +94,7 @@
 		414898351FB593E300323454 /* GeolocationOpenHelperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeolocationOpenHelperTest.m; sourceTree = "<group>"; };
 		414898361FB593E300323454 /* SQLiteOpenHelperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SQLiteOpenHelperTest.m; sourceTree = "<group>"; };
 		414898371FB593E300323454 /* BackgroundLocationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundLocationTest.m; sourceTree = "<group>"; };
+		418E0B6D1FD84D6200E24CB0 /* LocationTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocationTest.m; sourceTree = "<group>"; };
 		418F75461D02DC3D0045FEA0 /* libBackgroundGeolocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBackgroundGeolocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4198B21C1FB089C900DCC96D /* RawLocationProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RawLocationProvider.h; sourceTree = "<group>"; };
 		4198B21D1FB08A2B00DCC96D /* RawLocationProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RawLocationProvider.m; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				41B1803C1FD2952400951D67 /* ConfigTest.m */,
+				418E0B6D1FD84D6200E24CB0 /* LocationTest.m */,
 				414898371FB593E300323454 /* BackgroundLocationTest.m */,
 				414898351FB593E300323454 /* GeolocationOpenHelperTest.m */,
 				414898321FB593E300323454 /* LocationUploaderTest.m */,
@@ -370,6 +373,7 @@
 			files = (
 				4148983E1FB593E300323454 /* BackgroundLocationTest.m in Sources */,
 				41B1803B1FD1D8B200951D67 /* SQLiteConfigurationDAOTest.m in Sources */,
+				418E0B6E1FD84D6200E24CB0 /* LocationTest.m in Sources */,
 				4148983C1FB593E300323454 /* GeolocationOpenHelperTest.m in Sources */,
 				414898391FB593E300323454 /* LocationUploaderTest.m in Sources */,
 				41B1803D1FD2952400951D67 /* ConfigTest.m in Sources */,

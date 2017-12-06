@@ -38,7 +38,7 @@ enum {
     return -[location.timestamp timeIntervalSinceNow];
 }
 
-+ (NSMutableDictionary*) toDictionary:(CLLocation*)location;
++ (NSDictionary*) toDictionary:(CLLocation*)location;
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:10];
 
@@ -80,9 +80,9 @@ enum {
     return -[time timeIntervalSinceNow];
 }
 
-- (NSMutableDictionary*) toDictionaryWithId
+- (NSDictionary*) toDictionaryWithId
 {
-    NSMutableDictionary *dict = [self toDictionary];
+    NSMutableDictionary *dict = (NSMutableDictionary*)[self toDictionary];
 
     // id is solely for internal purposes like deleteLocation method!!!
     if (id != nil) [dict setObject:id forKey:@"id"];
@@ -92,9 +92,8 @@ enum {
 
 - (NSMutableDictionary*) toDictionary
 {
-    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:10];
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:13];
 
-    if (id != nil) [dict setObject:id forKey:@"id"];
     if (time != nil) [dict setObject:[NSNumber numberWithDouble:([time timeIntervalSince1970] * 1000)] forKey:@"time"];
     if (accuracy != nil) [dict setObject:accuracy forKey:@"accuracy"];
     if (altitudeAccuracy != nil) [dict setObject:altitudeAccuracy forKey:@"altitudeAccuracy"];
@@ -110,6 +109,55 @@ enum {
     if (recordedAt != nil) [dict setObject:[NSNumber numberWithDouble:([recordedAt timeIntervalSince1970] * 1000)] forKey:@"recordedAt"];
 
     return dict;
+}
+
+- (NSArray*) toArrayFromTemplate:(NSArray*)locationTemplate
+{
+    NSMutableArray *locationArray = [[NSMutableArray alloc] initWithCapacity:locationTemplate.count];
+
+    for (NSString *key in locationTemplate) {
+        // check if we have mapped property
+        SEL selector = NSSelectorFromString(key);
+        if ([self respondsToSelector:selector]) {
+            [locationArray addObject:[self valueForKey:key]];
+        } else {
+            [locationArray addObject:key];
+        }
+    }
+
+    return locationArray;
+}
+
+- (NSDictionary*) toDictionaryFromTemplate:(NSDictionary*)locationTemplate
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:locationTemplate.count];
+    
+    for (NSString *key in locationTemplate) {
+        // check if we have mapped property
+        NSString *wantedProp = [locationTemplate objectForKey:key];
+        SEL selector = NSSelectorFromString(wantedProp);
+        if ([self respondsToSelector:selector]) {
+            id value = [self valueForKey:wantedProp];
+            if (value != nil) {
+                [dict setObject:value forKey:key];
+            }
+        } else {
+            [dict setObject:wantedProp forKey:key];
+        }
+    }
+    
+    return dict;
+}
+
+- (id) toResultFromTemplate:(id)locationTemplate
+{
+    if ([locationTemplate isKindOfClass:[NSArray class]]) {
+        return [self toArrayFromTemplate:locationTemplate];
+    } else if ([locationTemplate isKindOfClass:[NSDictionary class]]) {
+        return [self toDictionaryFromTemplate:locationTemplate];
+    }
+    
+    return [self toDictionary];
 }
 
 - (CLLocationCoordinate2D) coordinate
@@ -206,16 +254,18 @@ enum {
     return [NSString stringWithFormat:@"Location: id=%@ time=%@ lat=%@ lon=%@ accu=%@ aaccu=%@ speed=%@ bear=%@ alt=%@", id, time, latitude, longitude, accuracy, altitudeAccuracy, speed, heading, altitude];
 }
 
-- (BOOL) postAsJSON:(NSString*)url withHttpHeaders:(NSMutableDictionary*)httpHeaders error:(NSError * __autoreleasing *)outError;
+- (BOOL) postAsJSON:(NSString*)url withTemplate:(id)locationTemplate withHttpHeaders:(NSMutableDictionary*)httpHeaders error:(NSError * __autoreleasing *)outError
 {
-    NSArray *locations = [[NSArray alloc] initWithObjects:[self toDictionary], nil];
+
+    NSArray *locations = [[NSArray alloc] initWithObjects:[self toResultFromTemplate:locationTemplate], nil];
     //    NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &e];
     NSData *data = [NSJSONSerialization dataWithJSONObject:locations options:0 error:outError];
     if (!data) {
         return NO;
     }
-
+    
     NSString *jsonStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPMethod:@"POST"];
@@ -226,11 +276,11 @@ enum {
         }
     }
     [request setHTTPBody:[jsonStr dataUsingEncoding:NSUTF8StringEncoding]];
-
+    
     // Create url connection and fire request
     NSHTTPURLResponse* urlResponse = nil;
     [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:outError];
-
+    
     if (*outError == nil && [urlResponse statusCode] == 200) {
         return YES;
     }

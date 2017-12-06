@@ -362,7 +362,7 @@ FMDBLogger *sqliteLogger;
 
     if (hasConnectivity && [config hasUrl]) {
         NSError *error = nil;
-        if ([location postAsJSON:config.url withHttpHeaders:config.httpHeaders error:&error]) {
+        if ([location postAsJSON:config.url withTemplate:config._template withHttpHeaders:config.httpHeaders error:&error]) {
             SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
             if (location.id != nil) {
                 [locationDAO deleteLocation:location.id];
@@ -380,7 +380,7 @@ FMDBLogger *sqliteLogger;
     Config *config = [self getConfig];
 
     if ([config hasSyncUrl]) {
-        [uploader sync:config.syncUrl onLocationThreshold:config.syncThreshold.integerValue withHttpHeaders:config.httpHeaders];
+        [uploader sync:config.syncUrl onLocationThreshold:config.syncThreshold.integerValue withTemplate:config._template withHttpHeaders:config.httpHeaders];
     }
 }
 

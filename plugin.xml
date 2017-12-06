@@ -214,7 +214,7 @@
         <framework src="AudioToolbox.framework" weak="true" />
         <framework src="AVFoundation.framework" weak="true" />
         <framework src="libsqlite3.dylib" weak="true" />
-        <!-- Generated with gen_sources.sh @ 2017-12-02 08:55:30 -->
+        <!-- Generated with gen_sources.sh @ 2017-12-06 22:33:29 -->
         <header-file src="ios/BackgroundGeolocation/AbstractLocationProvider.h" />
         <source-file src="ios/BackgroundGeolocation/AbstractLocationProvider.m" />
         <header-file src="ios/BackgroundGeolocation/ActivityLocationProvider.h" />

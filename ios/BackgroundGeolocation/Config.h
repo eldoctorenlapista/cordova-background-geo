@@ -33,6 +33,7 @@ enum {
 @property NSNumber *maxLocations;
 @property NSNumber *_pauseLocationUpdates;
 @property NSNumber *locationProvider;
+@property NSObject *_template;
 
 - (instancetype) initWithDefaults;
 + (instancetype) fromDictionary:(NSDictionary*)config;
@@ -52,12 +53,15 @@ enum {
 - (BOOL) hasMaxLocations;
 - (BOOL) hasPauseLocationUpdates;
 - (BOOL) hasLocationProvider;
+- (BOOL) hasTemplate;
 - (BOOL) isDebugging;
 - (BOOL) stopOnTerminate;
 - (BOOL) saveBatteryOnBackground;
 - (BOOL) pauseLocationUpdates;
 - (CLActivityType) decodeActivityType;
 - (NSInteger) decodeDesiredAccuracy;
+- (NSString*) getHttpHeadersAsString:(NSError * __autoreleasing *)outError;
+- (NSString*) getTemplateAsString:(NSError * __autoreleasing *)outError;
 - (NSDictionary*) toDictionary;
 
 @end;

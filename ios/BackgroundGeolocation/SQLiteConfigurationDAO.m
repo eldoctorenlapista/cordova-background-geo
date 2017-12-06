@@ -45,17 +45,19 @@
     __block BOOL success = NO;
 
     NSError *error = nil;
-    NSString *jsonHttpHeadersString;
-
-    if (config.httpHeaders != nil) {
-        NSData *jsonHttpHeaders = [NSJSONSerialization dataWithJSONObject:config.httpHeaders options:NSJSONWritingPrettyPrinted error:&error];
-        if (jsonHttpHeaders) {
-            jsonHttpHeadersString = [[NSString alloc] initWithData:jsonHttpHeaders encoding:NSUTF8StringEncoding];
-        } else {
-            NSLog(@"Http headers serialization error: %@", error);
-        }
-    }
     
+    NSString *httpHeadersString = [config getHttpHeadersAsString:&error];
+    if (error != nil) {
+        NSLog(@"Http headers serialization error: %@", error);
+        return false;
+    }
+
+    NSString *templateString = [config getTemplateAsString:&error];
+    if (error != nil) {
+        NSLog(@"Template serialization error: %@", error);
+        return false;
+    }
+   
     NSString *sql = @"INSERT OR REPLACE INTO " @CC_TABLE_NAME @" ("
         @CC_COLUMN_NAME_ID
         @COMMA_SEP @CC_COLUMN_NAME_RADIUS
@@ -83,8 +85,9 @@
         @COMMA_SEP @CC_COLUMN_NAME_SAVE_BATTERY
         @COMMA_SEP @CC_COLUMN_NAME_MAX_LOCATIONS
         @COMMA_SEP @CC_COLUMN_NAME_PAUSE_LOCATION_UPDATES
+        @COMMA_SEP @CC_COLUMN_NAME_TEMPLATE
         @COMMA_SEP @CC_COLUMN_NAME_LAST_UPDATED_AT
-        @") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,DateTime('now'))";
+        @") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,DateTime('now'))";
 
     [queue inDatabase:^(FMDatabase *database) {
         success = [database executeUpdate:sql,
@@ -110,10 +113,11 @@
                     [config hasUrl] ? config.url : @CC_COLUMN_NAME_NULLABLE,
                     [config hasSyncUrl] ? config.syncUrl : @CC_COLUMN_NAME_NULLABLE,
                     [config hasSyncThreshold] ? config.syncThreshold : @CC_COLUMN_NAME_NULLABLE,
-                    jsonHttpHeadersString != nil ? jsonHttpHeadersString : @CC_COLUMN_NAME_NULLABLE,
+                    (httpHeadersString != nil) ? httpHeadersString : @CC_COLUMN_NAME_NULLABLE,
                     [config hasSaveBatteryOnBackground] ? config._saveBatteryOnBackground : @CC_COLUMN_NAME_NULLABLE,
                     [config hasMaxLocations] ? config.maxLocations : @CC_COLUMN_NAME_NULLABLE,
-                    [config hasPauseLocationUpdates] ? config._pauseLocationUpdates : @CC_COLUMN_NAME_NULLABLE
+                    [config hasPauseLocationUpdates] ? config._pauseLocationUpdates : @CC_COLUMN_NAME_NULLABLE,
+                    (templateString != nil) ? templateString : @CC_COLUMN_NAME_NULLABLE
                 ];
 
         if (success) {
@@ -157,6 +161,7 @@
     @COMMA_SEP @CC_COLUMN_NAME_SAVE_BATTERY
     @COMMA_SEP @CC_COLUMN_NAME_MAX_LOCATIONS
     @COMMA_SEP @CC_COLUMN_NAME_PAUSE_LOCATION_UPDATES
+    @COMMA_SEP @CC_COLUMN_NAME_TEMPLATE
     @" FROM " @CC_TABLE_NAME @" WHERE " @CC_COLUMN_NAME_ID @" = 1";
     
     [queue inDatabase:^(FMDatabase *database) {
@@ -194,9 +199,9 @@
                 config.syncThreshold = [NSNumber numberWithInt:[rs intForColumnIndex:21]];
             }
             if ([self isNonNull:rs columnIndex:22]) {
-                NSString *jsonHttpHeadersString = [rs stringForColumnIndex:22];
-                if (jsonHttpHeadersString != nil) {
-                    NSData *jsonHttpHeaders = [jsonHttpHeadersString dataUsingEncoding:NSUTF8StringEncoding];
+                NSString *httpHeadersString = [rs stringForColumnIndex:22];
+                if (httpHeadersString != nil) {
+                    NSData *jsonHttpHeaders = [httpHeadersString dataUsingEncoding:NSUTF8StringEncoding];
                     config.httpHeaders = [NSJSONSerialization JSONObjectWithData:jsonHttpHeaders options:0 error:nil];
                 }
             }
@@ -208,6 +213,13 @@
             }
             if ([self isNonNull:rs columnIndex:25]) {
                 config._pauseLocationUpdates = [NSNumber numberWithBool:[rs intForColumnIndex:25] == 1 ? YES : NO];
+            }
+            if ([self isNonNull:rs columnIndex:26]) {
+                NSString *templateAsString = [rs stringForColumnIndex:26];
+                if (templateAsString != nil) {
+                    NSData *jsonTemplate = [templateAsString dataUsingEncoding:NSUTF8StringEncoding];
+                    config._template = [NSJSONSerialization JSONObjectWithData:jsonTemplate options:0 error:nil];
+                }
             }
         }
         
