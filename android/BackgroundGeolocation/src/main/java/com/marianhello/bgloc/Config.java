@@ -470,79 +470,6 @@ public class Config implements Parcelable, Cloneable
         this.maxLocations = maxLocations;
     }
 
-    public Config mergeWith(Config config) throws CloneNotSupportedException {
-        Config merger = (Config) this.clone();
-
-        if (config.hasStationaryRadius()) {
-            merger.setStationaryRadius(config.getStationaryRadius());
-        }
-        if (config.hasDistanceFilter()) {
-            merger.setDistanceFilter(config.getDistanceFilter());
-        }
-        if (config.hasDesiredAccuracy()) {
-            merger.setDesiredAccuracy(config.getDesiredAccuracy());
-        }
-        if (config.hasDebug()) {
-            merger.setDebugging(config.isDebugging());
-        }
-        if (config.hasNotificationTitle()) {
-            merger.setNotificationTitle(config.getNotificationTitle());
-        }
-        if (config.hasNotificationText()) {
-            merger.setNotificationText(config.getNotificationText());
-        }
-        if (config.hasStopOnTerminate()) {
-            merger.setStopOnTerminate(config.getStopOnTerminate());
-        }
-        if (config.hasStartOnBoot()) {
-            merger.setStartOnBoot(config.getStartOnBoot());
-        }
-        if (config.hasLocationProvider()) {
-            merger.setLocationProvider(config.getLocationProvider());
-        }
-        if (config.hasInterval()) {
-            merger.setInterval(config.getInterval());
-        }
-        if (config.hasFastestInterval()) {
-            merger.setFastestInterval(config.getFastestInterval());
-        }
-        if (config.hasActivitiesInterval()) {
-            merger.setActivitiesInterval(config.getActivitiesInterval());
-        }
-        if (config.hasNotificationIconColor()) {
-            merger.setNotificationIconColor(config.getNotificationIconColor());
-        }
-        if (config.hasLargeNotificationIcon()) {
-            merger.setLargeNotificationIcon(config.getLargeNotificationIcon());
-        }
-        if (config.hasSmallNotificationIcon()) {
-            merger.setSmallNotificationIcon(config.getSmallNotificationIcon());
-        }
-        if (config.hasStartForeground()) {
-            merger.setStartForeground(config.getStartForeground());
-        }
-        if (config.hasStopOnStillActivity()) {
-            merger.setStopOnStillActivity(config.getStopOnStillActivity());
-        }
-        if (config.hasUrl()) {
-            merger.setUrl(config.getUrl());
-        }
-        if (config.hasSyncUrl()) {
-            merger.setSyncUrl(config.getSyncUrl());
-        }
-        if (config.hasSyncThreshold()) {
-            merger.setSyncThreshold(config.getSyncThreshold());
-        }
-        if (config.hasHttpHeaders()) {
-            merger.setHttpHeaders(config.getHttpHeaders());
-        }
-        if (config.hasMaxLocations()) {
-            merger.setMaxLocations(config.getMaxLocations());
-        }
-
-        return merger;
-    }
-
     @Override
     public String toString () {
         return new StringBuffer()
@@ -583,6 +510,79 @@ public class Config implements Parcelable, Cloneable
         Bundle bundle = new Bundle();
         bundle.putParcelable(BUNDLE_KEY, this);
         return bundle;
+    }
+
+    public static Config merge(Config config1, Config config2) throws CloneNotSupportedException {
+        Config merger = (Config) config1.clone();
+
+        if (config2.hasStationaryRadius()) {
+            merger.setStationaryRadius(config2.getStationaryRadius());
+        }
+        if (config2.hasDistanceFilter()) {
+            merger.setDistanceFilter(config2.getDistanceFilter());
+        }
+        if (config2.hasDesiredAccuracy()) {
+            merger.setDesiredAccuracy(config2.getDesiredAccuracy());
+        }
+        if (config2.hasDebug()) {
+            merger.setDebugging(config2.isDebugging());
+        }
+        if (config2.hasNotificationTitle()) {
+            merger.setNotificationTitle(config2.getNotificationTitle());
+        }
+        if (config2.hasNotificationText()) {
+            merger.setNotificationText(config2.getNotificationText());
+        }
+        if (config2.hasStopOnTerminate()) {
+            merger.setStopOnTerminate(config2.getStopOnTerminate());
+        }
+        if (config2.hasStartOnBoot()) {
+            merger.setStartOnBoot(config2.getStartOnBoot());
+        }
+        if (config2.hasLocationProvider()) {
+            merger.setLocationProvider(config2.getLocationProvider());
+        }
+        if (config2.hasInterval()) {
+            merger.setInterval(config2.getInterval());
+        }
+        if (config2.hasFastestInterval()) {
+            merger.setFastestInterval(config2.getFastestInterval());
+        }
+        if (config2.hasActivitiesInterval()) {
+            merger.setActivitiesInterval(config2.getActivitiesInterval());
+        }
+        if (config2.hasNotificationIconColor()) {
+            merger.setNotificationIconColor(config2.getNotificationIconColor());
+        }
+        if (config2.hasLargeNotificationIcon()) {
+            merger.setLargeNotificationIcon(config2.getLargeNotificationIcon());
+        }
+        if (config2.hasSmallNotificationIcon()) {
+            merger.setSmallNotificationIcon(config2.getSmallNotificationIcon());
+        }
+        if (config2.hasStartForeground()) {
+            merger.setStartForeground(config2.getStartForeground());
+        }
+        if (config2.hasStopOnStillActivity()) {
+            merger.setStopOnStillActivity(config2.getStopOnStillActivity());
+        }
+        if (config2.hasUrl()) {
+            merger.setUrl(config2.getUrl());
+        }
+        if (config2.hasSyncUrl()) {
+            merger.setSyncUrl(config2.getSyncUrl());
+        }
+        if (config2.hasSyncThreshold()) {
+            merger.setSyncThreshold(config2.getSyncThreshold());
+        }
+        if (config2.hasHttpHeaders()) {
+            merger.setHttpHeaders(config2.getHttpHeaders());
+        }
+        if (config2.hasMaxLocations()) {
+            merger.setMaxLocations(config2.getMaxLocations());
+        }
+
+        return merger;
     }
 
     public static Config fromByteArray (byte[] byteArray) {

@@ -274,7 +274,7 @@ public class BackgroundGeolocationFacade {
         }
 
         try {
-            config = config.mergeWith(newConfig);
+            config = Config.merge(config, newConfig);
             persistConfiguration(config);
             logger.debug("Service configured with: {}", config.toString());
             mConfig = config;

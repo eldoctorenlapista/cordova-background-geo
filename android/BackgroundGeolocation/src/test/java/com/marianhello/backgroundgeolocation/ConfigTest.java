@@ -84,7 +84,7 @@ public class ConfigTest {
         newConfig.setSyncThreshold(100);
         newConfig.setDesiredAccuracy(500);
 
-        Config merged = config.mergeWith(newConfig);
+        Config merged = Config.merge(config, newConfig);
 
         Assert.assertEquals(merged.getSyncThreshold().intValue(), 100);
         Assert.assertEquals(merged.getMaxLocations().intValue(), 1000);
@@ -108,7 +108,7 @@ public class ConfigTest {
         Config config = new Config();
         config.setHttpHeaders(httpHeaders);
 
-        Config merged = config.mergeWith(new Config());
+        Config merged = Config.merge(config, new Config());
 
         Assert.assertNotSame(config, merged);
         // TODO: we should probably clone httpHeaders too (leaving for now)
