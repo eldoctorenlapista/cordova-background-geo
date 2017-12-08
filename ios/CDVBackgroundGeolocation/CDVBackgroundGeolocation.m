@@ -187,7 +187,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         NSArray *locations = [facade getLocations];
         NSMutableArray* dictionaryLocations = [[NSMutableArray alloc] initWithCapacity:[locations count]];
         for (Location* location in locations) {
-            [dictionaryLocations addObject:[location toDictionary]];
+            [dictionaryLocations addObject:[location toDictionaryWithId]];
         }
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:dictionaryLocations];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -201,7 +201,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         NSArray *locations = [facade getValidLocations];
         NSMutableArray* dictionaryLocations = [[NSMutableArray alloc] initWithCapacity:[locations count]];
         for (Location* location in locations) {
-            [dictionaryLocations addObject:[location toDictionary]];
+            [dictionaryLocations addObject:[location toDictionaryWithId]];
         }
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:dictionaryLocations];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
