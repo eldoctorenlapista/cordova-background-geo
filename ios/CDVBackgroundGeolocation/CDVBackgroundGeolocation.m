@@ -323,13 +323,13 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 - (void) onLocationChanged:(Location*)location
 {
     NSLog(@"%@ #%@", TAG, @"onLocationChanged");
-    [self sendEvent:@"location" result:[location toResultFromTemplate:config._template]];
+    [self sendEvent:@"location" result:[location toDictionaryWithId]];
 }
 
 - (void) onStationaryChanged:(Location*)location
 {
     NSLog(@"%@ #%@", TAG, @"onStationaryChanged");
-    [self sendEvent:@"stationary" result:[location toResultFromTemplate:config._template]];
+    [self sendEvent:@"stationary" result:[location toDictionaryWithId]];
 }
 
 - (void) onLocationPause
