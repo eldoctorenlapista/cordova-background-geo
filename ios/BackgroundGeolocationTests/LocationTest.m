@@ -85,7 +85,8 @@
                                @"r": @"@radius",
                                @"rt": @"@recordedAt",
                                @"foo": @"bar",
-                               @"at": @"@"
+                               @"at": @"@",
+                               @"number": @12
                                };
 
     NSDictionary *actual = [location toResultFromTemplate:template];
@@ -104,7 +105,8 @@
                                @"r": location.radius,
                                @"rt": location.recordedAt,
                                @"foo": @"bar",
-                               @"at": @"@"
+                               @"at": @"@",
+                               @"number": @12
                             };
     
     XCTAssertEqualObjects(actual, expected);

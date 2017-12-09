@@ -111,8 +111,12 @@ enum {
     return dict;
 }
 
-- (id) getValueForKey:(NSString*)key
+- (id) getValueForKey:(id)key
 {
+    if (key == nil || ![key isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+
     if ([key isEqualToString:@"@id"]) {
         return locationId;
     }
@@ -163,7 +167,7 @@ enum {
 {
     NSMutableArray *locationArray = [[NSMutableArray alloc] initWithCapacity:locationTemplate.count];
 
-    for (NSString *key in locationTemplate) {
+    for (id key in locationTemplate) {
         id value = [self getValueForKey:key];
         if (value != nil) {
             [locationArray addObject:value];
@@ -179,8 +183,8 @@ enum {
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:locationTemplate.count];
     
-    for (NSString *key in locationTemplate) {
-        NSString *wantedProp = [locationTemplate objectForKey:key];
+    for (id key in locationTemplate) {
+        id wantedProp = [locationTemplate objectForKey:key];
         id value = [self getValueForKey:wantedProp];
         if (value != nil) {
             [dict setObject:value forKey:key];
