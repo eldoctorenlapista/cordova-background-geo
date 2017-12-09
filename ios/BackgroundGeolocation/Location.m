@@ -15,7 +15,7 @@ enum {
 
 @implementation Location
 
-@synthesize id, time, accuracy, altitudeAccuracy, speed, heading, altitude, latitude, longitude, provider, locationProvider, radius, isValid, recordedAt;
+@synthesize locationId, time, accuracy, altitudeAccuracy, speed, heading, altitude, latitude, longitude, provider, locationProvider, radius, isValid, recordedAt;
 
 + (instancetype) fromCLLocation:(CLLocation*)location;
 {
@@ -84,8 +84,8 @@ enum {
 {
     NSMutableDictionary *dict = (NSMutableDictionary*)[self toDictionary];
 
-    // id is solely for internal purposes like deleteLocation method!!!
-    if (id != nil) [dict setObject:id forKey:@"id"];
+    // locationId is solely for internal purposes like deleteLocation method!!!
+    if (locationId != nil) [dict setObject:locationId forKey:@"id"];
 
     return dict;
 }
@@ -111,15 +111,62 @@ enum {
     return dict;
 }
 
+- (id) getValueForKey:(NSString*)key
+{
+    if ([key isEqualToString:@"@id"]) {
+        return locationId;
+    }
+    if ([key isEqualToString:@"@time"]) {
+        return time;
+    }
+    if ([key isEqualToString:@"@accuracy"]) {
+        return accuracy;
+    }
+    if ([key isEqualToString:@"@altitudeAccuracy"]) {
+        return altitudeAccuracy;
+    }
+    if ([key isEqualToString:@"@speed"]) {
+        return speed;
+    }
+    if ([key isEqualToString:@"@heading"]) {
+        return heading;
+    }
+    if ([key isEqualToString:@"@bearing"]) {
+        return heading;
+    }
+    if ([key isEqualToString:@"@altitude"]) {
+        return altitude;
+    }
+    if ([key isEqualToString:@"@latitude"]) {
+        return latitude;
+    }
+    if ([key isEqualToString:@"@longitude"]) {
+        return longitude;
+    }
+    if ([key isEqualToString:@"@provider"]) {
+        return provider;
+    }
+    if ([key isEqualToString:@"@locationProvider"]) {
+        return locationProvider;
+    }
+    if ([key isEqualToString:@"@radius"]) {
+        return radius;
+    }
+    if ([key isEqualToString:@"@recordedAt"]) {
+        return recordedAt;
+    }
+    
+    return nil;
+}
+
 - (NSArray*) toArrayFromTemplate:(NSArray*)locationTemplate
 {
     NSMutableArray *locationArray = [[NSMutableArray alloc] initWithCapacity:locationTemplate.count];
 
     for (NSString *key in locationTemplate) {
-        // check if we have mapped property
-        SEL selector = NSSelectorFromString(key);
-        if ([self respondsToSelector:selector]) {
-            [locationArray addObject:[self valueForKey:key]];
+        id value = [self getValueForKey:key];
+        if (value != nil) {
+            [locationArray addObject:value];
         } else {
             [locationArray addObject:key];
         }
@@ -133,14 +180,10 @@ enum {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:locationTemplate.count];
     
     for (NSString *key in locationTemplate) {
-        // check if we have mapped property
         NSString *wantedProp = [locationTemplate objectForKey:key];
-        SEL selector = NSSelectorFromString(wantedProp);
-        if ([self respondsToSelector:selector]) {
-            id value = [self valueForKey:wantedProp];
-            if (value != nil) {
-                [dict setObject:value forKey:key];
-            }
+        id value = [self getValueForKey:wantedProp];
+        if (value != nil) {
+            [dict setObject:value forKey:key];
         } else {
             [dict setObject:wantedProp forKey:key];
         }
@@ -251,7 +294,7 @@ enum {
 
 - (NSString *) description
 {
-    return [NSString stringWithFormat:@"Location: id=%@ time=%@ lat=%@ lon=%@ accu=%@ aaccu=%@ speed=%@ bear=%@ alt=%@", id, time, latitude, longitude, accuracy, altitudeAccuracy, speed, heading, altitude];
+    return [NSString stringWithFormat:@"Location: id=%@ time=%@ lat=%@ lon=%@ accu=%@ aaccu=%@ speed=%@ bear=%@ alt=%@", locationId, time, latitude, longitude, accuracy, altitudeAccuracy, speed, heading, altitude];
 }
 
 - (BOOL) postAsJSON:(NSString*)url withTemplate:(id)locationTemplate withHttpHeaders:(NSMutableDictionary*)httpHeaders error:(NSError * __autoreleasing *)outError

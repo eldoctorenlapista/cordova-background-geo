@@ -13,7 +13,7 @@
 
 @interface Location : NSObject <NSCopying>
 
-@property (nonatomic, retain) NSNumber *id;
+@property (nonatomic, retain) NSNumber *locationId;
 @property (nonatomic, retain) NSDate *time;
 @property (nonatomic, retain) NSNumber *accuracy;
 @property (nonatomic, retain) NSNumber *altitudeAccuracy;

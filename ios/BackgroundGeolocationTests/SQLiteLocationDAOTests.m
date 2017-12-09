@@ -86,7 +86,7 @@
     Location *result = [locations firstObject];
 
     XCTAssertEqual([locations count], 1, @"Number of stored location is %lu expecting 1", (unsigned long)[locations count]);
-    XCTAssertTrue([result.id isEqualToNumber:locationId2], "LocationId is %@ expecting %@", result.id, locationId2);
+    XCTAssertTrue([result.locationId isEqualToNumber:locationId2], "LocationId is %@ expecting %@", result.locationId, locationId2);
 }
 
 - (void)testDeleteAllLocations {
@@ -144,7 +144,7 @@
 
     for (int i = 0; i < 10; i++) {
         Location *result = [locations objectAtIndex:i];
-        XCTAssertEqual([result.id intValue], i+1, "LocationId is %d expecting %d", [result.id intValue], i+1);
+        XCTAssertEqual([result.locationId intValue], i+1, "LocationId is %d expecting %d", [result.locationId intValue], i+1);
         XCTAssertTrue([result.time isEqualToDate:[NSDate dateWithTimeIntervalSince1970:1465511097774.577+i]], "Location time is %@ expecting %@", result.time, [NSDate dateWithTimeIntervalSince1970:1465511097774.577+i]);
         XCTAssertTrue([result.accuracy isEqualToNumber:[NSNumber numberWithDouble:5+i]], "Location accuracy is %@ expecting %@", result.accuracy, [NSNumber numberWithDouble:5+i]);
         XCTAssertTrue([result.speed isEqualToNumber:[NSNumber numberWithDouble:31.67+i]], "Location speed is %@ expecting %@", result.speed, [NSNumber numberWithDouble:31.67+i]);

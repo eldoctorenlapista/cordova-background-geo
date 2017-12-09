@@ -358,14 +358,14 @@ FMDBLogger *sqliteLogger;
     
     SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
     // TODO: investigate location id always 0
-    location.id = [locationDAO persistLocation:location limitRows:config.maxLocations.integerValue];
+    location.locationId = [locationDAO persistLocation:location limitRows:config.maxLocations.integerValue];
 
     if (hasConnectivity && [config hasUrl]) {
         NSError *error = nil;
         if ([location postAsJSON:config.url withTemplate:config._template withHttpHeaders:config.httpHeaders error:&error]) {
             SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
-            if (location.id != nil) {
-                [locationDAO deleteLocation:location.id];
+            if (location.locationId != nil) {
+                [locationDAO deleteLocation:location.locationId];
             }
         } else {
             DDLogWarn(@"%@ postJSON failed: error: %@", TAG, error.userInfo[@"NSLocalizedDescription"]);
