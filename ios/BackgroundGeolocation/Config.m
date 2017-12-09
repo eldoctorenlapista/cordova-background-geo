@@ -83,8 +83,8 @@
     if (isNotNull(config[@"locationProvider"])) {
         instance.locationProvider = config[@"locationProvider"];
     }
-    if (isNotNull(config[@"template"])) {
-        instance._template = config[@"template"];
+    if (isNotNull(config[@"postTemplate"])) {
+        instance._template = config[@"postTemplate"];
     }
 
     return instance;
@@ -352,7 +352,7 @@
     if (url != nil) [dict setObject:url forKey:@"url"];
     if (syncUrl != nil) [dict setObject:syncUrl forKey:@"syncUrl"];
     if (httpHeaders != nil) [dict setObject:httpHeaders forKey:@"httpHeaders"];
-    if (_template != nil) [dict setObject:_template forKey:@"template"];
+    if (_template != nil) [dict setObject:_template forKey:@"postTemplate"];
 
     [dict setObject:stationaryRadius forKey:@"stationaryRadius"];
     [dict setObject:distanceFilter forKey:@"distanceFilter"];
