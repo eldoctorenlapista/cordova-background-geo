@@ -38,7 +38,7 @@ public class LocationTemplateFactoryTest {
         try {
             LocationTemplate tpl = LocationTemplateFactory.fromJSONString(jsonString);
             JSONObject expected = new JSONObject();
-            expected.put("bar", "foo");
+            expected.put("foo", "bar");
             Assert.assertEquals(expected.toString(), tpl.toString());
         } catch (JSONException e) {
             org.junit.Assert.fail(e.getMessage());

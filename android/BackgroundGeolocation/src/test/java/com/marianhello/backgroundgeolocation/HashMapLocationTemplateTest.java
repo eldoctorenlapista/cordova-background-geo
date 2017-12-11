@@ -98,8 +98,8 @@ public class HashMapLocationTemplateTest {
         map.put("Speed", "@speed");
         map.put("Bearing", "@bearing");
 
-        String jsonString = new JSONObject(map).toString();
-        LocationTemplate tpl = LocationTemplateFactory.fromJSONString(jsonString);
+        JSONObject json = new JSONObject(map);
+        LocationTemplate tpl = LocationTemplateFactory.fromJSONReverted(json);
 
         JSONObject expected = (JSONObject) tpl.locationToJson(location);
 
