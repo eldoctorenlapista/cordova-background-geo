@@ -1,5 +1,30 @@
 ## Changelog
 
+### [3.0.0] - unreleased
+#### Added
+- checkStatus if service is running
+- events [start, stop, authorization, background, foreground]
+- implement all methods for both platforms
+- new RAW_LOCATION_PROVIDER
+Since alpha.8:
+- onError event signature = { code, message }
+- post/sync attributes customization via postTemplate config prop
+- enable partial plugin reconfiguration
+- Android on "activity" event
+- iOS configuration persistence
+
+#### Changed
+- start and stop methods doesn't accept callback (use event listeners instead)
+- for background syncing syncUrl option is required
+- on Android DISTANCE_FILTER_PROVIDER now accept arbitrary values (before only 10, 100, 1000)
+- all plugin constants are in directly BackgroundGeolocation namespace. (check index.js)
+- plugin can be started without executing configure (stored settings or defaults will be used)
+- location property locationId renamed to just id
+- iOS pauseLocationUpdates now default to false (becuase iOS docs now states that you need to restart manually if you set it to true)
+- iOS finish method replaced with startTask and endTask
+Since alpha.8:
+- Android bind to service on facade construct
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
