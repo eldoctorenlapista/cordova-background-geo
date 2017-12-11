@@ -1,6 +1,7 @@
 package com.marianhello.bgloc.cordova;
 
 import com.marianhello.bgloc.Config;
+import com.marianhello.bgloc.data.LocationTemplateFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,6 +80,11 @@ public class ConfigMapper {
         if (jObject.has("maxLocations")) {
             config.setMaxLocations(jObject.getInt("maxLocations"));
         }
+        if (jObject.has("postTemplate")) {
+            Object postTemplate = jObject.get("postTemplate");
+            config.setTemplate(LocationTemplateFactory.fromJSONReverted(postTemplate));
+        }
+
         return config;
     }
 
@@ -106,6 +112,7 @@ public class ConfigMapper {
         json.put("syncThreshold", config.getSyncThreshold());
         json.put("httpHeaders", new JSONObject(config.getHttpHeaders()));
         json.put("maxLocations", config.getMaxLocations());
+        json.put("postTemplate", new JSONObject(config.getTemplate().toString()));
 
         return json;
     }

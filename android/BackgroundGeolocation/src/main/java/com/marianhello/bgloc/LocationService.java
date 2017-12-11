@@ -40,6 +40,7 @@ import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.bgloc.data.ConfigurationDAO;
 import com.marianhello.bgloc.data.DAOFactory;
 import com.marianhello.bgloc.data.LocationDAO;
+import com.marianhello.bgloc.data.LocationTemplate;
 import com.marianhello.bgloc.sync.AccountHelper;
 import com.marianhello.bgloc.sync.AuthenticatorService;
 import com.marianhello.bgloc.sync.SyncService;
@@ -511,9 +512,15 @@ public class LocationService extends Service {
             logger.debug("Executing PostLocationTask#doInBackground");
             JSONArray jsonLocations = new JSONArray();
             for (BackgroundLocation location : locations) {
+                Object jsonLocation;
                 try {
-                    JSONObject jsonLocation = location.toJSONObject();
-                    jsonLocations.put(jsonLocation);
+                    if (mConfig.hasTemplate()) {
+                        LocationTemplate tpl = mConfig.getTemplate();
+                        jsonLocations.put(tpl.locationToJson(location));
+                    } else {
+                        jsonLocation = location.toJSONObjectWithId();
+                        jsonLocations.put(jsonLocation);
+                    }
                 } catch (JSONException e) {
                     logger.warn("Location to json failed: {}", location.toString());
                     return false;

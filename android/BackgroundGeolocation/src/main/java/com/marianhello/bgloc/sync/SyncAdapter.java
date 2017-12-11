@@ -105,12 +105,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
         if (config == null) return;
 
         logger.debug("Sync request: {}", config.toString());
-        if (config.hasUrl() || config.hasSyncUrl()) {
+        if (config.hasSyncUrl()) {
             Long batchStartMillis = System.currentTimeMillis();
 
             File file = null;
             try {
-                file = batchManager.createBatch(batchStartMillis, config.getSyncThreshold());
+                file = batchManager.createBatch(batchStartMillis, config.getSyncThreshold(), config.getTemplate());
             } catch (IOException e) {
                 logger.error("Failed to create batch: {}", e.getMessage());
             }

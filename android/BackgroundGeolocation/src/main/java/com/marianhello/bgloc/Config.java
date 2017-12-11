@@ -9,15 +9,17 @@ This is a new class
 
 package com.marianhello.bgloc;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Bundle;
 
-import org.json.JSONObject;
+import com.marianhello.bgloc.data.AbstractLocationTemplate;
+import com.marianhello.bgloc.data.HashMapLocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplateFactory;
+
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,6 +61,7 @@ public class Config implements Parcelable, Cloneable
     private Integer syncThreshold;
     private HashMap httpHeaders;
     private Integer maxLocations;
+    private LocationTemplate template;
 
     public Config () {
     }
@@ -87,9 +90,10 @@ public class Config implements Parcelable, Cloneable
         setMaxLocations(in.readInt());
         Bundle bundle = in.readBundle();
         setHttpHeaders((HashMap<String, String>) bundle.getSerializable("httpHeaders"));
+        setTemplate((LocationTemplate) bundle.getSerializable(AbstractLocationTemplate.BUNDLE_KEY));
     }
 
-    public static Config getDefault () {
+    public static Config getDefault() {
         Config config = new Config();
         config.stationaryRadius = 50f;
         config.distanceFilter = 500;
@@ -111,11 +115,26 @@ public class Config implements Parcelable, Cloneable
         config.url = "";
         config.syncUrl = "";
         config.syncThreshold = 100;
-        config.httpHeaders = new HashMap<String, String>();
+        config.httpHeaders = null;
         config.maxLocations = 10000;
+        config.template = null;
 
         return config;
     }
+
+//    public static LocationTemplate getDefaultTemplate() {
+//        HashMap props = new HashMap<String, String>();
+//        props.put("provider", "provider");
+//        props.put("locationProvider", "locationProvider");
+//        props.put("time", "time");
+//        props.put("latitude", "latitude");
+//        props.put("longitude", "longitude");
+//        props.put("accuracy", "accuracy");
+//        props.put("speed", "speed");
+//        props.put("altitude", "altitude");
+//        props.put("bearing", "bearing");
+//        return new HashMapLocationTemplate(props);
+//    }
 
     public int describeContents() {
         return 0;
@@ -146,6 +165,7 @@ public class Config implements Parcelable, Cloneable
         out.writeInt(getMaxLocations());
         Bundle bundle = new Bundle();
         bundle.putSerializable("httpHeaders", getHttpHeaders());
+        bundle.putSerializable(AbstractLocationTemplate.BUNDLE_KEY, (AbstractLocationTemplate) getTemplate());
         out.writeBundle(bundle);
     }
 
@@ -164,7 +184,7 @@ public class Config implements Parcelable, Cloneable
         return stationaryRadius != null;
     }
 
-    public float getStationaryRadius() {
+    public Float getStationaryRadius() {
         return stationaryRadius;
     }
 
@@ -205,7 +225,7 @@ public class Config implements Parcelable, Cloneable
     }
 
     public Boolean isDebugging() {
-        return debug;
+        return debug != null && debug;
     }
 
     public void setDebugging(Boolean debug) {
@@ -437,7 +457,7 @@ public class Config implements Parcelable, Cloneable
     }
 
     public HashMap<String, String> getHttpHeaders() {
-        return httpHeaders;
+        return hasHttpHeaders() ? httpHeaders : new HashMap<String, String>();
     }
 
     public void setHttpHeaders(HashMap httpHeaders) {
@@ -470,6 +490,18 @@ public class Config implements Parcelable, Cloneable
         this.maxLocations = maxLocations;
     }
 
+    public boolean hasTemplate() {
+        return template != null;
+    }
+
+    public LocationTemplate getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(LocationTemplate template) {
+        this.template = template;
+    }
+
     @Override
     public String toString () {
         return new StringBuffer()
@@ -495,6 +527,7 @@ public class Config implements Parcelable, Cloneable
                 .append(" syncThreshold=").append(getSyncThreshold())
                 .append(" httpHeaders=").append(getHttpHeaders().toString())
                 .append(" maxLocations=").append(getMaxLocations())
+                .append(" template=").append(hasTemplate() ? getTemplate().toString() : null)
                 .append("]")
                 .toString();
     }
@@ -580,6 +613,9 @@ public class Config implements Parcelable, Cloneable
         }
         if (config2.hasMaxLocations()) {
             merger.setMaxLocations(config2.getMaxLocations());
+        }
+        if (config2.hasTemplate()) {
+            merger.setTemplate(config2.getTemplate());
         }
 
         return merger;

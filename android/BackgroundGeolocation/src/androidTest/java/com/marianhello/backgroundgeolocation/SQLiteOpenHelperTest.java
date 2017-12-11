@@ -56,7 +56,7 @@ public class SQLiteOpenHelperTest {
         location.setTime(1000);
         BackgroundLocation bgLocation = new BackgroundLocation(location);
 
-        Config config = new Config();
+        Config config = Config.getDefault();
         config.setActivitiesInterval(1000);
         config.setDesiredAccuracy(200);
         config.setDistanceFilter(300);

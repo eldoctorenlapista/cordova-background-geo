@@ -8,6 +8,9 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.marianhello.bgloc.Config;
+import com.marianhello.bgloc.data.HashMapLocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplateFactory;
 import com.marianhello.bgloc.data.sqlite.SQLiteConfigurationContract;
 import com.marianhello.bgloc.data.sqlite.SQLiteConfigurationDAO;
 import com.marianhello.bgloc.data.sqlite.SQLiteOpenHelper;
@@ -17,6 +20,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 
 /**
  * Created by finch on 13/07/16.
@@ -88,6 +94,68 @@ public class SQLiteConfigurationDAOTest {
             Assert.assertEquals("in progress", storedConfig.getNotificationText());
             Assert.assertEquals("yellow", storedConfig.getNotificationIconColor());
 
+        } catch (JSONException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void persistConfigurationWithLinkedHashSet() {
+        Context ctx = InstrumentationRegistry.getTargetContext();
+        SQLiteDatabase db = new SQLiteOpenHelper(ctx).getWritableDatabase();
+        SQLiteConfigurationDAO dao = new SQLiteConfigurationDAO(db);
+
+        Config config = Config.getDefault();
+        LinkedHashSet props = new LinkedHashSet<String>();
+        props.add("@id");
+        props.add("@provider");
+        props.add("@time");
+        props.add("@altitude");
+        props.add("@latitude");
+        props.add("@longitude");
+        props.add("foo");
+        props.add("@locationProvider");
+        props.add("@accuracy");
+        props.add("@speed");
+        props.add("@bearing");
+
+        config.setTemplate(LocationTemplateFactory.fromLinkedHashSet(props));
+        dao.persistConfiguration(config);
+
+        try {
+            Config storedConfig = dao.retrieveConfiguration();
+            Assert.assertEquals(config.getTemplate(), storedConfig.getTemplate());
+        } catch (JSONException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void persistConfigurationWithArrayTemplate() {
+        Context ctx = InstrumentationRegistry.getTargetContext();
+        SQLiteDatabase db = new SQLiteOpenHelper(ctx).getWritableDatabase();
+        SQLiteConfigurationDAO dao = new SQLiteConfigurationDAO(db);
+
+        Config config = Config.getDefault();
+        HashMap props = new HashMap<String, String>();
+        props.put("@id", "Id");
+        props.put("@provider", "Provider");
+        props.put("@time", "Time");
+        props.put("@altitude", "Altitude");
+        props.put("@latitude", "Latitude");
+        props.put("@longitude", "Longitude");
+        props.put("Bar", "Foo");
+        props.put("@locationProvider", "LocationProvider");
+        props.put("@accuracy", "Accuracy");
+        props.put("@speed", "Speed");
+        props.put("@bearing", "Bearing");
+
+        config.setTemplate(new HashMapLocationTemplate(props));
+        dao.persistConfiguration(config);
+
+        try {
+            Config storedConfig = dao.retrieveConfiguration();
+            Assert.assertEquals(config.getTemplate(), storedConfig.getTemplate());
         } catch (JSONException e) {
             Assert.fail(e.getMessage());
         }

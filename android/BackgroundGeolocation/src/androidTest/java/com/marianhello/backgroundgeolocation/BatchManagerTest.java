@@ -6,8 +6,13 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 import com.marianhello.bgloc.data.BackgroundLocation;
+import com.marianhello.bgloc.data.HashMapLocationTemplate;
+import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplate;
+import com.marianhello.bgloc.data.sqlite.SQLiteLocationContract;
 import com.marianhello.bgloc.data.sqlite.SQLiteLocationDAO;
 import com.marianhello.bgloc.data.sqlite.SQLiteOpenHelper;
 import com.marianhello.bgloc.sync.BatchManager;
@@ -22,6 +27,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -30,10 +37,14 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 @SmallTest
 public class BatchManagerTest {
+    SQLiteDatabase db;
+
     @Before
-    public void deleteDatabase() {
-        Context ctx = InstrumentationRegistry.getTargetContext();
-        ctx.deleteDatabase(SQLiteOpenHelper.SQLITE_DATABASE_NAME);
+    public void prepareDatabase() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        SQLiteOpenHelper helper = SQLiteOpenHelper.getHelper(context);
+        db = helper.getWritableDatabase();
+        db.delete(SQLiteLocationContract.LocationEntry.TABLE_NAME, null, null);
     }
 
     private List<BackgroundLocation> readLocationsArray(JsonReader reader) throws IOException {
@@ -44,7 +55,9 @@ public class BatchManagerTest {
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
-                if (name.equals("time")) {
+                if (name.equals("id")) {
+                    l.setLocationId(reader.nextLong());
+                } else if (name.equals("time")) {
                     l.setTime(reader.nextLong());
                 } else if (name.equals("latitude")) {
                     l.setLatitude(reader.nextDouble());
@@ -59,11 +72,18 @@ public class BatchManagerTest {
                 } else if (name.equals("altitude")) {
                     l.setAltitude(reader.nextDouble());
                 } else if (name.equals("radius")) {
-                    l.setRadius((float)reader.nextDouble());
+                    JsonToken token = reader.peek();
+                    if (token != JsonToken.NULL) {
+                        l.setRadius((float)reader.nextDouble());
+                    } else {
+                        reader.skipValue();
+                    }
                 } else if (name.equals("provider")) {
                     l.setProvider(reader.nextString());
                 } else if (name.equals("locationProvider")) {
                     l.setLocationProvider(reader.nextInt());
+                } else {
+                    reader.skipValue();
                 }
             }
             reader.endObject();
@@ -75,14 +95,11 @@ public class BatchManagerTest {
 
     @Test
     public void createBatch() {
-        Context ctx = InstrumentationRegistry.getTargetContext();
-        SQLiteDatabase db = new SQLiteOpenHelper(ctx).getWritableDatabase();
         SQLiteLocationDAO dao = new SQLiteLocationDAO(db);
 
         int i = 1;
-        BackgroundLocation location;
         for (int j = i; j < 100; j++) {
-            location = new BackgroundLocation();
+            BackgroundLocation location = new BackgroundLocation();
             location.setTime(1000 + i);
             location.setLatitude(40.21 + i);
             location.setLongitude(23.45 + i);
@@ -103,7 +120,7 @@ public class BatchManagerTest {
         }
 
         List<BackgroundLocation> locations = null;
-        BatchManager batchManager = new BatchManager(ctx);
+        BatchManager batchManager = new BatchManager(InstrumentationRegistry.getTargetContext());
         try {
             File batchFile = batchManager.createBatch(1000L, 0);
             JsonReader reader = new JsonReader(new FileReader(batchFile));
@@ -128,9 +145,123 @@ public class BatchManagerTest {
     }
 
     @Test
+    public void createBatchWithLinkedHashTemplate() {
+        SQLiteLocationDAO dao = new SQLiteLocationDAO(db);
+
+        for (int i = 1; i < 3; i++) {
+            BackgroundLocation location = new BackgroundLocation();
+            location.setTime(1000 * i);
+            location.setLatitude(30.21 + i);
+            location.setLongitude(13.45 + i);
+            location.setBatchStartMillis(1000L);
+            dao.persistLocation(location);
+        }
+
+
+        LinkedHashSet set = new LinkedHashSet();
+        set.add("@latitude");
+        set.add("@longitude");
+        set.add("foo");
+        set.add("bar");
+        LocationTemplate template = new LinkedHashSetLocationTemplate(set);
+
+        ArrayList<HashMap> locations = new ArrayList();
+        BatchManager batchManager = new BatchManager(InstrumentationRegistry.getTargetContext());
+
+        try {
+            File batchFile = batchManager.createBatch(3000L, 0, template);
+            JsonReader reader = new JsonReader(new FileReader(batchFile));
+
+            reader.beginArray();
+            while (reader.hasNext()) {
+                HashMap hashLocation = new HashMap<String, Object>();
+                reader.beginArray();
+                hashLocation.put("latitude", reader.nextDouble());
+                hashLocation.put("longitude", reader.nextDouble());
+                hashLocation.put("foo", reader.nextString());
+                hashLocation.put("bar", reader.nextString());
+                reader.endArray();
+                locations.add(hashLocation);
+            }
+            reader.endArray();
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+
+        Assert.assertEquals(2, locations.size());
+        int i = 1;
+        for (HashMap l : locations) {
+            Assert.assertEquals(30.21 + i, (Double) l.get("latitude"), 0);
+            Assert.assertEquals(13.45 + i, (Double) l.get("longitude"), 0);
+            Assert.assertEquals("foo", (String) l.get("foo"));
+            Assert.assertEquals("bar", (String) l.get("bar"));
+            i++;
+        }
+    }
+
+    @Test
+    public void createBatchWithMapHashTemplate() {
+        SQLiteLocationDAO dao = new SQLiteLocationDAO(db);
+
+        for (int i = 1; i < 3; i++) {
+            BackgroundLocation location = new BackgroundLocation();
+            location.setTime(1000 * i);
+            location.setLatitude(30.21 + i);
+            location.setLongitude(13.45 + i);
+            location.setBatchStartMillis(1000L);
+            dao.persistLocation(location);
+        }
+
+
+        HashMap map = new HashMap<String, String>();
+        map.put("@latitude", "lat");
+        map.put("@longitude", "lon");
+        map.put("bar", "foo");
+        LocationTemplate template = new HashMapLocationTemplate(map);
+
+        ArrayList<HashMap> locations = new ArrayList();
+        BatchManager batchManager = new BatchManager(InstrumentationRegistry.getTargetContext());
+
+        try {
+            File batchFile = batchManager.createBatch(3000L, 0, template);
+            JsonReader reader = new JsonReader(new FileReader(batchFile));
+
+            reader.beginArray();
+            while (reader.hasNext()) {
+                HashMap hashLocation = new HashMap<String, Object>();
+                reader.beginObject();
+                while (reader.hasNext()) {
+                    String name = reader.nextName();
+                    if ("lat".equals(name)) {
+                        hashLocation.put(name, reader.nextDouble());
+                    } else if ("lon".equals(name)) {
+                        hashLocation.put(name, reader.nextDouble());
+                    } else if ("foo".equals(name)) {
+                        hashLocation.put(name, reader.nextString());
+                    } else {
+                        reader.skipValue();
+                    }
+                }
+                reader.endObject();
+                locations.add(hashLocation);
+            }
+            reader.endArray();
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+
+        Assert.assertEquals(2, locations.size());
+        int i = 1;
+        for (HashMap l : locations) {
+            Assert.assertEquals(30.21 + i, (Double) l.get("lat"), 0);
+            Assert.assertEquals(13.45 + i, (Double) l.get("lon"), 0);
+            Assert.assertEquals("bar", (String) l.get("foo"));
+            i++;
+        }
+    }
+
+    @Test
     public void setBatchCompleted() {
-        Context ctx = InstrumentationRegistry.getTargetContext();
-        SQLiteDatabase db = new SQLiteOpenHelper(ctx).getWritableDatabase();
         SQLiteLocationDAO dao = new SQLiteLocationDAO(db);
 
         int i = 1;
@@ -161,7 +292,7 @@ public class BatchManagerTest {
         Assert.assertEquals(99, dao.getAllLocations().size());
         Assert.assertEquals(50, dao.getValidLocations().size());
         Assert.assertEquals(Long.valueOf(49), dao.locationsForSyncCount(1000L));
-        BatchManager batchManager = new BatchManager(ctx);
+        BatchManager batchManager = new BatchManager(InstrumentationRegistry.getTargetContext());
         try {
             batchManager.createBatch(1000L, 0);
             batchManager.setBatchCompleted(1000L);
