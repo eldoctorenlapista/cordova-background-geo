@@ -48,10 +48,8 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         config = [Config fromDictionary:[command.arguments objectAtIndex:0]];
 
         NSError *error = nil;
-        CDVPluginResult* result = nil;
         if (![facade configure:config error:&error]) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Configuration error"];
-            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+            [self sendError:error];
         }
     }];
 }
@@ -309,7 +307,13 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         return;
     }
 
-    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[error userInfo]];
+    NSDictionary *userInfo = [error userInfo];
+    NSString *errorMessage = [error localizedDescription];
+    if (errorMessage == nil) {
+        errorMessage = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
+    }
+    NSDictionary *errorDict = @{ @"code": [NSNumber numberWithLong:error.code], @"message": errorMessage};
+    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDict];
     [cordovaResult setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:cordovaResult callbackId:callbackId];
 }

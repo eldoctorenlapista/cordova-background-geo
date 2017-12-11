@@ -33,8 +33,8 @@ static NSString * const Domain = @"com.marianhello";
 - (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
-        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
-        *outError = [NSError errorWithDomain:Domain code:NOT_IMPLEMENTED userInfo:errorDictionary];
+        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:BG_NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
+        *outError = [NSError errorWithDomain:Domain code:BG_NOT_IMPLEMENTED userInfo:errorDictionary];
     }
     
     return NO;
@@ -43,8 +43,8 @@ static NSString * const Domain = @"com.marianhello";
 - (BOOL) onStart:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
-        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
-        *outError = [NSError errorWithDomain:Domain code:NOT_IMPLEMENTED userInfo:errorDictionary];
+        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:BG_NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
+        *outError = [NSError errorWithDomain:Domain code:BG_NOT_IMPLEMENTED userInfo:errorDictionary];
     }
 
     return NO;
@@ -53,8 +53,8 @@ static NSString * const Domain = @"com.marianhello";
 - (BOOL) onStop:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
-        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
-        *outError = [NSError errorWithDomain:Domain code:NOT_IMPLEMENTED userInfo:errorDictionary];
+        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:BG_NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
+        *outError = [NSError errorWithDomain:Domain code:BG_NOT_IMPLEMENTED userInfo:errorDictionary];
     }
 
     return NO;

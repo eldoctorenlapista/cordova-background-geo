@@ -27,9 +27,11 @@
 #import "RawLocationProvider.h"
 
 // error messages
+#define CONFIGURE_ERROR_MSG             "Configuration error."
+#define SERVICE_ERROR_MSG               "Cannot start service error."
 #define UNKNOWN_LOCATION_PROVIDER_MSG   "Unknown location provider."
 
-static NSString * const Domain = @"com.marianhello";
+static NSString * const BGGeolocationDomain = @"com.marianhello";
 static NSString * const TAG = @"BgGeo";
 
 FMDBLogger *sqliteLogger;
@@ -129,8 +131,6 @@ FMDBLogger *sqliteLogger;
             }
         }
     }
-    
-    BOOL wasStarted = isStarted;
 
     if (isStarted) {
         // Note: CLLocationManager must be created on a thread with an active run loop (main thread)
@@ -138,7 +138,7 @@ FMDBLogger *sqliteLogger;
 
             // requesting new provider
             if (![currentConfig.locationProvider isEqual:_config.locationProvider]) {
-                [locationProvider onDestroy];
+                [locationProvider onDestroy]; // destroy current provider
                 locationProvider = [self getProvider:_config.locationProvider.intValue error:&error];
             }
 
@@ -156,8 +156,15 @@ FMDBLogger *sqliteLogger;
         }];
     }
     
-    if (wasStarted && !isStarted) {
-        if (outError != nil) *outError = error;
+    if (error != nil) {
+        if (outError != nil) {
+            NSDictionary *userInfo = @{
+                NSLocalizedDescriptionKey: NSLocalizedString(@CONFIGURE_ERROR_MSG, nil),
+                NSUnderlyingErrorKey : error
+                };
+            *outError = [NSError errorWithDomain:BGGeolocationDomain code:BG_CONFIGURE_ERROR userInfo:userInfo];
+        }
+
         return NO;
     }
    
@@ -165,7 +172,7 @@ FMDBLogger *sqliteLogger;
         uploader = [[BackgroundSync alloc] init];
     }
 
-    return isStarted;
+    return YES;
 }
 
 /**
@@ -203,7 +210,10 @@ FMDBLogger *sqliteLogger;
 
     
     if (!isStarted) {
-        if (outError != nil) *outError = error;
+        if (outError != nil) {
+            *outError = error;
+        }
+
         return NO;
     }
   
@@ -280,9 +290,11 @@ FMDBLogger *sqliteLogger;
             locationProvider = [[RawLocationProvider alloc] init];
             break;
         default:
-            errorDictionary = @{ @"code": [NSNumber numberWithInt:UNKNOWN_LOCATION_PROVIDER], @"message": @UNKNOWN_LOCATION_PROVIDER_MSG };
             if (outError != nil) {
-                *outError = [NSError errorWithDomain:Domain code:UNKNOWN_LOCATION_PROVIDER userInfo:errorDictionary];
+                errorDictionary = @{
+                                    NSLocalizedDescriptionKey: NSLocalizedString(@UNKNOWN_LOCATION_PROVIDER_MSG, nil),
+                                    };
+                *outError = [NSError errorWithDomain:BGGeolocationDomain code:BG_CONFIGURE_ERROR userInfo:errorDictionary];
             }
             return nil;
     }

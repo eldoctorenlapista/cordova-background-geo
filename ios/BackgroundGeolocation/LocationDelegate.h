@@ -12,6 +12,16 @@
 #import "Location.h"
 //#import "LocationController.h"
 
+typedef NS_ENUM(NSInteger, BGErrorCode) {
+    BG_PERMISSION_DENIED = 1000,
+    BG_SETTINGS_ERROR    = 1001,
+    BG_CONFIGURE_ERROR   = 1002,
+    BG_SERVICE_ERROR     = 1003,
+    BG_JSON_ERROR        = 1004,
+    BG_NOT_IMPLEMENTED   = 9999
+};
+
+
 typedef NS_ENUM(NSInteger, BGAuthorizationStatus) {
     NOT_DETERMINED = 0,
     ALLOWED = 1,

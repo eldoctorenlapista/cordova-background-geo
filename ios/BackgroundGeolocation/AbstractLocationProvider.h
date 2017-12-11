@@ -25,11 +25,6 @@
 #define acquiredLocationSound   1052
 #define locationErrorSound      1073
 
-typedef NS_ENUM(NSInteger, BGErrorCode) {
-    UNKNOWN_LOCATION_PROVIDER = 1,
-    NOT_IMPLEMENTED = 99
-};
-
 @protocol LocationProvider <NSObject>
 
 - (void) onCreate;

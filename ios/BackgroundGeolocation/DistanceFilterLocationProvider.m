@@ -110,18 +110,23 @@ enum {
         authStatus = [CLLocationManager authorizationStatus];
         
         if (authStatus == kCLAuthorizationStatusDenied) {
-            NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:DENIED], @"message" : @LOCATION_DENIED };
             if (outError != NULL) {
-                *outError = [NSError errorWithDomain:Domain code:DENIED userInfo:errorDictionary];
+                NSDictionary *errorDictionary = @{
+                                                  NSLocalizedDescriptionKey: NSLocalizedString(@LOCATION_DENIED, nil)
+                                                  };
+                
+                *outError = [NSError errorWithDomain:Domain code:BG_PERMISSION_DENIED userInfo:errorDictionary];
             }
             
             return NO;
         }
         
         if (authStatus == kCLAuthorizationStatusRestricted) {
-            NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:DENIED], @"message" : @LOCATION_RESTRICTED };
             if (outError != NULL) {
-                *outError = [NSError errorWithDomain:Domain code:DENIED userInfo:errorDictionary];
+                NSDictionary *errorDictionary = @{
+                                                  NSLocalizedDescriptionKey: NSLocalizedString(@LOCATION_RESTRICTED, nil)
+                                                  };
+                *outError = [NSError errorWithDomain:Domain code:BG_PERMISSION_DENIED userInfo:errorDictionary];
             }
             
             return NO;
@@ -361,7 +366,12 @@ enum {
     }
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(onError:)]) {
-        [self.delegate onError:error];
+        NSDictionary *errorDictionary = @{
+                                          NSUnderlyingErrorKey : error
+                                          };
+        NSError *outError = [NSError errorWithDomain:Domain code:BG_SERVICE_ERROR userInfo:errorDictionary];
+        
+        [self.delegate onError:outError];
     }
 }
 
