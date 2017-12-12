@@ -6,6 +6,7 @@
 - events [start, stop, authorization, background, foreground]
 - implement all methods for both platforms
 - new RAW_LOCATION_PROVIDER
+
 Since alpha.8:
 - onError event signature = { code, message }
 - post/sync attributes customization via postTemplate config prop
@@ -22,6 +23,7 @@ Since alpha.8:
 - location property locationId renamed to just id
 - iOS pauseLocationUpdates now default to false (becuase iOS docs now states that you need to restart manually if you set it to true)
 - iOS finish method replaced with startTask and endTask
+
 Since alpha.8:
 - Android bind to service on facade construct
 
