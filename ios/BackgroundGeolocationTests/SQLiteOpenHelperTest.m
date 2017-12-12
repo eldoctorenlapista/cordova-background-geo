@@ -1,6 +1,6 @@
 //
-//  SQLiteOpenHelperTests.m
-//  CDVBackgroundGeolocation
+//  SQLiteOpenHelperTest.m
+//  BackgroundGeolocationTests
 //
 //  Created by Marian Hello on 01/07/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -67,11 +67,11 @@
 @end
 
 
-@interface SQLiteOpenHelperTests : XCTestCase
+@interface SQLiteOpenHelperTest : XCTestCase
 
 @end
 
-@implementation SQLiteOpenHelperTests
+@implementation SQLiteOpenHelperTest
 
 - (void)setUp {
     [super setUp];

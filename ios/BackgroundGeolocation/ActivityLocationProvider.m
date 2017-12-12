@@ -1,6 +1,6 @@
 //
 //  ActivityLocationProvider.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 14/09/2016.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -30,37 +30,37 @@ static NSString * const Domain = @"com.marianhello";
 
 - (void) onDestroy {/* noop */}
 
-- (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError
+- (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
-        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
-        *outError = [NSError errorWithDomain:Domain code:NOT_IMPLEMENTED userInfo:errorDictionary];
+        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:BG_NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
+        *outError = [NSError errorWithDomain:Domain code:BG_NOT_IMPLEMENTED userInfo:errorDictionary];
     }
     
     return NO;
 }
 
-- (BOOL) start:(NSError * __autoreleasing *)outError
+- (BOOL) onStart:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
-        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
-        *outError = [NSError errorWithDomain:Domain code:NOT_IMPLEMENTED userInfo:errorDictionary];
+        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:BG_NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
+        *outError = [NSError errorWithDomain:Domain code:BG_NOT_IMPLEMENTED userInfo:errorDictionary];
     }
 
     return NO;
 }
 
-- (BOOL) stop:(NSError * __autoreleasing *)outError
+- (BOOL) onStop:(NSError * __autoreleasing *)outError
 {
     if (outError != nil) {
-        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
-        *outError = [NSError errorWithDomain:Domain code:NOT_IMPLEMENTED userInfo:errorDictionary];
+        NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:BG_NOT_IMPLEMENTED], @"message" : @"Not implemented yet" };
+        *outError = [NSError errorWithDomain:Domain code:BG_NOT_IMPLEMENTED userInfo:errorDictionary];
     }
 
     return NO;
 }
 
-- (void) switchMode:(BGOperationMode)mode
+- (void) onSwitchMode:(BGOperationMode)mode
 {
     /* do nothing */
 }

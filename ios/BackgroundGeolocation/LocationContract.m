@@ -1,6 +1,6 @@
 //
 //  LocationContract.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 23/06/16.
 //  Copyright © 2016 mauron85. All rights reserved.

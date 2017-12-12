@@ -15,6 +15,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "BackgroundGeolocationFacade.h"
 #import "BackgroundSync.h"
+#import "SQLiteConfigurationDAO.h"
 #import "SQLiteLocationDAO.h"
 #import "BackgroundTaskManager.h"
 #import "Reachability.h"
@@ -26,9 +27,11 @@
 #import "RawLocationProvider.h"
 
 // error messages
+#define CONFIGURE_ERROR_MSG             "Configuration error."
+#define SERVICE_ERROR_MSG               "Cannot start service error."
 #define UNKNOWN_LOCATION_PROVIDER_MSG   "Unknown location provider."
 
-static NSString * const Domain = @"com.marianhello";
+static NSString * const BGGeolocationDomain = @"com.marianhello";
 static NSString * const TAG = @"BgGeo";
 
 FMDBLogger *sqliteLogger;
@@ -43,8 +46,6 @@ FMDBLogger *sqliteLogger;
     BGOperationMode operationMode;
 
     UILocalNotification *localNotification;
-
-    NSNumber *maxBackgroundHours;
 
     // configurable options
     Config *_config;
@@ -63,8 +64,7 @@ FMDBLogger *sqliteLogger;
     if (self == nil) {
         return self;
     }
-
-    
+   
     [DDLog addLogger:[DDASLLogger sharedInstance] withLevel:DDLogLevelInfo];
     [DDLog addLogger:[DDTTYLogger sharedInstance] withLevel:DDLogLevelDebug];
     
@@ -76,8 +76,6 @@ FMDBLogger *sqliteLogger;
     sqliteLogger.deleteOnEverySave = NO;
     
     [DDLog addLogger:sqliteLogger withLevel:DDLogLevelDebug];
-
-    _config = [[Config alloc] init];
 
     reach = [Reachability reachabilityWithHostname:@"www.google.com"];
     reach.reachableBlock = ^(Reachability *_reach){
@@ -110,18 +108,67 @@ FMDBLogger *sqliteLogger;
  */
 - (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
-    DDLogInfo(@"%@ #configure: %@", TAG, config);
-    _config = config;
+    __block NSError *error = nil;
+
+    Config *currentConfig = [self getConfig];
+    _config = [Config merge:currentConfig withConfig:config];
+    
+    DDLogInfo(@"%@ #configure: %@", TAG, _config);
+    
+    SQLiteConfigurationDAO* configDAO = [SQLiteConfigurationDAO sharedInstance];
+    [configDAO persistConfiguration:_config];
 
     // ios 8 requires permissions to send local-notifications
-    if (_config.isDebugging) {
+    if ([_config isDebugging]) {
         UIApplication *app = [UIApplication sharedApplication];
-        if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-            [app registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
+        if ([[UIApplication sharedApplication]respondsToSelector:@selector(currentUserNotificationSettings)]) {
+            UIUserNotificationType wantedTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
+            UIUserNotificationSettings *currentSettings = [app currentUserNotificationSettings];
+            if (!currentSettings || (currentSettings.types != wantedTypes)) {
+                if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+                    [app registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:wantedTypes categories:nil]];
+                }
+            }
         }
     }
+
+    if (isStarted) {
+        // Note: CLLocationManager must be created on a thread with an active run loop (main thread)
+        [self runOnMainThread:^{
+
+            // requesting new provider
+            if (![currentConfig.locationProvider isEqual:_config.locationProvider]) {
+                [locationProvider onDestroy]; // destroy current provider
+                locationProvider = [self getProvider:_config.locationProvider.intValue error:&error];
+            }
+
+            if (locationProvider == nil) {
+                return;
+            }
+
+            // trap configuration errors
+            if (![locationProvider onConfigure:_config error:&error]) {
+                return;
+            }
+
+            isStarted = [locationProvider onStart:&error];
+            locationProvider.delegate = self;
+        }];
+    }
+    
+    if (error != nil) {
+        if (outError != nil) {
+            NSDictionary *userInfo = @{
+                NSLocalizedDescriptionKey: NSLocalizedString(@CONFIGURE_ERROR_MSG, nil),
+                NSUnderlyingErrorKey : error
+                };
+            *outError = [NSError errorWithDomain:BGGeolocationDomain code:BG_CONFIGURE_ERROR userInfo:userInfo];
+        }
+
+        return NO;
+    }
    
-    if ([config hasSyncUrl] && uploader == nil) {
+    if ([_config hasSyncUrl] && uploader == nil) {
         uploader = [[BackgroundSync alloc] init];
     }
 
@@ -141,46 +188,32 @@ FMDBLogger *sqliteLogger;
         return NO;
     }
     
-    // Note: CLLocationManager must be created on a thread with an active run loop (main thread)
     __block NSError *error = nil;
-    __block NSDictionary *errorDictionary;
+    Config *config = [self getConfig];
     
+    // Note: CLLocationManager must be created on a thread with an active run loop (main thread)
     [self runOnMainThread:^{
-        switch (_config.locationProvider) {
-            // TODO: implement ACTIVITY_PROVIDER
-            case ACTIVITY_PROVIDER:
-            case DISTANCE_FILTER_PROVIDER:
-                locationProvider = [[DistanceFilterLocationProvider alloc] init];
-                break;
-//            case ACTIVITY_PROVIDER:
-//                locationProvider = [[ActivityLocationProvider alloc] init];
-//                break;
-            case RAW_PROVIDER:
-                locationProvider = [[RawLocationProvider alloc] init];
-                break;
-            default:
-                errorDictionary = @{ @"code": [NSNumber numberWithInt:UNKNOWN_LOCATION_PROVIDER], @"message": @UNKNOWN_LOCATION_PROVIDER_MSG };
-                error = [NSError errorWithDomain:Domain code:UNKNOWN_LOCATION_PROVIDER userInfo:errorDictionary];
-                return;
+        locationProvider = [self getProvider:config.locationProvider.intValue error:&error];
+
+        if (locationProvider == nil) {
+            return;
         }
-       
+
         // trap configuration errors
-        if (![locationProvider configure:_config error:&error]) {
-            if (outError != nil) *outError = error;
+        if (![locationProvider onConfigure:config error:&error]) {
             return;
         }
         
-        isStarted = [locationProvider start:&error];
+        isStarted = [locationProvider onStart:&error];
         locationProvider.delegate = self;
     }];
 
-    if (locationProvider == nil) {
-        if (outError != nil) *outError = error;
-        return NO;
-    }
     
     if (!isStarted) {
-        if (outError != nil) *outError = error;
+        if (outError != nil) {
+            *outError = error;
+        }
+
         return NO;
     }
   
@@ -201,7 +234,7 @@ FMDBLogger *sqliteLogger;
     [reach stopNotifier];
     
     [self runOnMainThread:^{
-        isStarted = ![locationProvider stop:outError];
+        isStarted = ![locationProvider onStop:outError];
     }];
 
     return isStarted;
@@ -218,12 +251,12 @@ FMDBLogger *sqliteLogger;
 
     if (!isStarted) return;
 
-    if (_config.isDebugging) {
+    if ([self getConfig].isDebugging) {
         AudioServicesPlaySystemSound (operationMode  == FOREGROUND ? paceChangeYesSound : paceChangeNoSound);
     }
    
     [self runOnMainThread:^{
-        [locationProvider switchMode:mode];
+        [locationProvider onSwitchMode:mode];
     }];
 }
 
@@ -239,6 +272,34 @@ FMDBLogger *sqliteLogger;
 - (BOOL) isStarted
 {
     return isStarted;
+}
+
+- (AbstractLocationProvider<LocationProvider>*) getProvider:(int)providerId error:(NSError * __autoreleasing *)outError
+{
+    NSDictionary *errorDictionary;
+    AbstractLocationProvider<LocationProvider> *locationProvider = nil;
+    switch (providerId) {
+        case DISTANCE_FILTER_PROVIDER:
+            locationProvider = [[DistanceFilterLocationProvider alloc] init];
+            break;
+            // TODO: implement ACTIVITY_PROVIDER till then use DISTANCE_FILTER_PROVIDER instead
+        case ACTIVITY_PROVIDER:
+            locationProvider = [[DistanceFilterLocationProvider alloc] init];
+            break;
+        case RAW_PROVIDER:
+            locationProvider = [[RawLocationProvider alloc] init];
+            break;
+        default:
+            if (outError != nil) {
+                errorDictionary = @{
+                                    NSLocalizedDescriptionKey: NSLocalizedString(@UNKNOWN_LOCATION_PROVIDER_MSG, nil),
+                                    };
+                *outError = [NSError errorWithDomain:BGGeolocationDomain code:BG_CONFIGURE_ERROR userInfo:errorDictionary];
+            }
+            return nil;
+    }
+    
+    return locationProvider;
 }
 
 - (void) showAppSettings
@@ -285,6 +346,14 @@ FMDBLogger *sqliteLogger;
 
 - (Config*) getConfig
 {
+    if (_config == nil) {
+        SQLiteConfigurationDAO* configDAO = [SQLiteConfigurationDAO sharedInstance];
+        _config = [configDAO retrieveConfiguration];
+        if (_config == nil) {
+            _config = [[Config alloc] initWithDefaults];
+        }
+    }
+
     return _config;
 }
 
@@ -295,14 +364,20 @@ FMDBLogger *sqliteLogger;
     return logs;
 }
 
-- (void) sync:(Location *)location
+- (void) post:(Location *)location
 {
-    if (hasConnectivity && [_config hasUrl]) {
+    Config *config = [self getConfig];
+    
+    SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
+    // TODO: investigate location id always 0
+    location.locationId = [locationDAO persistLocation:location limitRows:config.maxLocations.integerValue];
+
+    if (hasConnectivity && [config hasUrl]) {
         NSError *error = nil;
-        if ([location postAsJSON:_config.url withHttpHeaders:_config.httpHeaders error:&error]) {
+        if ([location postAsJSON:config.url withTemplate:config._template withHttpHeaders:config.httpHeaders error:&error]) {
             SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
-            if (location.id != nil) {
-                [locationDAO deleteLocation:location.id];
+            if (location.locationId != nil) {
+                [locationDAO deleteLocation:location.locationId];
             }
         } else {
             DDLogWarn(@"%@ postJSON failed: error: %@", TAG, error.userInfo[@"NSLocalizedDescription"]);
@@ -310,9 +385,14 @@ FMDBLogger *sqliteLogger;
             [reach startNotifier];
         }
     }
-    
-    if ([_config hasSyncUrl]) {
-        [uploader sync:_config.syncUrl onLocationThreshold:_config.syncThreshold withHttpHeaders:_config.httpHeaders];
+}
+
+- (void) sync
+{
+    Config *config = [self getConfig];
+
+    if ([config hasSyncUrl]) {
+        [uploader sync:config.syncUrl onLocationThreshold:config.syncThreshold.integerValue withTemplate:config._template withHttpHeaders:config.httpHeaders];
     }
 }
 
@@ -349,6 +429,24 @@ FMDBLogger *sqliteLogger;
     DDLogDebug(@"%@ #onStationaryChanged", TAG);
     stationaryLocation = location;
 
+    Config *config = [self getConfig];
+    if ([config isDebugging]) {
+        [self notify:[NSString stringWithFormat:@"Stationary update: %s\nSPD: %0.0f | DF: %ld | ACY: %0.0f | RAD: %0.0f",
+                      ((operationMode == FOREGROUND) ? "FG" : "BG"),
+                      [location.speed doubleValue],
+                      (long) nil, //locationProvider.distanceFilter,
+                      [location.accuracy doubleValue],
+                      [location.radius doubleValue]
+                      ]];
+        
+        AudioServicesPlaySystemSound (locationSyncSound);
+    }
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [self post:location];
+        [self sync];
+    });
+
     // Any javascript stationaryRegion event-listeners?
     if (self.delegate && [self.delegate respondsToSelector:@selector(onStationaryChanged:)]) {
         [self.delegate onStationaryChanged:location];
@@ -360,7 +458,9 @@ FMDBLogger *sqliteLogger;
     DDLogDebug(@"%@ #onLocationChanged %@", TAG, location);
     stationaryLocation = nil;
     
-    if (_config.isDebugging) {
+    Config *config = [self getConfig];
+
+    if ([config isDebugging]) {
         [self notify:[NSString stringWithFormat:@"Location update: %s\nSPD: %0.0f | DF: %ld | ACY: %0.0f",
                       ((operationMode == FOREGROUND) ? "FG" : "BG"),
                       [location.speed doubleValue],
@@ -371,15 +471,10 @@ FMDBLogger *sqliteLogger;
         AudioServicesPlaySystemSound (locationSyncSound);
     }
     
-    SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
-    // TODO: investigate location id always 0
-    location.id = [locationDAO persistLocation:location limitRows:_config.maxLocations];
-
-    if ([_config hasSyncUrl] || [_config hasUrl]) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            [self sync:location];
-        });
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [self post:location];
+        [self sync];
+    });
 
     // Delegate to main module
     if (self.delegate && [self.delegate respondsToSelector:@selector(onLocationChanged:)]) {
@@ -414,7 +509,8 @@ FMDBLogger *sqliteLogger;
  */
 - (void) onAppTerminate
 {
-    if (_config.stopOnTerminate) {
+    Config *config = [self getConfig];
+    if ([config stopOnTerminate]) {
         DDLogInfo(@"%@ #onAppTerminate.", TAG);
         [self stop:nil];
     } else {

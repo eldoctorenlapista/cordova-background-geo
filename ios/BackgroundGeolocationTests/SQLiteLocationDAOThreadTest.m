@@ -1,6 +1,6 @@
 //
-//  CDVBackgroundGeolocationTests.m
-//  CDVBackgroundGeolocationTests
+//  BackgroundGeolocationTest.m
+//  BackgroundGeolocationTests
 //
 //  Created by Marian Hello on 10/06/16.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -18,11 +18,11 @@
 - (void) persistLocation:(NSNumber *)value;
 @end
 
-@interface SQLiteLocationDAOThreadTests : XCTestCase
+@interface SQLiteLocationDAOThreadTest : XCTestCase
 
 @end
 
-@implementation SQLiteLocationDAOThreadTests
+@implementation SQLiteLocationDAOThreadTest
 
 - (void)setUp {
     [super setUp];

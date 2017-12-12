@@ -1,6 +1,6 @@
 //
 //  LogReader.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 02/07/16.
 //  Copyright © 2016 mauron85. All rights reserved.

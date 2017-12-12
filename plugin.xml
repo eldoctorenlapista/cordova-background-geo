@@ -223,7 +223,7 @@
         <framework src="AudioToolbox.framework" weak="true" />
         <framework src="AVFoundation.framework" weak="true" />
         <framework src="libsqlite3.dylib" weak="true" />
-        <!-- Generated with gen_sources.sh @ 2017-11-12 16:03:42 -->
+        <!-- Generated with gen_sources.sh @ 2017-12-06 22:33:29 -->
         <header-file src="ios/BackgroundGeolocation/AbstractLocationProvider.h" />
         <source-file src="ios/BackgroundGeolocation/AbstractLocationProvider.m" />
         <header-file src="ios/BackgroundGeolocation/ActivityLocationProvider.h" />
@@ -238,6 +238,8 @@
         <source-file src="ios/BackgroundGeolocation/CocoaLumberjack.m" />
         <header-file src="ios/BackgroundGeolocation/Config.h" />
         <source-file src="ios/BackgroundGeolocation/Config.m" />
+        <header-file src="ios/BackgroundGeolocation/ConfigurationContract.h" />
+        <source-file src="ios/BackgroundGeolocation/ConfigurationContract.m" />
         <header-file src="ios/BackgroundGeolocation/DistanceFilterLocationProvider.h" />
         <source-file src="ios/BackgroundGeolocation/DistanceFilterLocationProvider.m" />
         <header-file src="ios/BackgroundGeolocation/FMDB.h" />
@@ -260,6 +262,8 @@
         <source-file src="ios/BackgroundGeolocation/RawLocationProvider.m" />
         <header-file src="ios/BackgroundGeolocation/Reachability.h" />
         <source-file src="ios/BackgroundGeolocation/Reachability.m" />
+        <header-file src="ios/BackgroundGeolocation/SQLiteConfigurationDAO.h" />
+        <source-file src="ios/BackgroundGeolocation/SQLiteConfigurationDAO.m" />
         <header-file src="ios/BackgroundGeolocation/SQLiteHelper.h" />
         <source-file src="ios/BackgroundGeolocation/SQLiteHelper.m" />
         <header-file src="ios/BackgroundGeolocation/SQLiteLocationDAO.h" />

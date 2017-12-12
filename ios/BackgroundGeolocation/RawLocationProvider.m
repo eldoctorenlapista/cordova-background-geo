@@ -1,6 +1,6 @@
 //
 //  RawLocationProvider.m
-//  RCTBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 06/11/2017.
 //  Copyright © 2017 mauron85. All rights reserved.
@@ -37,22 +37,20 @@ static NSString * const Domain = @"com.marianhello";
 
 - (void) onCreate {/* noop */}
 
-- (void) onDestroy {/* noop */}
-
-- (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError
+- (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
     DDLogVerbose(@"%@ configure", TAG);
     _config = config;
 
-    locationController.pausesLocationUpdatesAutomatically = _config.pauseLocationUpdates;
+    locationController.pausesLocationUpdatesAutomatically = [_config pauseLocationUpdates];
     locationController.activityType = [_config decodeActivityType];
-    locationController.distanceFilter = _config.distanceFilter; // meters
+    locationController.distanceFilter = _config.distanceFilter.integerValue; // meters
     locationController.desiredAccuracy = [_config decodeDesiredAccuracy];
 
     return YES;
 }
 
-- (BOOL) start:(NSError * __autoreleasing *)outError
+- (BOOL) onStart:(NSError * __autoreleasing *)outError
 {
     DDLogInfo(@"%@ will start", TAG);
 
@@ -64,7 +62,7 @@ static NSString * const Domain = @"com.marianhello";
     return YES;
 }
 
-- (BOOL) stop:(NSError * __autoreleasing *)outError
+- (BOOL) onStop:(NSError * __autoreleasing *)outError
 {
     DDLogInfo(@"%@ will stop", TAG);
 
@@ -76,7 +74,7 @@ static NSString * const Domain = @"com.marianhello";
     return YES;
 }
 
-- (void) switchMode:(BGOperationMode)mode
+- (void) onSwitchMode:(BGOperationMode)mode
 {
     /* do nothing */
 }
@@ -109,9 +107,14 @@ static NSString * const Domain = @"com.marianhello";
     [self.delegate onLocationResume];
 }
 
+- (void) onDestroy {
+    DDLogInfo(@"Destroying %@ ", TAG);
+    [self onStop:nil];
+}
+
 - (void) dealloc
 {
-//    locationController.delegate = nil;
+    //    locationController.delegate = nil;
 }
 
 @end

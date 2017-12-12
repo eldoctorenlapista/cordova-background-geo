@@ -1,6 +1,6 @@
 //
 //  AbstractLocationProvider.h
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 14/09/2016.
 //  Copyright © 2016 mauron85. All rights reserved.
@@ -25,19 +25,14 @@
 #define acquiredLocationSound   1052
 #define locationErrorSound      1073
 
-typedef NS_ENUM(NSInteger, BGErrorCode) {
-    UNKNOWN_LOCATION_PROVIDER = 1,
-    NOT_IMPLEMENTED = 99
-};
-
 @protocol LocationProvider <NSObject>
 
 - (void) onCreate;
 - (void) onDestroy;
-- (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError;
-- (BOOL) start:(NSError * __autoreleasing *)outError;
-- (BOOL) stop:(NSError * __autoreleasing *)outError;
-- (void) switchMode:(BGOperationMode)mode;
+- (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError;
+- (BOOL) onStart:(NSError * __autoreleasing *)outError;
+- (BOOL) onStop:(NSError * __autoreleasing *)outError;
+- (void) onSwitchMode:(BGOperationMode)mode;
 
 @end
 

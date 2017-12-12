@@ -1,6 +1,6 @@
 //
 //  SQLiteLocationDAO.m
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 10/06/16.
 //
@@ -60,7 +60,7 @@
         FMResultSet *rs = [database executeQuery:sql];
         while([rs next]) {
             Location *location = [[Location alloc] init];
-            location.id = [NSNumber numberWithDouble:[rs doubleForColumnIndex:0]];
+            location.locationId = [NSNumber numberWithDouble:[rs doubleForColumnIndex:0]];
             NSTimeInterval timestamp = [rs doubleForColumnIndex:1];
             location.time = [NSDate dateWithTimeIntervalSince1970:timestamp];
             location.accuracy = [NSNumber numberWithDouble:[rs doubleForColumnIndex:2]];
@@ -108,7 +108,7 @@
         FMResultSet *rs = [database executeQuery:sql];
         while([rs next]) {
             Location *location = [[Location alloc] init];
-            location.id = [NSNumber numberWithDouble:[rs doubleForColumnIndex:0]];
+            location.locationId = [NSNumber numberWithDouble:[rs doubleForColumnIndex:0]];
             NSTimeInterval timestamp = [rs doubleForColumnIndex:1];
             location.time = [NSDate dateWithTimeIntervalSince1970:timestamp];
             location.accuracy = [NSNumber numberWithDouble:[rs doubleForColumnIndex:2]];
@@ -155,7 +155,7 @@
         FMResultSet *rs = [database executeQuery:sql];
         while([rs next]) {
             Location *location = [[Location alloc] init];
-            location.id = [NSNumber numberWithDouble:[rs doubleForColumnIndex:0]];
+            location.locationId = [NSNumber numberWithDouble:[rs doubleForColumnIndex:0]];
             NSTimeInterval timestamp = [rs doubleForColumnIndex:1];
             location.time = [NSDate dateWithTimeIntervalSince1970:timestamp];
             location.accuracy = [NSNumber numberWithDouble:[rs doubleForColumnIndex:2]];
@@ -366,8 +366,9 @@
         if (![database executeStatements:sql]) {
             NSLog(@"%@ failed code: %d: message: %@", sql, [database lastErrorCode], [database lastErrorMessage]);
             success = NO;
+        } else {
+            success = YES;
         }
-        success = YES;
     }];
 
     return success;

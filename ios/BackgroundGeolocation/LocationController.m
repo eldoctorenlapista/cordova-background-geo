@@ -48,18 +48,23 @@ static NSString * const Domain = @"com.marianhello";
         authStatus = [CLLocationManager authorizationStatus];
         
         if (authStatus == kCLAuthorizationStatusDenied) {
-            NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:DENIED], @"message" : @LOCATION_DENIED };
             if (outError != NULL) {
-                *outError = [NSError errorWithDomain:Domain code:DENIED userInfo:errorDictionary];
+                NSDictionary *errorDictionary = @{
+                                                  NSLocalizedDescriptionKey: NSLocalizedString(@LOCATION_DENIED, nil)
+                                                  };
+
+                *outError = [NSError errorWithDomain:Domain code:BG_PERMISSION_DENIED userInfo:errorDictionary];
             }
             
             return NO;
         }
         
         if (authStatus == kCLAuthorizationStatusRestricted) {
-            NSDictionary *errorDictionary = @{ @"code": [NSNumber numberWithInt:DENIED], @"message" : @LOCATION_RESTRICTED };
             if (outError != NULL) {
-                *outError = [NSError errorWithDomain:Domain code:DENIED userInfo:errorDictionary];
+                NSDictionary *errorDictionary = @{
+                                                  NSLocalizedDescriptionKey: NSLocalizedString(@LOCATION_RESTRICTED, nil)
+                                                  };
+                *outError = [NSError errorWithDomain:Domain code:BG_PERMISSION_DENIED userInfo:errorDictionary];
             }
             
             return NO;
@@ -153,7 +158,12 @@ static NSString * const Domain = @"com.marianhello";
     }
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(onError:)]) {
-        [self.delegate onError:error];
+        NSDictionary *errorDictionary = @{
+                                          NSUnderlyingErrorKey : error
+                                          };
+        NSError *outError = [NSError errorWithDomain:Domain code:BG_SERVICE_ERROR userInfo:errorDictionary];
+
+        [self.delegate onError:outError];
     }
 }
 
@@ -178,14 +188,14 @@ static NSString * const Domain = @"com.marianhello";
 
 - (void) locationManagerDidPauseLocationUpdates:(CLLocationManager *)manager
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(onPause:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onLocationPause:)]) {
         [self.delegate onLocationPause:manager];
     }
 }
 
 - (void) locationManagerDidResumeLocationUpdates:(CLLocationManager *)manager
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(onResume:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onLocationResume:)]) {
         [self.delegate onLocationResume:manager];
     }
 }

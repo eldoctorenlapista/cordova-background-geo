@@ -54,7 +54,7 @@
     }
 }
 
-- (void) sync:(NSString*)url onLocationThreshold:(NSInteger)threshold withHttpHeaders: (NSMutableDictionary*)httpHeaders;
+- (void) sync:(NSString*)url onLocationThreshold:(NSInteger)threshold withTemplate:(id)locationTemplate withHttpHeaders:(NSMutableDictionary*)httpHeaders
 {
     SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
     NSNumber *locationsCount = [locationDAO getLocationsCount];
@@ -65,7 +65,7 @@
     
     NSMutableArray *jsonArray = [[NSMutableArray alloc] initWithCapacity:[locations count]];
     for (Location *location in locations) {
-        [jsonArray addObject:[location toDictionary]];
+        [jsonArray addObject:[location toResultFromTemplate:locationTemplate]];
     }
     
     NSError *error = nil;

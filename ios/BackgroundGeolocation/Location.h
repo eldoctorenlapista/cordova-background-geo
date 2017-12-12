@@ -1,6 +1,6 @@
 //
 //  Location.h
-//  CDVBackgroundGeolocation
+//  BackgroundGeolocation
 //
 //  Created by Marian Hello on 10/06/16.
 //
@@ -8,11 +8,12 @@
 #ifndef Location_h
 #define Location_h
 
+#import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
 @interface Location : NSObject <NSCopying>
 
-@property (nonatomic, retain) NSNumber *id;
+@property (nonatomic, retain) NSNumber *locationId;
 @property (nonatomic, retain) NSDate *time;
 @property (nonatomic, retain) NSNumber *accuracy;
 @property (nonatomic, retain) NSNumber *altitudeAccuracy;
@@ -29,17 +30,18 @@
 
 + (instancetype) fromCLLocation:(CLLocation*)location;
 + (NSTimeInterval) locationAge:(CLLocation*)location;
-+ (NSMutableDictionary*) toDictionary:(CLLocation*)location;;
++ (NSMutableDictionary*) toDictionary:(CLLocation*)location;
 - (NSTimeInterval) locationAge;
-- (NSMutableDictionary*) toDictionary;
-- (NSMutableDictionary*) toDictionaryWithId;
+- (NSDictionary*) toDictionary;
+- (NSDictionary*) toDictionaryWithId;
+- (id) toResultFromTemplate:(id)locationTemplate;
 - (CLLocationCoordinate2D) coordinate;
 - (BOOL) hasAccuracy;
 - (BOOL) hasTime;
 - (double) distanceFromLocation:(Location*)location;
 - (BOOL) isBetterLocation:(Location*)location;
 - (BOOL) isBeyond:(Location*)location radius:(NSInteger)radius;
-- (BOOL) postAsJSON:(NSString*)url withHttpHeaders:(NSMutableDictionary*)httpHeaders error:(NSError * __autoreleasing *)outError;
+- (BOOL) postAsJSON:(NSString*)url withTemplate:(id)locationTemplate withHttpHeaders:(NSMutableDictionary*)httpHeaders error:(NSError * __autoreleasing *)outError;
 - (id) copyWithZone: (NSZone *)zone;
 
 @end
