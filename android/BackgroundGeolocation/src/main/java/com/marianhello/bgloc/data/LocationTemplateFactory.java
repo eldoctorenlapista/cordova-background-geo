@@ -62,4 +62,18 @@ public class LocationTemplateFactory {
     public static LocationTemplate fromLinkedHashSet(LinkedHashSet template) {
         return new LinkedHashSetLocationTemplate(template);
     }
+
+    public static LocationTemplate getDefault() {
+        HashMap attrs = new HashMap<String, String>();
+        attrs.put("@provider", "provider");
+        attrs.put("@locationProvider", "locationProvider");
+        attrs.put("@time", "time");
+        attrs.put("@latitude", "latitude");
+        attrs.put("@longitude", "longitude");
+        attrs.put("@accuracy", "accuracy");
+        attrs.put("@speed", "speed");
+        attrs.put("@altitude", "altitude");
+        attrs.put("@bearing", "bearing");
+        return new HashMapLocationTemplate(attrs);
+    }
 }

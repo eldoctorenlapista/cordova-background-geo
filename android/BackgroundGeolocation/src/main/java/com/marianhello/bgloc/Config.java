@@ -122,20 +122,6 @@ public class Config implements Parcelable, Cloneable
         return config;
     }
 
-//    public static LocationTemplate getDefaultTemplate() {
-//        HashMap props = new HashMap<String, String>();
-//        props.put("provider", "provider");
-//        props.put("locationProvider", "locationProvider");
-//        props.put("time", "time");
-//        props.put("latitude", "latitude");
-//        props.put("longitude", "longitude");
-//        props.put("accuracy", "accuracy");
-//        props.put("speed", "speed");
-//        props.put("altitude", "altitude");
-//        props.put("bearing", "bearing");
-//        return new HashMapLocationTemplate(props);
-//    }
-
     public int describeContents() {
         return 0;
     }
@@ -495,7 +481,7 @@ public class Config implements Parcelable, Cloneable
     }
 
     public LocationTemplate getTemplate() {
-        return template;
+        return hasTemplate() ? template : LocationTemplateFactory.getDefault();
     }
 
     public void setTemplate(LocationTemplate template) {
