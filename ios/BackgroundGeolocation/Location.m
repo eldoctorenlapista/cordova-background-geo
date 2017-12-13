@@ -121,7 +121,7 @@ enum {
         return locationId;
     }
     if ([key isEqualToString:@"@time"]) {
-        return time;
+        return [NSNumber numberWithDouble:([time timeIntervalSince1970] * 1000)];
     }
     if ([key isEqualToString:@"@accuracy"]) {
         return accuracy;
@@ -157,7 +157,7 @@ enum {
         return radius;
     }
     if ([key isEqualToString:@"@recordedAt"]) {
-        return recordedAt;
+        return [NSNumber numberWithDouble:([recordedAt timeIntervalSince1970] * 1000)];
     }
     
     return nil;
