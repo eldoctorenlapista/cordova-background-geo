@@ -10,6 +10,7 @@
 #define ProviderDelegate_h
 
 #import "Location.h"
+#import "Activity.h"
 //#import "LocationController.h"
 
 typedef NS_ENUM(NSInteger, BGErrorCode) {
@@ -35,6 +36,7 @@ typedef NS_ENUM(NSInteger, BGAuthorizationStatus) {
 - (void) onStationaryChanged:(Location*)location;
 - (void) onLocationPause;
 - (void) onLocationResume;
+- (void) onActivityChanged:(Activity*)activity;
 - (void) onError:(NSError*)error;
 
 @end

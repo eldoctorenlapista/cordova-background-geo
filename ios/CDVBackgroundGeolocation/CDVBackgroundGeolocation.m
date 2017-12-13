@@ -371,6 +371,12 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     [self sendEvent:@"start"];
 }
 
+- (void) onActivityChanged:(Activity *)activity
+{
+    NSLog(@"%@ #%@", TAG, @"onActivityChanged");
+    [self sendEvent:@"activity" result:[activity toDictionary]];
+}
+
 - (void) onError:(NSError*)error
 {
     NSLog(@"%@ #%@", TAG, @"onError");

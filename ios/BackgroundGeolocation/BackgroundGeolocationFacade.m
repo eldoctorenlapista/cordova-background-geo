@@ -282,9 +282,8 @@ FMDBLogger *sqliteLogger;
         case DISTANCE_FILTER_PROVIDER:
             locationProvider = [[DistanceFilterLocationProvider alloc] init];
             break;
-            // TODO: implement ACTIVITY_PROVIDER till then use DISTANCE_FILTER_PROVIDER instead
         case ACTIVITY_PROVIDER:
-            locationProvider = [[DistanceFilterLocationProvider alloc] init];
+            locationProvider = [[ActivityLocationProvider alloc] init];
             break;
         case RAW_PROVIDER:
             locationProvider = [[RawLocationProvider alloc] init];
@@ -500,6 +499,12 @@ FMDBLogger *sqliteLogger;
 - (void) onLocationResume
 {
     [self.delegate onLocationResume];
+}
+
+- (void) onActivityChanged:(Activity *)activity
+{
+    DDLogDebug(@"%@ #onActivityChanged %@", TAG, activity);
+    [self.delegate onActivityChanged:activity];
 }
 
 /**@
