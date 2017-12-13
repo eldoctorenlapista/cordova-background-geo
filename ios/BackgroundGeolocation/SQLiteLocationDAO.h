@@ -23,8 +23,8 @@
 - (NSNumber*) getLocationsCount;
 - (NSNumber*) persistLocation:(Location*)location;
 - (NSNumber*) persistLocation:(Location*)location limitRows:(NSInteger)maxRows;
-- (BOOL) deleteLocation:(NSNumber*)locationId;
-- (BOOL) deleteAllLocations;
+- (BOOL) deleteLocation:(NSNumber*)locationId error:(NSError * __autoreleasing *)outError;
+- (BOOL) deleteAllLocations:(NSError * __autoreleasing *)outError;
 - (BOOL) clearDatabase;
 - (NSString*) getDatabaseName;
 - (NSString*) getDatabasePath;

@@ -210,8 +210,17 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 {
     NSLog(@"%@ #%@", TAG, @"deleteLocation");
     [self.commandDelegate runInBackground:^{
+        NSError *error = nil;
         int locationId = [[command.arguments objectAtIndex: 0] intValue];
-        [facade deleteLocation:[[NSNumber alloc] initWithInt:locationId]];
+        BOOL success = [facade deleteLocation:[[NSNumber alloc] initWithInt:locationId] error:&error];
+        CDVPluginResult* result;
+        if (success) {
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        } else {
+            NSString *errorMessage = [error localizedDescription];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
+        }
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
 
@@ -219,7 +228,16 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 {
     NSLog(@"%@ #%@", TAG, @"deleteAllLocations");
     [self.commandDelegate runInBackground:^{
-        [facade deleteAllLocations];
+        NSError *error = nil;
+        BOOL success = [facade deleteAllLocations:&error];
+        CDVPluginResult* result;
+        if (success) {
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        } else {
+            NSString *errorMessage = [error localizedDescription];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
+        }
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
 

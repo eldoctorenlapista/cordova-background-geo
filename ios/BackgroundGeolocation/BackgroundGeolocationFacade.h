@@ -36,8 +36,8 @@ typedef NS_ENUM(NSInteger, BGOperationMode) {
 - (Location*)getStationaryLocation;
 - (NSArray<Location*>*) getLocations;
 - (NSArray<Location*>*) getValidLocations;
-- (BOOL) deleteLocation:(NSNumber*)locationId;
-- (BOOL) deleteAllLocations;
+- (BOOL) deleteLocation:(NSNumber*)locationId error:(NSError * __autoreleasing *)outError;
+- (BOOL) deleteAllLocations:(NSError * __autoreleasing *)outError;
 - (Config*) getConfig;
 - (NSArray*) getLogEntries:(NSInteger)limit;
 - (void) onAppTerminate;

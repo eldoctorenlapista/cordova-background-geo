@@ -60,7 +60,6 @@
     XCTAssertTrue([result.locationProvider isEqualToNumber:[NSNumber numberWithInt:-1]], "Location service_provider is %@ expecting %@", result.locationProvider, [NSNumber numberWithInt:-1]);
 }
 
-
 - (void)testDeleteLocation {
     SQLiteLocationDAO *locationDAO = [SQLiteLocationDAO sharedInstance];
     Location *location = [[Location alloc] init];
@@ -81,7 +80,7 @@
     NSArray<Location*> *locations = [locationDAO getAllLocations];
     XCTAssertEqual([locations count], 2, @"Number of stored location is %lu expecting 2", (unsigned long)[locations count]);
     
-    [locationDAO deleteLocation:locationId1];
+    [locationDAO deleteLocation:locationId1 error:nil];
     locations = [locationDAO getValidLocations];
     Location *result = [locations firstObject];
 
@@ -114,7 +113,7 @@
     NSArray<Location*> *locations = [locationDAO getAllLocations];
     XCTAssertEqual([locations count], 7, @"Number of stored location is %lu expecting 7", (unsigned long)[locations count]);
     
-    [locationDAO deleteAllLocations];
+    [locationDAO deleteAllLocations:nil];
     locations = [locationDAO getValidLocations];
     
     XCTAssertEqual([locations count], 0, @"Number of stored location is %lu expecting 0", (unsigned long)[locations count]);

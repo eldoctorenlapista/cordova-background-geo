@@ -319,24 +319,34 @@
     return locationId;
 }
 
-- (BOOL) deleteLocation:(NSNumber*)locationId
+- (BOOL) deleteLocation:(NSNumber*)locationId error:(NSError * __autoreleasing *)outError
 {
     __block BOOL success;
     NSString *sql = @"UPDATE " @LC_TABLE_NAME @" SET " @LC_COLUMN_NAME_VALID @" = 0 WHERE " @LC_COLUMN_NAME_ID @" = ?";
 
     [queue inDatabase:^(FMDatabase *database) {
-        if (![database executeUpdate:sql, locationId]) {
-            NSLog(@"Delete location %@ failed code: %d: message: %@", locationId, [database lastErrorCode], [database lastErrorMessage]);
+        if ([database executeUpdate:sql, locationId]) {
+            success = YES;
+        } else {
+            int errorCode = [database lastErrorCode];
+            NSString *errorMessage = [database lastErrorMessage];
+            NSLog(@"Delete location %@ failed code: %d: message: %@", locationId, errorCode, errorMessage);
+
+            if (outError != NULL) {
+                NSDictionary *errorDictionary = @{
+                                                  NSLocalizedDescriptionKey: NSLocalizedString(errorMessage, nil)
+                                                  };
+                *outError = [NSError errorWithDomain:Domain code:errorCode userInfo:errorDictionary];
+            }
+
             success = NO;
         }
-
-        success = YES;
     }];
 
     return success;
 }
 
-- (BOOL) deleteAllLocations
+- (BOOL) deleteAllLocations:(NSError * __autoreleasing *)outError
 {
     __block BOOL success;
     NSString *sql = @"UPDATE " @LC_TABLE_NAME @" SET " @LC_COLUMN_NAME_VALID @" = 0";
@@ -345,7 +355,17 @@
         if ([database executeUpdate:sql]) {
             success = YES;
         } else {
-            NSLog(@"Deleting all location failed code: %d: message: %@", [database lastErrorCode], [database lastErrorMessage]);
+            int errorCode = [database lastErrorCode];
+            NSString *errorMessage = [database lastErrorMessage];
+            NSLog(@"Deleting all locations failed code: %d: message: %@", errorCode, errorMessage);
+
+            if (outError != NULL) {
+                NSDictionary *errorDictionary = @{
+                                                  NSLocalizedDescriptionKey: NSLocalizedString(errorMessage, nil)
+                                                  };
+                *outError = [NSError errorWithDomain:Domain code:errorCode userInfo:errorDictionary];
+            }
+
             success = NO;
         }
     }];

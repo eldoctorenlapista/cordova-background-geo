@@ -332,16 +332,16 @@ FMDBLogger *sqliteLogger;
     return [locationDAO getValidLocations];
 }
 
-- (BOOL) deleteLocation:(NSNumber*) locationId
+- (BOOL) deleteLocation:(NSNumber*)locationId error:(NSError * __autoreleasing *)outError
 {
     SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
-    return [locationDAO deleteLocation:locationId];
+    return [locationDAO deleteLocation:locationId error:outError];
 }
 
-- (BOOL) deleteAllLocations
+- (BOOL) deleteAllLocations:(NSError * __autoreleasing *)outError;
 {
     SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
-    return [locationDAO deleteAllLocations];
+    return [locationDAO deleteAllLocations:outError];
 }
 
 - (Config*) getConfig
@@ -377,7 +377,7 @@ FMDBLogger *sqliteLogger;
         if ([location postAsJSON:config.url withTemplate:config._template withHttpHeaders:config.httpHeaders error:&error]) {
             SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
             if (location.locationId != nil) {
-                [locationDAO deleteLocation:location.locationId];
+                [locationDAO deleteLocation:location.locationId error:nil];
             }
         } else {
             DDLogWarn(@"%@ postJSON failed: error: %@", TAG, error.userInfo[@"NSLocalizedDescription"]);

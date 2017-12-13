@@ -15,6 +15,8 @@
 #define SPACE_SEP " "
 #define EQ_BIND "= ?"
 
+static NSString * const Domain = @"SQLiteHelper";
+
 typedef NS_ENUM(NSInteger, SQLType) {
     kReal = 0, kInteger = 1, kText = 2, kDateTime = 3
 };
