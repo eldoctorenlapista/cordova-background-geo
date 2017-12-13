@@ -39,7 +39,7 @@
 
 +(instancetype) fromDictionary:(NSDictionary*)config
 {
-    Config *instance = [[Config alloc] initWithDefaults];
+    Config *instance = [[Config alloc] init];
 
     if (isNotNull(config[@"stationaryRadius"])) {
         instance.stationaryRadius = config[@"stationaryRadius"];
