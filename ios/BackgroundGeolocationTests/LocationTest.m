@@ -36,10 +36,10 @@
     
     NSArray *actual = [location toResultFromTemplate:template];
     NSArray *expected = @[
-                        location.time,
+                        [NSNumber numberWithDouble:([location.time timeIntervalSince1970] * 1000)],
                         location.altitude,
                         location.longitude,
-                        location.recordedAt,
+                        [NSNumber numberWithDouble:([location.recordedAt timeIntervalSince1970] * 1000)],
                         location.accuracy,
                         @"",
                         @"custom",
@@ -92,7 +92,7 @@
     NSDictionary *actual = [location toResultFromTemplate:template];
     NSDictionary *expected = @{
                                @"id": location.locationId,
-                               @"t": location.time,
+                               @"t": [NSNumber numberWithDouble:([location.time timeIntervalSince1970] * 1000)],
                                @"acu": location.accuracy,
                                @"aacu": location.altitudeAccuracy,
                                @"s": location.speed,
@@ -103,7 +103,7 @@
                                @"p": location.provider,
                                @"lp": location.locationProvider,
                                @"r": location.radius,
-                               @"rt": location.recordedAt,
+                               @"rt": [NSNumber numberWithDouble:([location.recordedAt timeIntervalSince1970] * 1000)],
                                @"foo": @"bar",
                                @"at": @"@",
                                @"number": @12
