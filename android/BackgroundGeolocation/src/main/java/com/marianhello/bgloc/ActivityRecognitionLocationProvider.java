@@ -42,8 +42,8 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
 
     private org.slf4j.Logger logger;
 
-    public ActivityRecognitionLocationProvider(LocationService locationService) {
-        super(locationService);
+    public ActivityRecognitionLocationProvider(LocationService locationService, Config config) {
+        super(locationService, config);
         PROVIDER_ID = Config.ACTIVITY_PROVIDER;
     }
 
@@ -76,6 +76,15 @@ public class ActivityRecognitionLocationProvider extends AbstractLocationProvide
         this.isStarted = false;
         detachRecorder();
         stopTracking();
+    }
+
+    @Override
+    public void onConfigure(Config config) {
+        mConfig = config;
+        if (isStarted) {
+            onStop();
+            onStart();
+        }
     }
 
     @Override

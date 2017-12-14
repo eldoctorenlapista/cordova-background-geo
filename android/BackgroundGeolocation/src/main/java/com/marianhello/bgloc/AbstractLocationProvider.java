@@ -34,9 +34,9 @@ public abstract class AbstractLocationProvider implements LocationProvider {
 
     protected ToneGenerator toneGenerator;
 
-    protected AbstractLocationProvider(LocationService locationService) {
+    protected AbstractLocationProvider(LocationService locationService, Config config) {
         this.mLocationService = locationService;
-        this.mConfig = locationService.getConfig();
+        this.mConfig = config;
     }
 
     @Override
@@ -53,8 +53,6 @@ public abstract class AbstractLocationProvider implements LocationProvider {
     @Override
     public void onConfigure(Config config) {
         mConfig = config;
-        onStop();
-        onStart();
     }
 
     @Override

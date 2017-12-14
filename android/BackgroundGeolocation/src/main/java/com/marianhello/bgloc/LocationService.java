@@ -197,6 +197,7 @@ public class LocationService extends Service {
     public void onDestroy() {
         logger.info("Destroying LocationService");
         mProvider.onDestroy();
+        mProvider = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             handlerThread.quitSafely();
         } else {
@@ -247,7 +248,7 @@ public class LocationService extends Service {
 
         logger.debug("Will start service with: {}", mConfig.toString());
 
-        LocationProviderFactory spf = new LocationProviderFactory(this);
+        LocationProviderFactory spf = new LocationProviderFactory(this, mConfig);
         mProvider = spf.getInstance(mConfig.getLocationProvider());
 
         if (mConfig.getStartForeground()) {
@@ -330,6 +331,10 @@ public class LocationService extends Service {
     }
 
     private void configure(Config config) {
+        if (!isRunning()) {
+            return; // do not configure stopped service it will be configured when started
+        }
+
         Config currentConfig = mConfig;
         mConfig = config;
 
@@ -356,7 +361,7 @@ public class LocationService extends Service {
         if (currentConfig.getLocationProvider() != mConfig.getLocationProvider()) {
             boolean shouldStart = mProvider.isStarted();
             mProvider.onDestroy();
-            LocationProviderFactory spf = new LocationProviderFactory(this);
+            LocationProviderFactory spf = new LocationProviderFactory(this, mConfig);
             mProvider = spf.getInstance(mConfig.getLocationProvider());
             mProvider.onCreate();
             if (shouldStart) {

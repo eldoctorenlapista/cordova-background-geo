@@ -80,8 +80,8 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 
     private boolean isStarted = false;
 
-    public DistanceFilterLocationProvider(LocationService context) {
-        super(context);
+    public DistanceFilterLocationProvider(LocationService locationService, Config config) {
+        super(locationService, config);
         PROVIDER_ID = Config.DISTANCE_FILTER_PROVIDER;
     }
 
@@ -161,6 +161,15 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 //    }
 
     @Override
+    public void onConfigure(Config config) {
+        mConfig = config;
+        if (isStarted) {
+            onStop();
+            onStart();
+        }
+    }
+
+    @Override
     public boolean isStarted() {
         return isStarted;
     }
@@ -213,10 +222,10 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     }
 
     /**
-    * Translates a number representing desired accuracy of Geolocation system from set [0, 10, 100, 1000].
-    * 0:  most aggressive, most accurate, worst battery drain
-    * 1000:  least aggressive, least accurate, best for battery.
-    */
+     * Translates a number representing desired accuracy of Geolocation system from set [0, 10, 100, 1000].
+     * 0:  most aggressive, most accurate, worst battery drain
+     * 1000:  least aggressive, least accurate, best for battery.
+     */
     private Integer translateDesiredAccuracy(Integer accuracy) {
         if (accuracy >= 1000) {
             return Criteria.ACCURACY_LOW;
@@ -438,8 +447,8 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     }
 
     /**
-    * Broadcast receiver for receiving a single-update from LocationManager.
-    */
+     * Broadcast receiver for receiving a single-update from LocationManager.
+     */
     private BroadcastReceiver singleUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -453,8 +462,8 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     };
 
     /**
-    * Broadcast receiver which detects a user has stopped for a long enough time to be determined as STOPPED
-    */
+     * Broadcast receiver which detects a user has stopped for a long enough time to be determined as STOPPED
+     */
     private BroadcastReceiver stationaryAlarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent)
@@ -469,28 +478,28 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
      * This is required because latest Android proximity-alerts don't seem to operate while suspended.  Regularly polling
      * the location seems to trigger the proximity-alerts while suspended.
      */
-     private BroadcastReceiver stationaryLocationMonitorReceiver = new BroadcastReceiver() {
-         @Override
-         public void onReceive(Context context, Intent intent)
-         {
-             logger.info("Stationary location monitor fired");
-             playDebugTone(Tone.DIALTONE);
+    private BroadcastReceiver stationaryLocationMonitorReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            logger.info("Stationary location monitor fired");
+            playDebugTone(Tone.DIALTONE);
 
-             criteria.setAccuracy(Criteria.ACCURACY_FINE);
-             criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
-             criteria.setPowerRequirement(Criteria.POWER_HIGH);
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
+            criteria.setPowerRequirement(Criteria.POWER_HIGH);
 
-             try {
-                 locationManager.requestSingleUpdate(criteria, singleUpdatePI);
-             } catch (SecurityException e) {
+            try {
+                locationManager.requestSingleUpdate(criteria, singleUpdatePI);
+            } catch (SecurityException e) {
                 logger.error("Security exception: {}", e.getMessage());
-             }
-         }
-     };
+            }
+        }
+    };
 
     /**
-    * Broadcast receiver which detects a user has exit his circular stationary-region determined by the greater of stationaryLocation.getAccuracy() OR stationaryRadius
-    */
+     * Broadcast receiver which detects a user has exit his circular stationary-region determined by the greater of stationaryLocation.getAccuracy() OR stationaryRadius
+     */
     private BroadcastReceiver stationaryRegionReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

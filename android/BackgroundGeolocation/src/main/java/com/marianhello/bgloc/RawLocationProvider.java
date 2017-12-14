@@ -18,8 +18,8 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
     private LocationManager locationManager;
     private boolean isStarted = false;
 
-    public RawLocationProvider(LocationService context) {
-        super(context);
+    public RawLocationProvider(LocationService locationService, Config config) {
+        super(locationService, config);
         PROVIDER_ID = Config.RAW_PROVIDER;
     }
 
@@ -69,6 +69,15 @@ public class RawLocationProvider extends AbstractLocationProvider implements Loc
             this.handleSecurityException(e);
         } finally {
             isStarted = false;
+        }
+    }
+
+    @Override
+    public void onConfigure(Config config) {
+        mConfig = config;
+        if (isStarted) {
+            onStop();
+            onStart();
         }
     }
 

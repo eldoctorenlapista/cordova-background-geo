@@ -227,8 +227,8 @@ public class BackgroundGeolocationFacade {
     public void stop() {
         logger.debug("Stopping service");
         unregisterLocationModeChangeReceiver();
-        safeUnbindService();
         stopBackgroundService();
+        safeUnbindService();
     }
 
     public Collection<BackgroundLocation> getLocations() {
@@ -433,12 +433,14 @@ public class BackgroundGeolocationFacade {
     }
 
     private void serviceSend(Message message) {
-        if (mService != null) {
-            try {
-                mService.send(message);
-            } catch (RemoteException e) {
-                logger.error("Service send exception: {}", e.getMessage());
-            }
+        if (!mIsBound) {
+            return;
+        }
+
+        try {
+            mService.send(message);
+        } catch (RemoteException e) {
+            logger.error("Service send exception: {}", e.getMessage());
         }
     }
 
