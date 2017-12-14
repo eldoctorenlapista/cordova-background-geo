@@ -443,7 +443,11 @@ public class Config implements Parcelable, Cloneable
     }
 
     public HashMap<String, String> getHttpHeaders() {
-        return hasHttpHeaders() ? httpHeaders : new HashMap<String, String>();
+        if (!hasHttpHeaders()) {
+            httpHeaders = new HashMap<String, String>();
+        }
+
+        return httpHeaders;
     }
 
     public void setHttpHeaders(HashMap httpHeaders) {
@@ -481,7 +485,11 @@ public class Config implements Parcelable, Cloneable
     }
 
     public LocationTemplate getTemplate() {
-        return hasTemplate() ? template : LocationTemplateFactory.getDefault();
+        if (!hasTemplate()) {
+            return new HashMapLocationTemplate(null);
+        }
+
+        return template;
     }
 
     public void setTemplate(LocationTemplate template) {
@@ -513,7 +521,7 @@ public class Config implements Parcelable, Cloneable
                 .append(" syncThreshold=").append(getSyncThreshold())
                 .append(" httpHeaders=").append(getHttpHeaders().toString())
                 .append(" maxLocations=").append(getMaxLocations())
-                .append(" template=").append(hasTemplate() ? getTemplate().toString() : null)
+                .append(" postTemplate=").append(hasTemplate() ? getTemplate().toString() : null)
                 .append("]")
                 .toString();
     }
