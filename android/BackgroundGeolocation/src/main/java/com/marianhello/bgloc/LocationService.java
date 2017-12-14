@@ -398,19 +398,8 @@ public class LocationService extends Service {
 
         location.setBatchStartMillis(System.currentTimeMillis() + ONE_MINUTE_IN_MILLIS); // prevent sync of not yet posted location
         persistLocation(location);
-
-        if (mConfig.hasSyncUrl()) {
-            Long locationsCount = dao.locationsForSyncCount(System.currentTimeMillis());
-            logger.debug("Location to sync: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
-            if (locationsCount >= mConfig.getSyncThreshold()) {
-                logger.debug("Attempt to sync locations: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
-                SyncService.sync(mSyncAccount, getStringResource(Config.CONTENT_AUTHORITY_RESOURCE));
-            }
-        }
-
-        if (hasConnectivity && mConfig.hasUrl()) {
-            postLocationAsync(location);
-        }
+        syncLocation(location);
+        postLocation(location);
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(BackgroundLocation.BUNDLE_KEY, location);
@@ -422,6 +411,11 @@ public class LocationService extends Service {
 
     public void handleStationary(BackgroundLocation location) {
         logger.debug("New stationary {}", location.toString());
+
+        location.setBatchStartMillis(System.currentTimeMillis() + ONE_MINUTE_IN_MILLIS); // prevent sync of not yet posted location
+        persistLocation(location);
+        syncLocation(location);
+        postLocation(location);
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(BackgroundLocation.BUNDLE_KEY, location);
@@ -487,18 +481,26 @@ public class LocationService extends Service {
         return locationId;
     }
 
-    public void postLocation(BackgroundLocation location) {
-        PostLocationTask task = new LocationService.PostLocationTask();
-        task.doInBackground(location);
+    public void syncLocation(BackgroundLocation location) {
+        if (mConfig.hasSyncUrl()) {
+            Long locationsCount = dao.locationsForSyncCount(System.currentTimeMillis());
+            logger.debug("Location to sync: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
+            if (locationsCount >= mConfig.getSyncThreshold()) {
+                logger.debug("Attempt to sync locations: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
+                SyncService.sync(mSyncAccount, getStringResource(Config.CONTENT_AUTHORITY_RESOURCE));
+            }
+        }
     }
 
-    public void postLocationAsync(BackgroundLocation location) {
-        PostLocationTask task = new LocationService.PostLocationTask();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, location);
-        }
-        else {
-            task.execute(location);
+    public void postLocation(BackgroundLocation location) {
+        if (hasConnectivity && mConfig.hasUrl()) {
+            PostLocationTask task = new LocationService.PostLocationTask();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, location);
+            }
+            else {
+                task.execute(location);
+            }
         }
     }
 
@@ -523,7 +525,7 @@ public class LocationService extends Service {
                         LocationTemplate tpl = mConfig.getTemplate();
                         jsonLocations.put(tpl.locationToJson(location));
                     } else {
-                        jsonLocation = location.toJSONObjectWithId();
+                        jsonLocation = location.toJSONObject();
                         jsonLocations.put(jsonLocation);
                     }
                 } catch (JSONException e) {

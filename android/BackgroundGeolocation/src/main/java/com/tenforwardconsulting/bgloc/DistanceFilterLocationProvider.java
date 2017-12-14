@@ -62,6 +62,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 
     private Location lastLocation;
     private Location stationaryLocation;
+    private float stationaryRadius;
     private PendingIntent stationaryAlarmPI;
     private PendingIntent stationaryLocationPollingPI;
     private long stationaryLocationPollingInterval;
@@ -69,12 +70,10 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     private PendingIntent singleUpdatePI;
     private Integer scaledDistanceFilter;
 
-    private String activity;
     private Criteria criteria;
 
     private LocationManager locationManager;
     private AlarmManager alarmManager;
-    private NotificationManager notificationManager;
 
     private org.slf4j.Logger logger;
 
@@ -308,7 +307,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
             if (++locationAcquisitionAttempts == MAX_STATIONARY_ACQUISITION_ATTEMPTS) {
                 isAcquiringStationaryLocation = false;
                 startMonitoringStationaryRegion(stationaryLocation);
-                handleStationary(stationaryLocation);
+                handleStationary(stationaryLocation, stationaryRadius);
                 return;
             } else {
                 // Unacceptable stationary-location: bail-out and wait for another.
@@ -370,19 +369,21 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
             locationManager.removeUpdates(this);
 
             float stationaryRadius = mConfig.getStationaryRadius();
-            float proximityAccuracy = (location.getAccuracy() < stationaryRadius) ? stationaryRadius : location.getAccuracy();
+            float proximityRadius = (location.getAccuracy() < stationaryRadius) ? stationaryRadius : location.getAccuracy();
             stationaryLocation = location;
 
-            logger.info("startMonitoringStationaryRegion: lat={} lon={} acy={}", location.getLatitude(), location.getLongitude(), proximityAccuracy);
+            logger.info("startMonitoringStationaryRegion: lat={} lon={} acy={}", location.getLatitude(), location.getLongitude(), proximityRadius);
 
             // Here be the execution of the stationary region monitor
             locationManager.addProximityAlert(
                     location.getLatitude(),
                     location.getLongitude(),
-                    proximityAccuracy,
+                    proximityRadius,
                     (long)-1,
                     stationaryRegionPI
             );
+
+            this.stationaryRadius = proximityRadius;
 
             startPollingStationaryLocation(STATIONARY_LOCATION_POLLING_INTERVAL_LAZY);
         } catch (SecurityException e) {

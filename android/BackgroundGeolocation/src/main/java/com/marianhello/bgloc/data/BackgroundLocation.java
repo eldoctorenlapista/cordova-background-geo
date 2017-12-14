@@ -69,7 +69,7 @@ public class BackgroundLocation implements Parcelable {
      * @param radius radius of stationary region
      */
     public BackgroundLocation(Integer locationProvider, Location location, float radius) {
-        this(null, location);
+        this(locationProvider, location);
         setRadius(radius);
     }
 
