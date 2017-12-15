@@ -102,42 +102,42 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements Uploadin
             logger.error("Error retrieving config: {}", e.getMessage());
         }
 
-        if (config == null) return;
+        if (config == null || !config.hasValidSyncUrl()) {
+            return;
+        }
 
         logger.debug("Sync request: {}", config.toString());
-        if (config.hasSyncUrl()) {
-            Long batchStartMillis = System.currentTimeMillis();
+        Long batchStartMillis = System.currentTimeMillis();
 
-            File file = null;
-            try {
-                file = batchManager.createBatch(batchStartMillis, config.getSyncThreshold(), config.getTemplate());
-            } catch (IOException e) {
-                logger.error("Failed to create batch: {}", e.getMessage());
-            }
+        File file = null;
+        try {
+            file = batchManager.createBatch(batchStartMillis, config.getSyncThreshold(), config.getTemplate());
+        } catch (IOException e) {
+            logger.error("Failed to create batch: {}", e.getMessage());
+        }
 
-            if (file == null) {
-                logger.info("Nothing to sync");
-                return;
-            }
+        if (file == null) {
+            logger.info("Nothing to sync");
+            return;
+        }
 
-            logger.info("Syncing startAt: {}", batchStartMillis);
-            String url = config.hasSyncUrl() ? config.getSyncUrl() : config.getUrl();
-            HashMap<String, String> httpHeaders = new HashMap<String, String>();
-            httpHeaders.putAll(config.getHttpHeaders());
-            httpHeaders.put("x-batch-id", String.valueOf(batchStartMillis));
+        logger.info("Syncing startAt: {}", batchStartMillis);
+        String url = config.getSyncUrl();
+        HashMap<String, String> httpHeaders = new HashMap<String, String>();
+        httpHeaders.putAll(config.getHttpHeaders());
+        httpHeaders.put("x-batch-id", String.valueOf(batchStartMillis));
 
-            if (uploadLocations(file, url, httpHeaders)) {
-                logger.info("Batch sync successful");
-                batchManager.setBatchCompleted(batchStartMillis);
-                if (file.delete()) {
-                    logger.info("Batch file has been deleted: {}", file.getAbsolutePath());
-                } else {
-                    logger.warn("Batch file has not been deleted: {}", file.getAbsolutePath());
-                }
+        if (uploadLocations(file, url, httpHeaders)) {
+            logger.info("Batch sync successful");
+            batchManager.setBatchCompleted(batchStartMillis);
+            if (file.delete()) {
+                logger.info("Batch file has been deleted: {}", file.getAbsolutePath());
             } else {
-                logger.warn("Batch sync failed due server error");
-                syncResult.stats.numIoExceptions++;
+                logger.warn("Batch file has not been deleted: {}", file.getAbsolutePath());
             }
+        } else {
+            logger.warn("Batch sync failed due server error");
+            syncResult.stats.numIoExceptions++;
         }
     }
 

@@ -117,4 +117,22 @@ public class ConfigTest {
         // TODO: we should probably clone httpHeaders too (leaving for now)
         //Assert.assertNotSame(config.getHttpHeaders(), merged.getHttpHeaders());
     }
+
+    @Test
+    public void testMergeEmptyUrls() {
+        Config config1 = new Config();
+        config1.setUrl("url");
+        config1.setSyncUrl("syncUrl");
+
+        Config config2 = new Config();
+        config2.setUrl("");
+        config2.setSyncUrl("");
+
+        try {
+            Assert.assertEquals("", Config.merge(config1, config2).getUrl());
+            Assert.assertEquals("", Config.merge(config1, config2).getSyncUrl());
+        } catch (CloneNotSupportedException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
 }

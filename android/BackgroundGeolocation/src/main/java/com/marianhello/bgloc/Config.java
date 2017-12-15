@@ -395,10 +395,16 @@ public class Config implements Parcelable, Cloneable
     }
 
     public Boolean hasUrl() {
+        return url != null;
+    }
+    public Boolean hasValidUrl() {
         return url != null && !url.isEmpty();
     }
 
     public String getUrl() {
+        if (!hasUrl()) {
+            url = "";
+        }
         return url;
     }
 
@@ -411,10 +417,16 @@ public class Config implements Parcelable, Cloneable
     }
 
     public Boolean hasSyncUrl() {
+        return syncUrl != null;
+    }
+    public Boolean hasValidSyncUrl() {
         return syncUrl != null && !syncUrl.isEmpty();
     }
 
     public String getSyncUrl() {
+        if (!hasSyncUrl()) {
+            syncUrl = "";
+        }
         return syncUrl;
     }
 

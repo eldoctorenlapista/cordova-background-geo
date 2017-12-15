@@ -482,7 +482,7 @@ public class LocationService extends Service {
     }
 
     public void syncLocation(BackgroundLocation location) {
-        if (mConfig.hasSyncUrl()) {
+        if (mConfig.hasValidSyncUrl()) {
             Long locationsCount = dao.locationsForSyncCount(System.currentTimeMillis());
             logger.debug("Location to sync: {} threshold: {}", locationsCount, mConfig.getSyncThreshold());
             if (locationsCount >= mConfig.getSyncThreshold()) {
@@ -493,7 +493,7 @@ public class LocationService extends Service {
     }
 
     public void postLocation(BackgroundLocation location) {
-        if (hasConnectivity && mConfig.hasUrl()) {
+        if (hasConnectivity && mConfig.hasValidUrl()) {
             PostLocationTask task = new LocationService.PostLocationTask();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, location);
