@@ -48,6 +48,11 @@ public class HashMapLocationTemplate extends AbstractLocationTemplate implements
     }
 
     @Override
+    public boolean isEmpty() {
+        return map == null || map.isEmpty();
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;

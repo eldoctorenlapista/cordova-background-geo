@@ -521,12 +521,12 @@ public class LocationService extends Service {
             for (BackgroundLocation location : locations) {
                 Object jsonLocation;
                 try {
-                    if (mConfig.hasTemplate()) {
-                        LocationTemplate tpl = mConfig.getTemplate();
-                        jsonLocations.put(tpl.locationToJson(location));
-                    } else {
+                    LocationTemplate tpl = mConfig.getTemplate();
+                    if (tpl.isEmpty()) {
                         jsonLocation = location.toJSONObject();
                         jsonLocations.put(jsonLocation);
+                    } else {
+                        jsonLocations.put(tpl.locationToJson(location));
                     }
                 } catch (JSONException e) {
                     logger.warn("Location to json failed: {}", location.toString());

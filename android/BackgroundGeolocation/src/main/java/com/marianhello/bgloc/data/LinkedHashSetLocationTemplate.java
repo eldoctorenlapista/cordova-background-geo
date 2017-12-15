@@ -45,6 +45,11 @@ public class LinkedHashSetLocationTemplate extends AbstractLocationTemplate impl
     }
 
     @Override
+    public boolean isEmpty() {
+        return set == null || set.isEmpty();
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;
