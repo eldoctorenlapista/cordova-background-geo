@@ -2,10 +2,17 @@ package com.marianhello.bgloc.cordova;
 
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.data.HashMapLocationTemplate;
+import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplateFactory;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Created by finch on 29.11.2017.
@@ -117,7 +124,21 @@ public class ConfigMapper {
         json.put("syncThreshold", config.getSyncThreshold());
         json.put("httpHeaders", new JSONObject(config.getHttpHeaders()));
         json.put("maxLocations", config.getMaxLocations());
-        json.put("postTemplate", new JSONObject(config.getTemplate().toString()));
+        LocationTemplate tpl = config.getTemplate();
+        Object template = JSONObject.NULL;
+        if (tpl instanceof HashMapLocationTemplate) {
+            Map map = ((HashMapLocationTemplate)tpl).toMap();
+            if (map != null) {
+                template = new JSONObject(map);
+            }
+        } else if (tpl instanceof LinkedHashSetLocationTemplate) {
+            Object[] keys = ((LinkedHashSetLocationTemplate)tpl).toArray();
+            if (keys != null) {
+                template = new JSONArray(Arrays.asList(keys));
+            }
+        }
+
+        json.put("postTemplate", template);
 
         return json;
     }

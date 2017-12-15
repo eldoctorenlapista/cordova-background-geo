@@ -115,4 +115,10 @@ public class HashMapLocationTemplateTest {
         Assert.assertEquals(expected.get("Speed"), location.getSpeed());
         Assert.assertEquals(expected.get("Bearing"), location.getBearing());
     }
+
+    @Test
+    public void testNullToString() {
+        HashMapLocationTemplate tpl = new HashMapLocationTemplate(null);
+        Assert.assertEquals("null", tpl.toString());
+    }
 }

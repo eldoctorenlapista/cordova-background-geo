@@ -42,6 +42,7 @@ public class ConfigTest {
         Assert.assertFalse(config.hasSyncThreshold());
         Assert.assertFalse(config.hasHttpHeaders());
         Assert.assertFalse(config.hasMaxLocations());
+        Assert.assertFalse(config.hasTemplate());
     }
 
     @Test
@@ -69,6 +70,7 @@ public class ConfigTest {
         Assert.assertEquals(config.getSyncUrl(), "");
         Assert.assertEquals(config.getSyncThreshold().intValue(), 100);
         Assert.assertTrue(config.getHttpHeaders().isEmpty());
+        Assert.assertTrue(config.getTemplate().isEmpty());
         Assert.assertEquals(config.getMaxLocations().intValue(), 10000);
     }
 

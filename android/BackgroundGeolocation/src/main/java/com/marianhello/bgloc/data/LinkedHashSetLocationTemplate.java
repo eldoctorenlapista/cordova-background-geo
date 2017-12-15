@@ -60,7 +60,7 @@ public class LinkedHashSetLocationTemplate extends AbstractLocationTemplate impl
     @Override
     public String toString() {
         if (set == null) {
-            return null;
+            return "null";
         }
 
         JSONArray jArray = new JSONArray();
@@ -69,5 +69,13 @@ public class LinkedHashSetLocationTemplate extends AbstractLocationTemplate impl
             jArray.put(it.next());
         }
         return jArray.toString();
+    }
+
+    public Object[] toArray() {
+        if (set == null) {
+            return null;
+        }
+
+        return set.toArray();
     }
 }

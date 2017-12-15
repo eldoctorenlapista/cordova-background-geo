@@ -63,10 +63,14 @@ public class HashMapLocationTemplate extends AbstractLocationTemplate implements
     @Override
     public String toString() {
         if (map == null) {
-            return null;
+            return "null";
         }
 
         JSONObject jObject = new JSONObject(map);
         return jObject.toString();
+    }
+
+    public Map toMap() {
+        return map;
     }
 }

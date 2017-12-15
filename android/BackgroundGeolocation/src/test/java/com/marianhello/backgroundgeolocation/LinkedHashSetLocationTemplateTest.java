@@ -1,10 +1,8 @@
 package com.marianhello.backgroundgeolocation;
 
-import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplate;
-import com.marianhello.bgloc.data.LocationTemplateFactory;
 
 import junit.framework.Assert;
 
@@ -70,5 +68,11 @@ public class LinkedHashSetLocationTemplateTest {
         Assert.assertEquals(expected.get(8), location.getAccuracy());
         Assert.assertEquals(expected.get(9), location.getSpeed());
         Assert.assertEquals(expected.get(10), location.getBearing());
+    }
+
+    @Test
+    public void testNullToString() {
+        LinkedHashSetLocationTemplate tpl = new LinkedHashSetLocationTemplate(null);
+        Assert.assertEquals("null", tpl.toString());
     }
 }
