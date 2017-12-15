@@ -24,9 +24,9 @@ public class LocationTemplateFactory {
                 String key = (String) it.next();
                 if (reverted) {
                     // we use reverted key, value semantic
-                    templateMap.put(jsonObject.getString(key), key);
+                    templateMap.put(jsonObject.get(key), key);
                 } else {
-                    templateMap.put(key, jsonObject.getString(key));
+                    templateMap.put(key, jsonObject.get(key));
                 }
             }
 

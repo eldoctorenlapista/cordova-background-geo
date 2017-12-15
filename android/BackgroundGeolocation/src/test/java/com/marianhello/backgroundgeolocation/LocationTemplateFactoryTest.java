@@ -18,13 +18,14 @@ import org.junit.Test;
 public class LocationTemplateFactoryTest {
     @Test
     public void testTemplateFromJsonArray() {
-        String jsonString = "[\"foo\",\"bar\"]";
+        String jsonString = "[\"foo\",\"bar\",123]";
 
         try {
             LocationTemplate tpl = LocationTemplateFactory.fromJSONString(jsonString);
             JSONArray expected = new JSONArray();
             expected.put("foo");
             expected.put("bar");
+            expected.put(123);
             Assert.assertEquals(expected.toString(), tpl.toString());
         } catch (JSONException e) {
             org.junit.Assert.fail(e.getMessage());
@@ -33,12 +34,13 @@ public class LocationTemplateFactoryTest {
 
     @Test
     public void testTemplateFromJsonObject() {
-        String jsonString = "{\"foo\":\"bar\"}";
+        String jsonString = "{\"foo\":\"bar\",\"pretzels\":123}";
 
         try {
             LocationTemplate tpl = LocationTemplateFactory.fromJSONString(jsonString);
             JSONObject expected = new JSONObject();
             expected.put("foo", "bar");
+            expected.put("pretzels", 123);
             Assert.assertEquals(expected.toString(), tpl.toString());
         } catch (JSONException e) {
             org.junit.Assert.fail(e.getMessage());
