@@ -93,7 +93,7 @@ public class ConfigMapper {
                 config.setTemplate(new HashMapLocationTemplate(null));
             } else {
                 Object postTemplate = jObject.get("postTemplate");
-                config.setTemplate(LocationTemplateFactory.fromJSONReverted(postTemplate));
+                config.setTemplate(LocationTemplateFactory.fromJSON(postTemplate));
             }
         }
 

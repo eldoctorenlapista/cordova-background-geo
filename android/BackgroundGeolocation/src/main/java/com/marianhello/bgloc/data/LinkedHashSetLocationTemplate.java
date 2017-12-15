@@ -28,8 +28,11 @@ public class LinkedHashSetLocationTemplate extends AbstractLocationTemplate impl
 
         Iterator<String> it = set.iterator();
         while (it.hasNext()) {
-            String key = it.next();
-            Object value = location.getValueForKey(key);
+            Object value = null;
+            Object key = it.next();
+            if (key instanceof String) {
+                value = location.getValueForKey((String)key);
+            }
             jArray.put(value != null ? value : key);
         }
 

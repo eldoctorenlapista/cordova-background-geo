@@ -214,9 +214,10 @@ public class BatchManagerTest {
 
 
         HashMap map = new HashMap<String, String>();
-        map.put("@latitude", "lat");
-        map.put("@longitude", "lon");
-        map.put("bar", "foo");
+        map.put("lat", "@latitude");
+        map.put("lon", "@longitude");
+        map.put("foo", "bar");
+        map.put("pretzels", 123);
         LocationTemplate template = new HashMapLocationTemplate(map);
 
         ArrayList<HashMap> locations = new ArrayList();

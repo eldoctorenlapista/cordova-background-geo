@@ -22,9 +22,10 @@ public class LinkedHashSetLocationTemplateTest {
         LinkedHashSet props = new LinkedHashSet();
         props.add("foo");
         props.add("bar");
+        props.add(123);
         LinkedHashSetLocationTemplate tpl = new LinkedHashSetLocationTemplate(props);
 
-        Assert.assertEquals("[\"foo\",\"bar\"]" , tpl.toString());
+        Assert.assertEquals("[\"foo\",\"bar\",123]" , tpl.toString());
     }
 
     @Test
@@ -53,6 +54,7 @@ public class LinkedHashSetLocationTemplateTest {
         props.add("@accuracy");
         props.add("@speed");
         props.add("@bearing");
+        props.add(123);
 
         LocationTemplate tpl = new LinkedHashSetLocationTemplate(props);
         JSONArray expected = (JSONArray) tpl.locationToJson(location);
@@ -68,6 +70,7 @@ public class LinkedHashSetLocationTemplateTest {
         Assert.assertEquals(expected.get(8), location.getAccuracy());
         Assert.assertEquals(expected.get(9), location.getSpeed());
         Assert.assertEquals(expected.get(10), location.getBearing());
+        Assert.assertEquals(expected.get(11), 123);
     }
 
     @Test

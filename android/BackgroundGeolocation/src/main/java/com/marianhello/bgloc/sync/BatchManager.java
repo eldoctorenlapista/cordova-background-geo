@@ -100,7 +100,8 @@ public class BatchManager {
                 String provider = cursor.getString(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_PROVIDER));
                 double latitude = cursor.getDouble(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_LATITUDE));
                 double longitude = cursor.getDouble(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_LONGITUDE));
-                long time = cursor.getLong(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_TIME));;
+                long time = cursor.getLong(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_TIME));
+                ;
                 float accuracy = cursor.getFloat(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_ACCURACY));
                 float speed = cursor.getFloat(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_SPEED));
                 float bearing = cursor.getFloat(cursor.getColumnIndex(SQLiteLocationContract.LocationEntry.COLUMN_NAME_BEARING));
@@ -114,66 +115,66 @@ public class BatchManager {
 
                 if (template instanceof HashMapLocationTemplate) {
                     writer.beginObject();
-                    HashMapLocationTemplate hashTemplate = (HashMapLocationTemplate)template;
+                    HashMapLocationTemplate hashTemplate = (HashMapLocationTemplate) template;
                     Iterator it = hashTemplate.iterator();
                     while (it.hasNext()) {
                         Map.Entry<String, String> pair = (Map.Entry) it.next();
                         String key = pair.getKey();
-                        String propName = pair.getValue();
+                        String value = String.valueOf(pair.getValue());
 
-                        if ("@id".equals(key)) {
-                            writer.name(propName).value(locationId);
-                        } else if ("@locationProvider".equals(key)) {
-                            writer.name(propName).value(locationProvider);
-                        } else if ("@provider".equals(key)) {
-                            writer.name(propName).value(provider);
-                        } else if ("@time".equals(key)) {
-                            writer.name(propName).value(time);
-                        } else if ("@latitude".equals(key)) {
-                            writer.name(propName).value(latitude);
-                        } else if ("@longitude".equals(key)) {
-                            writer.name(propName).value(longitude);
-                        } else if ("@accuracy".equals(key)) {
+                        if ("@id".equals(value)) {
+                            writer.name(key).value(locationId);
+                        } else if ("@locationProvider".equals(value)) {
+                            writer.name(key).value(locationProvider);
+                        } else if ("@provider".equals(value)) {
+                            writer.name(key).value(provider);
+                        } else if ("@time".equals(value)) {
+                            writer.name(key).value(time);
+                        } else if ("@latitude".equals(value)) {
+                            writer.name(key).value(latitude);
+                        } else if ("@longitude".equals(value)) {
+                            writer.name(key).value(longitude);
+                        } else if ("@accuracy".equals(value)) {
                             if (hasAccuracy) {
-                                writer.name(propName).value(accuracy);
+                                writer.name(key).value(accuracy);
                             } else {
-                                writer.name(propName).nullValue();
+                                writer.name(key).nullValue();
                             }
-                        }  else if ("@speed".equals(key)) {
+                        } else if ("@speed".equals(value)) {
                             if (hasSpeed) {
-                                writer.name(propName).value(speed);
+                                writer.name(key).value(speed);
                             } else {
-                                writer.name(propName).nullValue();
+                                writer.name(key).nullValue();
                             }
-                        } else if ("@bearing".equals(key)) {
+                        } else if ("@bearing".equals(value)) {
                             if (hasBearing) {
-                                writer.name(propName).value(bearing);
+                                writer.name(key).value(bearing);
                             } else {
-                                writer.name(propName).nullValue();
+                                writer.name(key).nullValue();
                             }
-                        } else if ("@altitude".equals(key)) {
+                        } else if ("@altitude".equals(value)) {
                             if (hasAltitude) {
-                                writer.name(propName).value(altitude);
+                                writer.name(key).value(altitude);
                             } else {
-                                writer.name(propName).nullValue();
+                                writer.name(key).nullValue();
                             }
-                        } else if ("@radius".equals(key)) {
+                        } else if ("@radius".equals(value)) {
                             if (hasRadius) {
-                                writer.name(propName).value(radius);
+                                writer.name(key).value(radius);
                             } else {
-                                writer.name(propName).nullValue();
+                                writer.name(key).nullValue();
                             }
                         } else {
-                            writer.name(propName).value(key);
+                            writer.name(key).value(value);
                         }
                     }
                     writer.endObject();
                 } else if (template instanceof LinkedHashSetLocationTemplate) {
-                    LinkedHashSetLocationTemplate hashTemplate = (LinkedHashSetLocationTemplate)template;
+                    LinkedHashSetLocationTemplate hashTemplate = (LinkedHashSetLocationTemplate) template;
                     writer.beginArray();
                     Iterator it = hashTemplate.iterator();
                     while (it.hasNext()) {
-                        String key = (String) it.next();
+                        String key = it.next().toString();
                         if ("@id".equals(key)) {
                             writer.value(locationId);
                         } else if ("@locationProvider".equals(key)) {
@@ -192,7 +193,7 @@ public class BatchManager {
                             } else {
                                 writer.nullValue();
                             }
-                        }  else if ("@speed".equals(key)) {
+                        } else if ("@speed".equals(key)) {
                             if (hasSpeed) {
                                 writer.value(speed);
                             } else {
@@ -238,13 +239,14 @@ public class BatchManager {
 
             return file;
         } finally {
+            db.endTransaction();
+
             if (cursor != null) {
                 cursor.close();
             }
             if (writer != null) {
                 writer.close();
             }
-            db.endTransaction();
         }
     }
 
@@ -254,17 +256,17 @@ public class BatchManager {
             tpl = template;
         } else {
             HashMap map = new HashMap<String,String>();
-            map.put("@id", "id");
-            map.put("@locationProvider", "locationProvider");
-            map.put("@provider", "provider");
-            map.put("@time", "time");
-            map.put("@latitude", "latitude");
-            map.put("@longitude", "longitude");
-            map.put("@accuracy", "accuracy");
-            map.put("@speed", "speed");
-            map.put("@bearing", "bearing");
-            map.put("@altitude", "altitude");
-            map.put("@radius", "radius");
+            map.put("id", "@id");
+            map.put("locationProvider", "@locationProvider");
+            map.put("provider", "@provider");
+            map.put("time", "@time");
+            map.put("latitude", "@latitude");
+            map.put("longitude", "@longitude");
+            map.put("accuracy", "@accuracy");
+            map.put("speed", "@speed");
+            map.put("bearing", "@bearing");
+            map.put("altitude", "@altitude");
+            map.put("radius", "@radius");
 
             tpl  = new HashMapLocationTemplate(map);
         }

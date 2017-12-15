@@ -15,19 +15,14 @@ import java.util.LinkedHashSet;
 
 public class LocationTemplateFactory {
 
-    public static LocationTemplate fromJSON(Object json, boolean reverted) throws JSONException {
+    public static LocationTemplate fromJSON(Object json) throws JSONException {
         if (json instanceof JSONObject) {
             HashMap templateMap = new HashMap<String, String>();
             JSONObject jsonObject = (JSONObject) json;
             Iterator<?> it = jsonObject.keys();
             while (it.hasNext()) {
                 String key = (String) it.next();
-                if (reverted) {
-                    // we use reverted key, value semantic
-                    templateMap.put(jsonObject.get(key), key);
-                } else {
-                    templateMap.put(key, jsonObject.get(key));
-                }
+                templateMap.put(key, jsonObject.get(key));
             }
 
             return new HashMapLocationTemplate(templateMap);
@@ -43,16 +38,12 @@ public class LocationTemplateFactory {
         return null;
     }
 
-    public static LocationTemplate fromJSONReverted(Object json) throws JSONException {
-        return fromJSON(json, true);
-    }
-
     public static LocationTemplate fromJSONString(String jsonString) throws JSONException {
         if (jsonString == null) {
             return null;
         }
         Object json = new JSONTokener(jsonString).nextValue();
-        return fromJSON(json, false);
+        return fromJSON(json);
     }
 
     public static LocationTemplate fromHashMap(HashMap template) {

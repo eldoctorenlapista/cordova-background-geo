@@ -26,10 +26,13 @@ public class HashMapLocationTemplate extends AbstractLocationTemplate implements
 
         Iterator<?> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, String> pair = (Map.Entry) it.next();
-            String key = pair.getKey();
-            Object value = location.getValueForKey(key);
-            jObject.put(pair.getValue(), value != null ? value : pair.getKey());
+            Map.Entry<String, Object> pair = (Map.Entry) it.next();
+            Object value = null;
+            Object key = pair.getValue();
+            if (key instanceof String) {
+                value = location.getValueForKey((String)key);
+            }
+            jObject.put(pair.getKey(), value != null ? value : pair.getValue());
         }
 
         return jObject;
