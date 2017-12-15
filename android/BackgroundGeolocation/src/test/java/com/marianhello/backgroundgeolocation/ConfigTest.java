@@ -3,6 +3,7 @@ package com.marianhello.backgroundgeolocation;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.marianhello.bgloc.Config;
+import com.marianhello.bgloc.data.LocationTemplateFactory;
 
 import junit.framework.Assert;
 
@@ -70,7 +71,7 @@ public class ConfigTest {
         Assert.assertEquals(config.getSyncUrl(), "");
         Assert.assertEquals(config.getSyncThreshold().intValue(), 100);
         Assert.assertTrue(config.getHttpHeaders().isEmpty());
-        Assert.assertTrue(config.getTemplate().isEmpty());
+        Assert.assertEquals(config.getTemplate(), LocationTemplateFactory.getDefault());
         Assert.assertEquals(config.getMaxLocations().intValue(), 10000);
     }
 

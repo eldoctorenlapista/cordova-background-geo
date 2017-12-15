@@ -519,15 +519,9 @@ public class LocationService extends Service {
             logger.debug("Executing PostLocationTask#doInBackground");
             JSONArray jsonLocations = new JSONArray();
             for (BackgroundLocation location : locations) {
-                Object jsonLocation;
+                Config config = getConfig();
                 try {
-                    LocationTemplate tpl = mConfig.getTemplate();
-                    if (tpl.isEmpty()) {
-                        jsonLocation = location.toJSONObject();
-                        jsonLocations.put(jsonLocation);
-                    } else {
-                        jsonLocations.put(tpl.locationToJson(location));
-                    }
+                    jsonLocations.put(config.getTemplate().locationToJson(location));
                 } catch (JSONException e) {
                     logger.warn("Location to json failed: {}", location.toString());
                     return false;

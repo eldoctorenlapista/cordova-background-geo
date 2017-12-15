@@ -90,7 +90,7 @@ public class ConfigMapper {
         }
         if (jObject.has("postTemplate")) {
             if (jObject.isNull("postTemplate")) {
-                config.setTemplate(new HashMapLocationTemplate(null));
+                config.setTemplate(LocationTemplateFactory.getDefault());
             } else {
                 Object postTemplate = jObject.get("postTemplate");
                 config.setTemplate(LocationTemplateFactory.fromJSON(postTemplate));

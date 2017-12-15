@@ -5,6 +5,7 @@ import com.marianhello.bgloc.cordova.ConfigMapper;
 import com.marianhello.bgloc.data.HashMapLocationTemplate;
 import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplateFactory;
 
 import junit.framework.Assert;
 
@@ -47,7 +48,7 @@ public class ConfigMapperTest {
             Assert.assertEquals(config.getSyncThreshold().intValue(), jConfig.getInt("syncThreshold"));
             Assert.assertEquals(new JSONObject(config.getHttpHeaders()).toString(), jConfig.getJSONObject("httpHeaders").toString());
             Assert.assertEquals(config.getMaxLocations().intValue(), jConfig.getInt("maxLocations"));
-            Assert.assertEquals(JSONObject.NULL, jConfig.get("postTemplate"));
+            Assert.assertEquals(LocationTemplateFactory.getDefault().toString(), jConfig.get("postTemplate").toString());
         } catch (JSONException e) {
             Assert.fail(e.getMessage());
         }

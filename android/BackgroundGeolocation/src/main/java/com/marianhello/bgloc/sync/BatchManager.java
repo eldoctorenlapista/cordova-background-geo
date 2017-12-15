@@ -10,6 +10,7 @@ import android.util.JsonWriter;
 import com.marianhello.bgloc.data.HashMapLocationTemplate;
 import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplate;
+import com.marianhello.bgloc.data.LocationTemplateFactory;
 import com.marianhello.bgloc.data.sqlite.SQLiteLocationContract;
 import com.marianhello.bgloc.data.sqlite.SQLiteOpenHelper;
 import com.marianhello.logging.LoggerManager;
@@ -255,20 +256,7 @@ public class BatchManager {
         if (template != null) {
             tpl = template;
         } else {
-            HashMap map = new HashMap<String,String>();
-            map.put("id", "@id");
-            map.put("locationProvider", "@locationProvider");
-            map.put("provider", "@provider");
-            map.put("time", "@time");
-            map.put("latitude", "@latitude");
-            map.put("longitude", "@longitude");
-            map.put("accuracy", "@accuracy");
-            map.put("speed", "@speed");
-            map.put("bearing", "@bearing");
-            map.put("altitude", "@altitude");
-            map.put("radius", "@radius");
-
-            tpl  = new HashMapLocationTemplate(map);
+            tpl = LocationTemplateFactory.getDefault();
         }
         return createBatchFromTemplate(batchStartMillis, syncThreshold, tpl);
     }

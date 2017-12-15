@@ -486,9 +486,8 @@ public class Config implements Parcelable, Cloneable
 
     public LocationTemplate getTemplate() {
         if (!hasTemplate()) {
-            return new HashMapLocationTemplate(null);
+            template = LocationTemplateFactory.getDefault();
         }
-
         return template;
     }
 
