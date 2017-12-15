@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
@@ -100,13 +101,13 @@ public class SQLiteConfigurationDAOTest {
     }
 
     @Test
-    public void persistConfigurationWithLinkedHashSet() {
+    public void persistConfigurationWithArrayList() {
         Context ctx = InstrumentationRegistry.getTargetContext();
         SQLiteDatabase db = new SQLiteOpenHelper(ctx).getWritableDatabase();
         SQLiteConfigurationDAO dao = new SQLiteConfigurationDAO(db);
 
         Config config = Config.getDefault();
-        LinkedHashSet props = new LinkedHashSet<String>();
+        ArrayList props = new ArrayList();
         props.add("@id");
         props.add("@provider");
         props.add("@time");
@@ -119,7 +120,7 @@ public class SQLiteConfigurationDAOTest {
         props.add("@speed");
         props.add("@bearing");
 
-        config.setTemplate(LocationTemplateFactory.fromLinkedHashSet(props));
+        config.setTemplate(LocationTemplateFactory.fromArrayList(props));
         dao.persistConfiguration(config);
 
         try {
@@ -131,7 +132,7 @@ public class SQLiteConfigurationDAOTest {
     }
 
     @Test
-    public void persistConfigurationWithArrayTemplate() {
+    public void persistConfigurationWithHashMap() {
         Context ctx = InstrumentationRegistry.getTargetContext();
         SQLiteDatabase db = new SQLiteOpenHelper(ctx).getWritableDatabase();
         SQLiteConfigurationDAO dao = new SQLiteConfigurationDAO(db);

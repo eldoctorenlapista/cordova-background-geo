@@ -2,6 +2,7 @@ package com.marianhello;
 
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.cordova.ConfigMapper;
+import com.marianhello.bgloc.data.ArrayListLocationTemplate;
 import com.marianhello.bgloc.data.HashMapLocationTemplate;
 import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplate;
@@ -13,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
@@ -135,12 +137,61 @@ public class ConfigMapperTest {
         LinkedHashSet set = new LinkedHashSet();
         set.add("foo");
         set.add(123);
+        set.add("foo");
         LocationTemplate tpl = new LinkedHashSetLocationTemplate(set);
         config.setTemplate(tpl);
 
         try {
             JSONObject jConfig = ConfigMapper.toJSONObject(config);
             Assert.assertEquals("[\"foo\",123]", jConfig.get("postTemplate").toString());
+        } catch (JSONException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testNullArrayListLocationTemplateToJSONObject() {
+        Config config = new Config();
+        LocationTemplate tpl = new ArrayListLocationTemplate(null);
+        config.setTemplate(tpl);
+
+        try {
+            JSONObject jConfig = ConfigMapper.toJSONObject(config);
+            Assert.assertEquals(JSONObject.NULL, jConfig.get("postTemplate"));
+        } catch (JSONException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testEmptyArrayListLocationTemplateToJSONObject() {
+        Config config = new Config();
+        ArrayList list = new ArrayList();
+        LocationTemplate tpl = new ArrayListLocationTemplate(list);
+        config.setTemplate(tpl);
+
+        try {
+            JSONObject jConfig = ConfigMapper.toJSONObject(config);
+            Assert.assertEquals("[]", jConfig.get("postTemplate").toString());
+        } catch (JSONException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testArrayListLocationTemplateToJSONObject() {
+        Config config = new Config();
+        ArrayList list = new ArrayList();
+        list.add("foo");
+        list.add(123);
+        list.add("foo");
+
+        LocationTemplate tpl = new ArrayListLocationTemplate(list);
+        config.setTemplate(tpl);
+
+        try {
+            JSONObject jConfig = ConfigMapper.toJSONObject(config);
+            Assert.assertEquals("[\"foo\",123,\"foo\"]", jConfig.get("postTemplate").toString());
         } catch (JSONException e) {
             Assert.fail(e.getMessage());
         }

@@ -1,7 +1,7 @@
 package com.marianhello.backgroundgeolocation;
 
+import com.marianhello.bgloc.data.ArrayListLocationTemplate;
 import com.marianhello.bgloc.data.BackgroundLocation;
-import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplate;
 
 import junit.framework.Assert;
@@ -10,23 +10,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 
 /**
- * Created by finch on 9.12.2017.
+ * Created by finch on 15.12.2017.
  */
 
-public class LinkedHashSetLocationTemplateTest {
+public class ArrayListLocationTemplateTest {
     @Test
     public void testLinkedHashSetTemplateToString() {
-        LinkedHashSet props = new LinkedHashSet();
+        ArrayList props = new ArrayList();
         props.add("foo");
         props.add("bar");
         props.add(123);
-        props.add("foo"); // no duplicates
-        LinkedHashSetLocationTemplate tpl = new LinkedHashSetLocationTemplate(props);
+        props.add("foo");
+        ArrayListLocationTemplate tpl = new ArrayListLocationTemplate(props);
 
-        Assert.assertEquals("[\"foo\",\"bar\",123]" , tpl.toString());
+        Assert.assertEquals("[\"foo\",\"bar\",123,\"foo\"]" , tpl.toString());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class LinkedHashSetLocationTemplateTest {
         location.setSpeed(50);
         location.setBearing(1);
 
-        LinkedHashSet props = new LinkedHashSet();
+        ArrayList props = new ArrayList();
         props.add("@id");
         props.add("@provider");
         props.add("@time");
@@ -57,7 +57,7 @@ public class LinkedHashSetLocationTemplateTest {
         props.add("@bearing");
         props.add(123);
 
-        LocationTemplate tpl = new LinkedHashSetLocationTemplate(props);
+        LocationTemplate tpl = new ArrayListLocationTemplate(props);
         JSONArray expected = (JSONArray) tpl.locationToJson(location);
 
         Assert.assertEquals(expected.get(0), location.getLocationId());
@@ -76,7 +76,7 @@ public class LinkedHashSetLocationTemplateTest {
 
     @Test
     public void testNullToString() {
-        LinkedHashSetLocationTemplate tpl = new LinkedHashSetLocationTemplate(null);
+        ArrayListLocationTemplate tpl = new ArrayListLocationTemplate(null);
         Assert.assertEquals("null", tpl.toString());
     }
 }

@@ -3,30 +3,29 @@ package com.marianhello.bgloc.data;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 
 /**
- * Created by finch on 9.12.2017.
+ * Created by finch on 15.12.2017.
  */
 
-public class LinkedHashSetLocationTemplate extends AbstractLocationTemplate implements Serializable {
-    private LinkedHashSet set;
+public class ArrayListLocationTemplate implements LocationTemplate {
+    private ArrayList list;
     private static final long serialVersionUID = 1234L;
 
-    public LinkedHashSetLocationTemplate(LinkedHashSet set) {
-        this.set = set;
+    public ArrayListLocationTemplate(ArrayList list) {
+        this.list = list;
     }
 
     @Override
-    public Object locationToJson(BackgroundLocation location) {
+    public Object locationToJson(BackgroundLocation location) throws JSONException {
         JSONArray jArray = new JSONArray();
-        if (set == null) {
+        if (list == null) {
             return jArray;
         }
 
-        Iterator it = set.iterator();
+        Iterator it = list.iterator();
         while (it.hasNext()) {
             Object value = null;
             Object key = it.next();
@@ -40,34 +39,34 @@ public class LinkedHashSetLocationTemplate extends AbstractLocationTemplate impl
     }
 
     public Iterator iterator() {
-        return set.iterator();
+        return list.iterator();
     }
 
     public boolean containsKey(String key) {
-        return set.contains(key);
+        return list.contains(key);
     }
 
     @Override
     public boolean isEmpty() {
-        return set == null || set.isEmpty();
+        return list == null || list.isEmpty();
     }
 
     @Override
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;
-        if (!(other instanceof LinkedHashSetLocationTemplate)) return false;
-        return ((LinkedHashSetLocationTemplate) other).set.equals(this.set);
+        if (!(other instanceof ArrayListLocationTemplate)) return false;
+        return ((ArrayListLocationTemplate) other).list.equals(this.list);
     }
 
     @Override
     public String toString() {
-        if (set == null) {
+        if (list == null) {
             return "null";
         }
 
         JSONArray jArray = new JSONArray();
-        Iterator<?> it = (set).iterator();
+        Iterator<?> it = (list).iterator();
         while (it.hasNext()) {
             jArray.put(it.next());
         }
@@ -75,10 +74,10 @@ public class LinkedHashSetLocationTemplate extends AbstractLocationTemplate impl
     }
 
     public Object[] toArray() {
-        if (set == null) {
+        if (list == null) {
             return null;
         }
 
-        return set.toArray();
+        return list.toArray();
     }
 }

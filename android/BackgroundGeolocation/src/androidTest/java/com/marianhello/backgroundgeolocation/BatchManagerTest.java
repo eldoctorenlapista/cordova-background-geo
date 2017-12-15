@@ -8,6 +8,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
+import com.marianhello.bgloc.data.ArrayListLocationTemplate;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.bgloc.data.HashMapLocationTemplate;
 import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
@@ -145,7 +146,7 @@ public class BatchManagerTest {
     }
 
     @Test
-    public void createBatchWithLinkedHashTemplate() {
+    public void createBatchWithArrayListTemplate() {
         SQLiteLocationDAO dao = new SQLiteLocationDAO(db);
 
         for (int i = 1; i < 3; i++) {
@@ -158,12 +159,12 @@ public class BatchManagerTest {
         }
 
 
-        LinkedHashSet set = new LinkedHashSet();
-        set.add("@latitude");
-        set.add("@longitude");
-        set.add("foo");
-        set.add("bar");
-        LocationTemplate template = new LinkedHashSetLocationTemplate(set);
+        ArrayList list = new ArrayList();
+        list.add("@latitude");
+        list.add("@longitude");
+        list.add("foo");
+        list.add("bar");
+        LocationTemplate template = new ArrayListLocationTemplate(list);
 
         ArrayList<HashMap> locations = new ArrayList();
         BatchManager batchManager = new BatchManager(InstrumentationRegistry.getTargetContext());

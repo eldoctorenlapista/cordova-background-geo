@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -17,7 +18,7 @@ public class LocationTemplateFactory {
 
     public static LocationTemplate fromJSON(Object json) throws JSONException {
         if (json instanceof JSONObject) {
-            HashMap templateMap = new HashMap<String, String>();
+            HashMap templateMap = new HashMap<String, Object>();
             JSONObject jsonObject = (JSONObject) json;
             Iterator<?> it = jsonObject.keys();
             while (it.hasNext()) {
@@ -27,13 +28,13 @@ public class LocationTemplateFactory {
 
             return new HashMapLocationTemplate(templateMap);
         } else if (json instanceof JSONArray) {
-            LinkedHashSet templateSet = new LinkedHashSet<String>();
+            ArrayList templateList = new ArrayList();
             JSONArray jsonArray = (JSONArray) json;
             for (int i = 0, size = jsonArray.length(); i < size; i++) {
-                templateSet.add(jsonArray.get(i));
+                templateList.add(jsonArray.get(i));
             }
 
-            return new LinkedHashSetLocationTemplate(templateSet);
+            return new ArrayListLocationTemplate(templateList);
         }
         return null;
     }
@@ -52,6 +53,10 @@ public class LocationTemplateFactory {
 
     public static LocationTemplate fromLinkedHashSet(LinkedHashSet template) {
         return new LinkedHashSetLocationTemplate(template);
+    }
+
+    public static LocationTemplate fromArrayList(ArrayList template) {
+        return new ArrayListLocationTemplate(template);
     }
 
     public static LocationTemplate getDefault() {

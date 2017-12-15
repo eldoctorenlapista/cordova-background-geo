@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.JsonWriter;
 
+import com.marianhello.bgloc.data.ArrayListLocationTemplate;
 import com.marianhello.bgloc.data.HashMapLocationTemplate;
 import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplate;
@@ -170,8 +171,8 @@ public class BatchManager {
                         }
                     }
                     writer.endObject();
-                } else if (template instanceof LinkedHashSetLocationTemplate) {
-                    LinkedHashSetLocationTemplate hashTemplate = (LinkedHashSetLocationTemplate) template;
+                } else if (template instanceof ArrayListLocationTemplate) {
+                    ArrayListLocationTemplate hashTemplate = (ArrayListLocationTemplate) template;
                     writer.beginArray();
                     Iterator it = hashTemplate.iterator();
                     while (it.hasNext()) {
