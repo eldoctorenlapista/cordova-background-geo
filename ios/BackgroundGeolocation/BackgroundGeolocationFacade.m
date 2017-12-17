@@ -298,7 +298,7 @@ FMDBLogger *sqliteLogger;
             }
             return nil;
     }
-    
+    [locationProvider onCreate];
     return locationProvider;
 }
 

@@ -41,7 +41,6 @@ enum {
 
     BGOperationMode operationMode;
     NSDate *aquireStartTime;
-    //    BOOL shouldStart; //indicating intent to start service, but we're waiting for user permission
     
     CLLocationManager *locationManager;
 
@@ -54,30 +53,26 @@ enum {
 {
     self = [super init];
     
-    if (self == nil) {
-        return self;
+    if (self) {
+        isUpdatingLocation = NO;
+        isAcquiringStationaryLocation = NO;
+        isAcquiringSpeed = NO;
+        stationaryRegion = nil;
     }
-    
-    // background location cache, for when no network is detected.
-    locationManager = [[CLLocationManager alloc] init];
 
+    return self;
+}
+
+- (void) onCreate {
+    locationManager = [[CLLocationManager alloc] init];
+    
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         DDLogDebug(@"%@ iOS9 detected", TAG);
         locationManager.allowsBackgroundLocationUpdates = YES;
     }
     
     locationManager.delegate = self;
-    
-    isUpdatingLocation = NO;
-    isAcquiringStationaryLocation = NO;
-    isAcquiringSpeed = NO;
-    //    shouldStart = NO;
-    stationaryRegion = nil;
-    
-    return self;
 }
-
-- (void) onCreate {/* noop */}
 
 /**
  * configure provider

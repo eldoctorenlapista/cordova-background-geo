@@ -25,17 +25,17 @@ static NSString * const Domain = @"com.marianhello";
 {
     self = [super init];
 
-    if (self == nil) {
-        return self;
+    if (self) {
+        isStarted = NO;
     }
-
-    locationController = [LocationController sharedInstance];
-    locationController.delegate = self;
 
     return self;
 }
 
-- (void) onCreate {/* noop */}
+- (void) onCreate {
+    locationController = [LocationController sharedInstance];
+    locationController.delegate = self;
+}
 
 - (BOOL) onConfigure:(Config*)config error:(NSError * __autoreleasing *)outError
 {
