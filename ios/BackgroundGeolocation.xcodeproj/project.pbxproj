@@ -266,15 +266,15 @@
 		41BCFA501FE19ED300D4000E /* SOMotionDetector */ = {
 			isa = PBXGroup;
 			children = (
+				41BCFA571FE19ED300D4000E /* SOMotionDetector.h */,
 				41BCFA511FE19ED300D4000E /* SOMotionDetector.m */,
+				41BCFA561FE19ED300D4000E /* SOLocationManager.h */,
 				41BCFA521FE19ED300D4000E /* SOLocationManager.m */,
 				41BCFA531FE19ED300D4000E /* SOStepDetector.h */,
+				41BCFA591FE19ED300D4000E /* SOStepDetector.m */,
 				41BCFA541FE19ED300D4000E /* LICENSE */,
 				41BCFA551FE19ED300D4000E /* README.md */,
-				41BCFA561FE19ED300D4000E /* SOLocationManager.h */,
-				41BCFA571FE19ED300D4000E /* SOMotionDetector.h */,
 				41BCFA581FE19ED300D4000E /* CHANGELOG.md */,
-				41BCFA591FE19ED300D4000E /* SOStepDetector.m */,
 			);
 			path = SOMotionDetector;
 			sourceTree = "<group>";

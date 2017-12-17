@@ -90,17 +90,10 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma mark - Public Methods
 - (void)startDetection
 {
-    [[SOLocationManager sharedInstance] start];
-    
-    self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
-                                                                target:self
-                                                              selector:@selector(detectShaking)
-                                                              userInfo:Nil
-                                                               repeats:YES];
-    
+
     [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init]
                                              withHandler:^(CMAccelerometerData *accelerometerData, NSError *error)
-    {
+     {
          _acceleration = accelerometerData.acceleration;
          [self calculateMotionType];
          dispatch_async(dispatch_get_main_queue(), ^{
@@ -117,7 +110,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
              }
          });
      }];
-    
+
     if (self.useM7IfAvailable && [SOMotionDetector motionHardwareAvailable]) {
         if (!self.motionActivityManager) {
             self.motionActivityManager = [[CMMotionActivityManager alloc] init];
@@ -151,8 +144,16 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
                     }
                 }
             });
-
+            
         }];
+    } else {
+        [[SOLocationManager sharedInstance] start];
+        
+        self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
+                                                                    target:self
+                                                                  selector:@selector(detectShaking)
+                                                                  userInfo:Nil
+                                                                   repeats:YES];
     }
 }
 
@@ -164,6 +165,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
     [[SOLocationManager sharedInstance] stop];
     [self.motionManager stopAccelerometerUpdates];
     [self.motionActivityManager stopActivityUpdates];
+    _previousMotionType = 0;
 }
 
 #pragma mark - Customization Methods
@@ -189,10 +191,6 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma mark - Private Methods
 - (void)calculateMotionType
 {
-    if (self.useM7IfAvailable && [SOMotionDetector motionHardwareAvailable]) {
-        return;
-    }
-    
     if (_currentSpeed < kMinimumSpeed) {
         _motionType = MotionTypeNotMoving;
     } else if (_currentSpeed <= kMaximumWalkingSpeed) {
