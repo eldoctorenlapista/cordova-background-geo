@@ -94,7 +94,7 @@ static NSString * const Domain = @"com.marianhello";
 
 - (void) onError:(NSError*)error
 {
-    [super.delegate onError:error];
+    [self.delegate onError:error];
 }
 
 - (void) onPause:(CLLocationManager*)manager
