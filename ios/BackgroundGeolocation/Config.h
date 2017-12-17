@@ -38,6 +38,7 @@ enum {
 - (instancetype) initWithDefaults;
 + (instancetype) fromDictionary:(NSDictionary*)config;
 + (instancetype) merge:(Config*)config withConfig:(Config*)newConfig;
++ (NSDictionary*) getDefaultTemplate;
 
 - (BOOL) hasStationaryRadius;
 - (BOOL) hasDistanceFilter;
@@ -46,7 +47,9 @@ enum {
 - (BOOL) hasActivityType;
 - (BOOL) hasStopOnTerminate;
 - (BOOL) hasUrl;
+- (BOOL) hasValidUrl;
 - (BOOL) hasSyncUrl;
+- (BOOL) hasValidSyncUrl;
 - (BOOL) hasSyncThreshold;
 - (BOOL) hasHttpHeaders;
 - (BOOL) hasSaveBatteryOnBackground;

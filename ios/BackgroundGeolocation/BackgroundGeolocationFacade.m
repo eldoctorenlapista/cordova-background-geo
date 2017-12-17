@@ -168,7 +168,7 @@ FMDBLogger *sqliteLogger;
         return NO;
     }
    
-    if ([_config hasSyncUrl] && uploader == nil) {
+    if ([_config hasValidSyncUrl] && uploader == nil) {
         uploader = [[BackgroundSync alloc] init];
     }
 
@@ -372,7 +372,7 @@ FMDBLogger *sqliteLogger;
     // TODO: investigate location id always 0
     location.locationId = [locationDAO persistLocation:location limitRows:config.maxLocations.integerValue];
 
-    if (hasConnectivity && [config hasUrl]) {
+    if (hasConnectivity && [config hasValidUrl]) {
         NSError *error = nil;
         if ([location postAsJSON:config.url withTemplate:config._template withHttpHeaders:config.httpHeaders error:&error]) {
             SQLiteLocationDAO* locationDAO = [SQLiteLocationDAO sharedInstance];
@@ -391,7 +391,7 @@ FMDBLogger *sqliteLogger;
 {
     Config *config = [self getConfig];
 
-    if ([config hasSyncUrl]) {
+    if ([config hasValidSyncUrl]) {
         [uploader sync:config.syncUrl onLocationThreshold:config.syncThreshold.integerValue withTemplate:config._template withHttpHeaders:config.httpHeaders];
     }
 }

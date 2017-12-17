@@ -59,16 +59,16 @@
     if (isNotNull(config[@"stopOnTerminate"])) {
         instance._stopOnTerminate = config[@"stopOnTerminate"];
     }
-    if (isNotNull(config[@"url"])) {
+    if (config[@"url"] != nil) {
         instance.url = config[@"url"];
     }
-    if (isNotNull(config[@"syncUrl"])) {
+    if (config[@"syncUrl"] != nil) {
         instance.syncUrl = config[@"syncUrl"];
     }
     if (isNotNull(config[@"syncThreshold"])) {
         instance.syncThreshold = config[@"syncThreshold"];
     }
-    if (isNotNull(config[@"httpHeaders"])) {
+    if (config[@"httpHeaders"] != nil) {
         instance.httpHeaders = config[@"httpHeaders"];
     }
     if (isNotNull(config[@"saveBatteryOnBackground"])) {
@@ -83,7 +83,7 @@
     if (isNotNull(config[@"locationProvider"])) {
         instance.locationProvider = config[@"locationProvider"];
     }
-    if (isNotNull(config[@"postTemplate"])) {
+    if (config[@"postTemplate"] != nil) {
         instance._template = config[@"postTemplate"];
     }
 
@@ -169,6 +169,7 @@
         copy.maxLocations = maxLocations;
         copy._pauseLocationUpdates = _pauseLocationUpdates;
         copy.locationProvider = locationProvider;
+        copy._template = _template;
     }
     
     return copy;
@@ -206,12 +207,56 @@
 
 - (BOOL) hasUrl
 {
-    return (url != nil && url.length > 0);
+    return url != nil;
+}
+
+- (BOOL) hasValidUrl
+{
+    return url != nil && url.length > 0;
+}
+
+- (void) setUrl:(NSString*)newUrl
+{
+    if (newUrl == (id)[NSNull null]) {
+        url = @"";
+    } else {
+        url = newUrl;
+    }
+}
+
+- (NSString*) url
+{
+    if (url == nil) {
+        url = @"";
+    }
+    return url;
 }
 
 - (BOOL) hasSyncUrl
 {
-    return (syncUrl != nil && syncUrl.length > 0);
+    return syncUrl != nil;
+}
+
+- (BOOL) hasValidSyncUrl
+{
+    return syncUrl != nil && syncUrl.length > 0;
+}
+
+- (void) setSyncUrl:(NSString*)newSyncUrl
+{
+    if (newSyncUrl == (id)[NSNull null]) {
+        syncUrl = @"";
+    } else {
+        syncUrl = newSyncUrl;
+    }
+}
+
+- (NSString*) syncUrl
+{
+    if (syncUrl == nil) {
+        syncUrl = @"";
+    }
+    return syncUrl;
 }
 
 - (BOOL) hasSyncThreshold
@@ -222,6 +267,23 @@
 - (BOOL) hasHttpHeaders
 {
     return httpHeaders != nil;
+}
+
+- (void) setHttpHeaders:(NSMutableDictionary *)newHttpHeaders
+{
+    if (newHttpHeaders == (id)[NSNull null]) {
+        httpHeaders = [[NSMutableDictionary alloc] init];
+    } else {
+        httpHeaders = newHttpHeaders;
+    }
+}
+
+- (NSMutableDictionary *) httpHeaders
+{
+    if (httpHeaders == nil) {
+        httpHeaders = [[NSMutableDictionary alloc] init];
+    }
+    return httpHeaders;
 }
 
 - (BOOL) hasSaveBatteryOnBackground
@@ -247,6 +309,22 @@
 - (BOOL) hasTemplate
 {
     return _template != nil;
+}
+
+- (void) set_template:(NSObject*)template
+{
+    if (template == (id)[NSNull null]) {
+        _template = [Config getDefaultTemplate];
+    } else {
+        _template = template;
+    }
+}
+
+- (NSObject*) _template{
+    if (_template == nil) {
+        _template = [Config getDefaultTemplate];
+    }
+    return _template;
 }
 
 - (BOOL) isDebugging
@@ -304,6 +382,23 @@
     return kCLLocationAccuracyHundredMeters;
 }
 
++ (NSDictionary*) getDefaultTemplate
+{
+    return @{
+             @"time": @"@time",
+             @"accuracy": @"@accuracy",
+             @"altitudeAccuracy": @"@altitudeAccuracy",
+             @"speed": @"@speed",
+             @"bearing": @"@bearing",
+             @"altitude": @"@altitude",
+             @"latitude": @"@latitude",
+             @"longitude": @"@longitude",
+             @"provider": @"provider",
+             @"locationProvider": @"@locationProvider",
+             @"radius": @"@radius",
+             };
+}
+
 - (NSString*) getHttpHeadersAsString:(NSError * __autoreleasing *)outError;
 {
     NSError *error = nil;
@@ -348,29 +443,28 @@
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:10];
  
-    if (activityType != nil) [dict setObject:activityType forKey:@"activityType"];
-    if (url != nil) [dict setObject:url forKey:@"url"];
-    if (syncUrl != nil) [dict setObject:syncUrl forKey:@"syncUrl"];
-    if (httpHeaders != nil) [dict setObject:httpHeaders forKey:@"httpHeaders"];
-    if (_template != nil) [dict setObject:_template forKey:@"postTemplate"];
+    if ([self hasActivityType]) [dict setObject:self.activityType forKey:@"activityType"];
+    if ([self hasUrl]) [dict setObject:self.url forKey:@"url"];
+    if ([self hasSyncUrl]) [dict setObject:self.syncUrl forKey:@"syncUrl"];
+    if ([self hasHttpHeaders]) [dict setObject:self.httpHeaders forKey:@"httpHeaders"];
+    if ([self hasStationaryRadius]) [dict setObject:self.stationaryRadius forKey:@"stationaryRadius"];
+    if ([self hasDistanceFilter]) [dict setObject:self.distanceFilter forKey:@"distanceFilter"];
+    if ([self hasDesiredAccuracy]) [dict setObject:self.desiredAccuracy forKey:@"desiredAccuracy"];
+    if ([self hasDebug]) [dict setObject:self._debug forKey:@"debug"];
+    if ([self hasStopOnTerminate]) [dict setObject:self._stopOnTerminate forKey:@"stopOnTerminate"];
+    if ([self hasSyncThreshold]) [dict setObject:self.syncThreshold forKey:@"syncThreshold"];
+    if ([self hasSaveBatteryOnBackground]) [dict setObject:self._saveBatteryOnBackground forKey:@"saveBatteryOnBackground"];
+    if ([self hasMaxLocations]) [dict setObject:self.maxLocations forKey:@"maxLocations"];
+    if ([self hasPauseLocationUpdates]) [dict setObject:self._pauseLocationUpdates forKey:@"pauseLocationUpdates"];
+    if ([self hasLocationProvider]) [dict setObject:self.locationProvider forKey:@"locationProvider"];
+    [dict setObject:self._template forKey:@"postTemplate"];
 
-    [dict setObject:stationaryRadius forKey:@"stationaryRadius"];
-    [dict setObject:distanceFilter forKey:@"distanceFilter"];
-    [dict setObject:desiredAccuracy forKey:@"desiredAccuracy"];
-    [dict setObject:_debug forKey:@"debug"];
-    [dict setObject:_stopOnTerminate forKey:@"stopOnTerminate"];
-    [dict setObject:syncThreshold forKey:@"syncThreshold"];
-    [dict setObject:_saveBatteryOnBackground forKey:@"saveBatteryOnBackground"];
-    [dict setObject:maxLocations forKey:@"maxLocations"];
-    [dict setObject:_pauseLocationUpdates forKey:@"pauseLocationUpdates"];
-    [dict setObject:locationProvider forKey:@"locationProvider"];
-    
-    return dict; 
+    return dict;
 }
 
 - (NSString *) description
 {
-    return [NSString stringWithFormat:@"Config: distanceFilter=%@ stationaryRadius=%@ desiredAccuracy=%@ activityType=%@ isDebugging=%@ stopOnTerminate=%@ url=%@ syncThreshold=%@ maxLocations=%@ httpHeaders=%@ pauseLocationUpdates=%@ saveBatteryOnBackground=%@ locationProvider=%@ template=%@", distanceFilter, stationaryRadius, desiredAccuracy, activityType, _debug, _stopOnTerminate, url, syncThreshold, maxLocations, httpHeaders, _pauseLocationUpdates, _saveBatteryOnBackground, locationProvider, _template];
+    return [NSString stringWithFormat:@"Config: distanceFilter=%@ stationaryRadius=%@ desiredAccuracy=%@ activityType=%@ isDebugging=%@ stopOnTerminate=%@ url=%@ syncThreshold=%@ maxLocations=%@ httpHeaders=%@ pauseLocationUpdates=%@ saveBatteryOnBackground=%@ locationProvider=%@ postTemplate=%@", self.distanceFilter, self.stationaryRadius, self.desiredAccuracy, self.activityType, self._debug, self._stopOnTerminate, self.url, self.syncThreshold, self.maxLocations, self.httpHeaders, self._pauseLocationUpdates, self._saveBatteryOnBackground, self.locationProvider, self._template];
 
 }
 

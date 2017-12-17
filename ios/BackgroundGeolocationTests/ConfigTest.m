@@ -25,7 +25,7 @@
     [super tearDown];
 }
 
-- (void)testEmpty {
+- (void)testInit {
     Config *config = [[Config alloc] init];
 
     XCTAssertFalse([config hasStationaryRadius]);
@@ -44,6 +44,16 @@
     XCTAssertFalse([config hasLocationProvider]);
 }
 
+- (void)testToDictionary {
+    Config *config = [[Config alloc] init];
+    NSDictionary *dict = [config toDictionary];
+
+    XCTAssertNil(dict[@"url"]);
+    XCTAssertNil(dict[@"syncUrl"]);
+    XCTAssertNil(dict[@"httpHeaders"]);
+    XCTAssertEqualObjects(dict[@"postTemplate"], [Config getDefaultTemplate]);
+}
+
 - (void)testBooleans {
     Config *config = [[Config alloc] init];
     
@@ -53,6 +63,20 @@
     config._debug = @NO;
     XCTAssertFalse([config isDebugging]);
     
+}
+
+- (void)testNullToDictionary {
+    Config *config = [[Config alloc] init];
+    config.url = (id)[NSNull null];
+    config.syncUrl = (id)[NSNull null];
+    config.httpHeaders = (id)[NSNull null];
+    config._template = (id)[NSNull null];
+    
+    NSDictionary *dict = [config toDictionary];
+    XCTAssertEqualObjects(dict[@"url"], @"");
+    XCTAssertEqualObjects(dict[@"syncUrl"], @"");
+    XCTAssertEqualObjects(dict[@"httpHeaders"], @{});
+    XCTAssertEqualObjects(dict[@"postTemplate"], [Config getDefaultTemplate]);
 }
 
 - (void)testMerge {
@@ -90,5 +114,47 @@
     XCTAssertEqualObjects([config getTemplateAsString:nil], @"{\"lat\":\"latitude\",\"lon\":\"longitude\",\"foo\":\"bar\"}");
 }
 
+- (void)testMergeEmpty {
+    Config *config1 = [[Config alloc] init];
+    Config *config2 = [[Config alloc] init];
+    
+    config1.url = @"url";
+    config1.syncUrl = @"syncurl";
+    
+    config2.url = @"";
+    config2.syncUrl = @"";
+
+    Config *merger = [Config merge:config1 withConfig:config2];
+    
+    XCTAssertEqualObjects(merger.url, @"");
+    XCTAssertEqualObjects(merger.syncUrl, @"");
+}
+
+- (void)testMergeNullFromDictionary {
+    Config *config1 = [[Config alloc] init];
+
+    config1.url = @"url";
+    config1.syncUrl = @"syncurl";
+    config1.httpHeaders = @{@"foo": @"bar"};
+    config1._template = @{@"lat": @"@latitude"};
+    
+    NSDictionary *configProps = @{
+                                  @"url": [NSNull null],
+                                  @"syncUrl": [NSNull null],
+                                  @"httpHeaders": [NSNull null],
+                                  @"postTemplate": [NSNull null]
+                                 };
+    Config *config2 = [Config fromDictionary:configProps];
+    
+    XCTAssertFalse([config2 hasValidUrl]);
+    XCTAssertFalse([config2 hasValidSyncUrl]);
+    
+    Config *merger = [Config merge:config1 withConfig:config2];
+    
+    XCTAssertEqualObjects(merger.url, @"");
+    XCTAssertEqualObjects(merger.syncUrl, @"");
+    XCTAssertEqualObjects(merger.httpHeaders, @{});
+    XCTAssertEqualObjects(merger._template, [Config getDefaultTemplate]);
+}
 
 @end
