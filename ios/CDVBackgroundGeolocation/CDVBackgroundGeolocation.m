@@ -48,9 +48,14 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         config = [Config fromDictionary:[command.arguments objectAtIndex:0]];
 
         NSError *error = nil;
-        if (![facade configure:config error:&error]) {
-            [self sendError:error];
+        CDVPluginResult* result = nil;
+        if ([facade configure:config error:&error]) {
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        } else {
+            NSString *errorMessage = [error localizedDescription];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
         }
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
 
