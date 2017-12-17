@@ -224,7 +224,7 @@
         <framework src="AudioToolbox.framework" weak="true" />
         <framework src="AVFoundation.framework" weak="true" />
         <framework src="libsqlite3.dylib" weak="true" />
-        <!-- Generated with gen_sources.sh @ 2017-12-06 22:33:29 -->
+        <!-- Generated with gen_sources.sh @ 2017-12-17 19:43:25 -->
         <header-file src="ios/BackgroundGeolocation/AbstractLocationProvider.h" />
         <source-file src="ios/BackgroundGeolocation/AbstractLocationProvider.m" />
         <header-file src="ios/BackgroundGeolocation/ActivityLocationProvider.h" />
@@ -255,10 +255,10 @@
         <source-file src="ios/BackgroundGeolocation/LocationContract.m" />
         <header-file src="ios/BackgroundGeolocation/LocationController.h" />
         <source-file src="ios/BackgroundGeolocation/LocationController.m" />
-        <header-file src="ios/BackgroundGeolocation/LocationDelegate.h" />
         <header-file src="ios/BackgroundGeolocation/LogReader.h" />
         <source-file src="ios/BackgroundGeolocation/LogReader.m" />
         <header-file src="ios/BackgroundGeolocation/Logging.h" />
+        <header-file src="ios/BackgroundGeolocation/ProviderDelegate.h" />
         <header-file src="ios/BackgroundGeolocation/RawLocationProvider.h" />
         <source-file src="ios/BackgroundGeolocation/RawLocationProvider.m" />
         <header-file src="ios/BackgroundGeolocation/Reachability.h" />

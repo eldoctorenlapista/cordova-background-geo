@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
-#import "LocationDelegate.h"
+#import "ProviderDelegate.h"
 
 // protocol for sending location updates to another view controller
 @protocol LocationControllerDelegate

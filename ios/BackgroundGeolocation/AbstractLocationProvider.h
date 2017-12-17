@@ -12,7 +12,7 @@
 #import <UIKit/UIKit.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import "BackgroundGeolocationFacade.h"
-#import "LocationDelegate.h"
+#import "ProviderDelegate.h"
 #import "Config.h"
 
 // Debug sounds for bg-geolocation life-cycle events.
@@ -38,7 +38,7 @@
 
 @interface AbstractLocationProvider : NSObject//<LocationProvider>
 
-@property (weak, nonatomic) id<LocationDelegate> delegate;
+@property (weak, nonatomic) id<ProviderDelegate> delegate;
 
 - (void) notify:(NSString*)message;
 

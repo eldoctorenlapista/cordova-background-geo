@@ -12,7 +12,7 @@
 #ifndef BackgroundGeolocationFacade_h
 #define BackgroundGeolocationFacade_h
 
-#import "LocationDelegate.h"
+#import "ProviderDelegate.h"
 #import "Location.h"
 #import "Config.h"
 
@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, BGOperationMode) {
 
 @interface BackgroundGeolocationFacade : NSObject
 
-@property (weak, nonatomic) id<LocationDelegate> delegate;
+@property (weak, nonatomic) id<ProviderDelegate> delegate;
 
 - (BOOL) configure:(Config*)config error:(NSError * __autoreleasing *)outError;
 - (BOOL) start:(NSError * __autoreleasing *)outError;

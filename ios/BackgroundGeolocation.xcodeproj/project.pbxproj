@@ -10,7 +10,7 @@
 		412428C71FB5AD2B00B21101 /* BackgroundGeolocationFacade.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41E82E761D5E351900F65575 /* BackgroundGeolocationFacade.h */; };
 		412428C81FB5AD3E00B21101 /* LogReader.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41E82E7A1D5E351900F65575 /* LogReader.h */; };
 		412428C91FB5ADDA00B21101 /* Location.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41E82E721D5E351900F65575 /* Location.h */; };
-		412428CA1FB5AE4B00B21101 /* LocationDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41399A081D941BC7005D6B5D /* LocationDelegate.h */; };
+		412428CA1FB5AE4B00B21101 /* ProviderDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41399A081D941BC7005D6B5D /* ProviderDelegate.h */; };
 		412428CC1FB5B04300B21101 /* Config.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41E82E6A1D5E351900F65575 /* Config.h */; };
 		412428D01FB5B43B00B21101 /* BackgroundTaskManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41E82E641D5E351900F65575 /* BackgroundTaskManager.h */; };
 		4148982B1FB593B900323454 /* libBackgroundGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 418F75461D02DC3D0045FEA0 /* libBackgroundGeolocation.a */; };
@@ -67,7 +67,7 @@
 			files = (
 				412428D01FB5B43B00B21101 /* BackgroundTaskManager.h in CopyFiles */,
 				412428CC1FB5B04300B21101 /* Config.h in CopyFiles */,
-				412428CA1FB5AE4B00B21101 /* LocationDelegate.h in CopyFiles */,
+				412428CA1FB5AE4B00B21101 /* ProviderDelegate.h in CopyFiles */,
 				412428C91FB5ADDA00B21101 /* Location.h in CopyFiles */,
 				412428C81FB5AD3E00B21101 /* LogReader.h in CopyFiles */,
 				412428C71FB5AD2B00B21101 /* BackgroundGeolocationFacade.h in CopyFiles */,
@@ -82,7 +82,7 @@
 		41399A051D941BC7005D6B5D /* ActivityLocationProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityLocationProvider.m; sourceTree = "<group>"; };
 		41399A061D941BC7005D6B5D /* DistanceFilterLocationProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistanceFilterLocationProvider.h; sourceTree = "<group>"; };
 		41399A071D941BC7005D6B5D /* DistanceFilterLocationProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DistanceFilterLocationProvider.m; sourceTree = "<group>"; };
-		41399A081D941BC7005D6B5D /* LocationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationDelegate.h; sourceTree = "<group>"; };
+		41399A081D941BC7005D6B5D /* ProviderDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProviderDelegate.h; sourceTree = "<group>"; };
 		41399A091D941BC7005D6B5D /* AbstractLocationProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractLocationProvider.h; sourceTree = "<group>"; };
 		41399A0A1D941BC7005D6B5D /* AbstractLocationProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractLocationProvider.m; sourceTree = "<group>"; };
 		414898261FB593B900323454 /* BackgroundGeolocationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BackgroundGeolocationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -212,7 +212,6 @@
 				41E82E6B1D5E351900F65575 /* Config.m */,
 				41E82E721D5E351900F65575 /* Location.h */,
 				41E82E731D5E351900F65575 /* Location.m */,
-				41399A081D941BC7005D6B5D /* LocationDelegate.h */,
 				4198B21F1FB08D7700DCC96D /* LocationController.h */,
 				4198B2201FB08D7700DCC96D /* LocationController.m */,
 				41E82E761D5E351900F65575 /* BackgroundGeolocationFacade.h */,
@@ -249,6 +248,7 @@
 		41FE81241FB114C900E4FC65 /* Providers */ = {
 			isa = PBXGroup;
 			children = (
+				41399A081D941BC7005D6B5D /* ProviderDelegate.h */,
 				41399A091D941BC7005D6B5D /* AbstractLocationProvider.h */,
 				41399A0A1D941BC7005D6B5D /* AbstractLocationProvider.m */,
 				41399A041D941BC7005D6B5D /* ActivityLocationProvider.h */,

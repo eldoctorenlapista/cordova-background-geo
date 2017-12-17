@@ -1,13 +1,13 @@
 //
-//  LocationDelegate.h
+//  ProviderDelegate.h
 //  BackgroundGeolocation
 //
 //  Created by Marian Hello on 14/09/2016.
 //  Copyright © 2016 mauron85. All rights reserved.
 //
 
-#ifndef LocationDelegate_h
-#define LocationDelegate_h
+#ifndef ProviderDelegate_h
+#define ProviderDelegate_h
 
 #import "Location.h"
 //#import "LocationController.h"
@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, BGAuthorizationStatus) {
     DENIED = 2
 };
 
-@protocol LocationDelegate <NSObject>
+@protocol ProviderDelegate <NSObject>
 
 - (void) onAuthorizationChanged:(BGAuthorizationStatus)authStatus;
 - (void) onLocationChanged:(Location*)location;
@@ -39,4 +39,4 @@ typedef NS_ENUM(NSInteger, BGAuthorizationStatus) {
 
 @end
 
-#endif /* LocationDelegate_h */
+#endif /* ProviderDelegate_h */

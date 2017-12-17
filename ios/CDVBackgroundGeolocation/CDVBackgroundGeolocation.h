@@ -10,9 +10,9 @@
 //  https://github.com/christocracy/cordova-plugin-background-geolocation
 
 #import <Cordova/CDVPlugin.h>
-#import "LocationDelegate.h"
+#import "ProviderDelegate.h"
 
-@interface CDVBackgroundGeolocation : CDVPlugin <LocationDelegate>
+@interface CDVBackgroundGeolocation : CDVPlugin <ProviderDelegate>
 
 - (void) configure:(CDVInvokedUrlCommand*)command;
 - (void) start:(CDVInvokedUrlCommand*)command;

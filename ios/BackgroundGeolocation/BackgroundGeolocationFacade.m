@@ -36,7 +36,7 @@ static NSString * const TAG = @"BgGeo";
 
 FMDBLogger *sqliteLogger;
 
-@interface BackgroundGeolocationFacade () <LocationDelegate>
+@interface BackgroundGeolocationFacade () <ProviderDelegate>
 @end
 
 @implementation BackgroundGeolocationFacade {
