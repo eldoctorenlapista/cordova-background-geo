@@ -14,6 +14,9 @@ Since alpha.8:
 - Android on "activity" event
 - iOS configuration persistence
 
+Since alpha.11
+- iOS ACTIVITY_PROVIDER (experimental)
+
 #### Changed
 - start and stop methods doesn't accept callback (use event listeners instead)
 - for background syncing syncUrl option is required
