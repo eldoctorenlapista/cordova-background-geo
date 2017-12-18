@@ -14,7 +14,7 @@ Since alpha.8:
 - Android on "activity" event
 - iOS configuration persistence
 
-Since alpha.11
+Since alpha.12
 - iOS ACTIVITY_PROVIDER (experimental)
 
 #### Changed
