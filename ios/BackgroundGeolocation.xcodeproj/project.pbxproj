@@ -21,6 +21,7 @@
 		4148983C1FB593E300323454 /* GeolocationOpenHelperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 414898351FB593E300323454 /* GeolocationOpenHelperTest.m */; };
 		4148983D1FB593E300323454 /* SQLiteOpenHelperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 414898361FB593E300323454 /* SQLiteOpenHelperTest.m */; };
 		4148983E1FB593E300323454 /* BackgroundLocationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 414898371FB593E300323454 /* BackgroundLocationTest.m */; };
+		4185A96C1FE79636008515B4 /* Activity.m in Sources */ = {isa = PBXBuildFile; fileRef = 4185A96A1FE79635008515B4 /* Activity.m */; };
 		418E0B6E1FD84D6200E24CB0 /* LocationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 418E0B6D1FD84D6200E24CB0 /* LocationTest.m */; };
 		41B1803B1FD1D8B200951D67 /* SQLiteConfigurationDAOTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 41B1803A1FD1D8B200951D67 /* SQLiteConfigurationDAOTest.m */; };
 		41B1803D1FD2952400951D67 /* ConfigTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 41B1803C1FD2952400951D67 /* ConfigTest.m */; };
@@ -46,7 +47,7 @@
 		41B180591FD2E05C00951D67 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E82E731D5E351900F65575 /* Location.m */; };
 		41B1805A1FD2E05C00951D67 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4198B2201FB08D7700DCC96D /* LocationController.m */; };
 		41B1805B1FD2E05C00951D67 /* BackgroundGeolocationFacade.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E82E771D5E351900F65575 /* BackgroundGeolocationFacade.m */; };
-		41BCFA421FE19B3000D4000E /* Activity.m in Sources */ = {isa = PBXBuildFile; fileRef = 41BCFA411FE19B3000D4000E /* Activity.m */; };
+		41BCFA421FE19B3000D4000E /* SOMotionActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 41BCFA411FE19B3000D4000E /* SOMotionActivity.m */; };
 		41BCFA5A1FE19ED300D4000E /* SOMotionDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 41BCFA511FE19ED300D4000E /* SOMotionDetector.m */; };
 		41BCFA5B1FE19ED300D4000E /* SOLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 41BCFA521FE19ED300D4000E /* SOLocationManager.m */; };
 		41BCFA5C1FE19ED300D4000E /* SOStepDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 41BCFA591FE19ED300D4000E /* SOStepDetector.m */; };
@@ -98,6 +99,8 @@
 		414898351FB593E300323454 /* GeolocationOpenHelperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeolocationOpenHelperTest.m; sourceTree = "<group>"; };
 		414898361FB593E300323454 /* SQLiteOpenHelperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SQLiteOpenHelperTest.m; sourceTree = "<group>"; };
 		414898371FB593E300323454 /* BackgroundLocationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundLocationTest.m; sourceTree = "<group>"; };
+		4185A96A1FE79635008515B4 /* Activity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Activity.m; sourceTree = "<group>"; };
+		4185A96B1FE79635008515B4 /* Activity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Activity.h; sourceTree = "<group>"; };
 		418E0B6D1FD84D6200E24CB0 /* LocationTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocationTest.m; sourceTree = "<group>"; };
 		418F75461D02DC3D0045FEA0 /* libBackgroundGeolocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBackgroundGeolocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4198B21C1FB089C900DCC96D /* RawLocationProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RawLocationProvider.h; sourceTree = "<group>"; };
@@ -112,8 +115,8 @@
 		41B1803C1FD2952400951D67 /* ConfigTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConfigTest.m; sourceTree = "<group>"; };
 		41B1803E1FD2D89800951D67 /* FMDB+Nullable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMDB+Nullable.h"; sourceTree = "<group>"; };
 		41B1803F1FD2D8B000951D67 /* FMDB+Nullable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "FMDB+Nullable.m"; sourceTree = "<group>"; };
-		41BCFA401FE1991800D4000E /* Activity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Activity.h; sourceTree = "<group>"; };
-		41BCFA411FE19B3000D4000E /* Activity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Activity.m; sourceTree = "<group>"; };
+		41BCFA401FE1991800D4000E /* SOMotionActivity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOMotionActivity.h; sourceTree = "<group>"; };
+		41BCFA411FE19B3000D4000E /* SOMotionActivity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOMotionActivity.m; sourceTree = "<group>"; };
 		41BCFA511FE19ED300D4000E /* SOMotionDetector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOMotionDetector.m; sourceTree = "<group>"; };
 		41BCFA521FE19ED300D4000E /* SOLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOLocationManager.m; sourceTree = "<group>"; };
 		41BCFA531FE19ED300D4000E /* SOStepDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOStepDetector.h; sourceTree = "<group>"; };
@@ -226,8 +229,8 @@
 				41E82E7D1D5E351900F65575 /* Reachability.m */,
 				41E82E6A1D5E351900F65575 /* Config.h */,
 				41E82E6B1D5E351900F65575 /* Config.m */,
-				41BCFA401FE1991800D4000E /* Activity.h */,
-				41BCFA411FE19B3000D4000E /* Activity.m */,
+				4185A96B1FE79635008515B4 /* Activity.h */,
+				4185A96A1FE79635008515B4 /* Activity.m */,
 				41E82E721D5E351900F65575 /* Location.h */,
 				41E82E731D5E351900F65575 /* Location.m */,
 				4198B21F1FB08D7700DCC96D /* LocationController.h */,
@@ -266,6 +269,8 @@
 		41BCFA501FE19ED300D4000E /* SOMotionDetector */ = {
 			isa = PBXGroup;
 			children = (
+				41BCFA401FE1991800D4000E /* SOMotionActivity.h */,
+				41BCFA411FE19B3000D4000E /* SOMotionActivity.m */,
 				41BCFA571FE19ED300D4000E /* SOMotionDetector.h */,
 				41BCFA511FE19ED300D4000E /* SOMotionDetector.m */,
 				41BCFA561FE19ED300D4000E /* SOLocationManager.h */,
@@ -437,10 +442,11 @@
 				41B180501FD2E05C00951D67 /* LogReader.m in Sources */,
 				41B180511FD2E05C00951D67 /* CocoaLumberjack.m in Sources */,
 				41B180521FD2E05C00951D67 /* FMDBLogger.m in Sources */,
-				41BCFA421FE19B3000D4000E /* Activity.m in Sources */,
+				41BCFA421FE19B3000D4000E /* SOMotionActivity.m in Sources */,
 				41B180531FD2E05C00951D67 /* FMDB.m in Sources */,
 				41B180551FD2E05C00951D67 /* BackgroundTaskManager.m in Sources */,
 				41B180561FD2E05C00951D67 /* BackgroundSync.m in Sources */,
+				4185A96C1FE79636008515B4 /* Activity.m in Sources */,
 				41B180571FD2E05C00951D67 /* Reachability.m in Sources */,
 				41B180581FD2E05C00951D67 /* Config.m in Sources */,
 				41B180591FD2E05C00951D67 /* Location.m in Sources */,

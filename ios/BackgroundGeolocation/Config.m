@@ -12,7 +12,7 @@
 
 @implementation Config 
 
-@synthesize stationaryRadius, distanceFilter, desiredAccuracy, _debug, activityType, _stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, _saveBatteryOnBackground, maxLocations, _pauseLocationUpdates, locationProvider, _template;
+@synthesize stationaryRadius, distanceFilter, desiredAccuracy, _debug, activityType, activitiesInterval, _stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, _saveBatteryOnBackground, maxLocations, _pauseLocationUpdates, locationProvider, _template;
 
 -(instancetype) initWithDefaults {
     self = [super init];
@@ -26,6 +26,7 @@
     desiredAccuracy = [NSNumber numberWithInt:100];
     _debug = [NSNumber numberWithBool:NO];
     activityType = @"OtherNavigation";
+    activitiesInterval = [NSNumber numberWithInt:10000];
     _stopOnTerminate = [NSNumber numberWithBool:YES];
     _saveBatteryOnBackground = [NSNumber numberWithBool:YES];
     maxLocations = [NSNumber numberWithInt:10000];
@@ -55,6 +56,9 @@
     }
     if (isNotNull(config[@"activityType"])) {
         instance.activityType = config[@"activityType"];
+    }
+    if (isNull(config[@"activitiesInterval"])) {
+        instance.activitiesInterval = config[@"activitiesInterval"];
     }
     if (isNotNull(config[@"stopOnTerminate"])) {
         instance._stopOnTerminate = config[@"stopOnTerminate"];
@@ -117,6 +121,9 @@
     if ([newConfig hasActivityType]) {
         merger.activityType = newConfig.activityType;
     }
+    if ([newConfig hasActivitiesInterval]) {
+        merger.activitiesInterval = newConfig.activitiesInterval;
+    }
     if ([newConfig hasStopOnTerminate]) {
         merger._stopOnTerminate = newConfig._stopOnTerminate;
     }
@@ -160,6 +167,7 @@
         copy.desiredAccuracy = desiredAccuracy;
         copy._debug = _debug;
         copy.activityType = activityType;
+        copy.activitiesInterval = activitiesInterval;
         copy._stopOnTerminate = _stopOnTerminate;
         copy.url = url;
         copy.syncUrl = syncUrl;
@@ -198,6 +206,11 @@
 - (BOOL) hasActivityType
 {
     return activityType != nil;
+}
+
+- (BOOL) hasActivitiesInterval
+{
+    return activitiesInterval != nil;
 }
 
 - (BOOL) hasStopOnTerminate
@@ -444,6 +457,7 @@
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:10];
  
     if ([self hasActivityType]) [dict setObject:self.activityType forKey:@"activityType"];
+    if ([self hasActivitiesInterval]) [dict setObject:self.activitiesInterval forKey:@"activitiesInterval"];
     if ([self hasUrl]) [dict setObject:self.url forKey:@"url"];
     if ([self hasSyncUrl]) [dict setObject:self.syncUrl forKey:@"syncUrl"];
     if ([self hasHttpHeaders]) [dict setObject:self.httpHeaders forKey:@"httpHeaders"];
@@ -464,7 +478,7 @@
 
 - (NSString *) description
 {
-    return [NSString stringWithFormat:@"Config: distanceFilter=%@ stationaryRadius=%@ desiredAccuracy=%@ activityType=%@ isDebugging=%@ stopOnTerminate=%@ url=%@ syncThreshold=%@ maxLocations=%@ httpHeaders=%@ pauseLocationUpdates=%@ saveBatteryOnBackground=%@ locationProvider=%@ postTemplate=%@", self.distanceFilter, self.stationaryRadius, self.desiredAccuracy, self.activityType, self._debug, self._stopOnTerminate, self.url, self.syncThreshold, self.maxLocations, self.httpHeaders, self._pauseLocationUpdates, self._saveBatteryOnBackground, self.locationProvider, self._template];
+    return [NSString stringWithFormat:@"Config: distanceFilter=%@ stationaryRadius=%@ desiredAccuracy=%@ activityType=%@ activitiesInterval=%@ isDebugging=%@ stopOnTerminate=%@ url=%@ syncThreshold=%@ maxLocations=%@ httpHeaders=%@ pauseLocationUpdates=%@ saveBatteryOnBackground=%@ locationProvider=%@ postTemplate=%@", self.distanceFilter, self.stationaryRadius, self.desiredAccuracy, self.activityType, self.activitiesInterval, self._debug, self._stopOnTerminate, self.url, self.syncThreshold, self.maxLocations, self.httpHeaders, self._pauseLocationUpdates, self._saveBatteryOnBackground, self.locationProvider, self._template];
 
 }
 

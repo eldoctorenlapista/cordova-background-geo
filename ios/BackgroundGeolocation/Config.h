@@ -24,6 +24,7 @@ enum {
 @property NSNumber *desiredAccuracy;
 @property NSNumber *_debug;
 @property NSString *activityType;
+@property NSNumber *activitiesInterval;
 @property NSNumber *_stopOnTerminate;
 @property NSString *url;
 @property NSString *syncUrl;
@@ -57,6 +58,7 @@ enum {
 - (BOOL) hasPauseLocationUpdates;
 - (BOOL) hasLocationProvider;
 - (BOOL) hasTemplate;
+- (BOOL) hasActivitiesInterval;
 - (BOOL) isDebugging;
 - (BOOL) stopOnTerminate;
 - (BOOL) saveBatteryOnBackground;

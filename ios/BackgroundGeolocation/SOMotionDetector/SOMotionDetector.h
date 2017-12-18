@@ -26,21 +26,15 @@
 
 #import <Foundation/Foundation.h>
 #import "SOLocationManager.h"
+#import "SOMotionActivity.h"
 #import <CoreMotion/CoreMotion.h>
 
 @class SOMotionDetector;
-typedef enum
-{
-  MotionTypeNotMoving = 1,
-  MotionTypeWalking,
-  MotionTypeRunning,
-  MotionTypeAutomotive
-} SOMotionType;
 
 @protocol SOMotionDetectorDelegate <NSObject>
 
 @optional
-- (void)motionDetector:(SOMotionDetector *)motionDetector motionTypeChanged:(SOMotionType)motionType;
+- (void)motionDetector:(SOMotionDetector *)motionDetector activityTypeChanged:(SOMotionActivity *)motionActivity;
 - (void)motionDetector:(SOMotionDetector *)motionDetector locationChanged:(CLLocation *)location;
 - (void)motionDetector:(SOMotionDetector *)motionDetector accelerationChanged:(CMAcceleration)acceleration;
 - (void)motionDetector:(SOMotionDetector *)motionDetector locationWasPaused:(BOOL)changed;
@@ -53,14 +47,14 @@ typedef enum
 + (SOMotionDetector *)sharedInstance;
 
 #pragma mark - Properties
-@property (weak, nonatomic) id<SOMotionDetectorDelegate> delegate DEPRECATED_MSG_ATTRIBUTE(" Use blocks instead");
+@property (weak, nonatomic) id<SOMotionDetectorDelegate> delegate;
 
-@property (copy) void (^motionTypeChangedBlock) (SOMotionType motionType);
+@property (copy) void (^activityTypeChangedBlock) (SOMotionActivity *motionActivity);
 @property (copy) void (^locationChangedBlock) (CLLocation *location);
 @property (copy) void (^accelerationChangedBlock) (CMAcceleration acceleration);
 @property (copy) void (^locationWasPausedBlock) (BOOL changed);
 
-@property (nonatomic, readonly) SOMotionType motionType;
+@property (nonatomic, readonly) SOMotionActivity *motionActivity;
 @property (nonatomic, readonly) double currentSpeed;
 @property (nonatomic, readonly) CMAcceleration acceleration;
 @property (nonatomic, readonly) BOOL isShaking;
@@ -79,6 +73,7 @@ typedef enum
  */
 @property (nonatomic) BOOL useM7IfAvailable NS_AVAILABLE_IOS(7_0);
 
+@property (nonatomic) double activityDetectionInterval;
 
 /**
  *@param speed  The minimum speed value less than which will be considered as not moving state

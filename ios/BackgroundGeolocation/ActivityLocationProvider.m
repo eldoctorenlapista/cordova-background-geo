@@ -64,6 +64,7 @@ static NSString * const Domain = @"com.marianhello";
     locationController.activityType = [config decodeActivityType];
     locationController.distanceFilter = config.distanceFilter.integerValue; // meters
     locationController.desiredAccuracy = [config decodeDesiredAccuracy];
+    [SOMotionDetector sharedInstance].activityDetectionInterval = config.activitiesInterval.intValue / 1000;
     
     return YES;
 }
@@ -137,8 +138,10 @@ static NSString * const Domain = @"com.marianhello";
     }
 }
 
-- (void)motionDetector:(SOMotionDetector *)motionDetector motionTypeChanged:(SOMotionType)motionType
+- (void)motionDetector:(SOMotionDetector *)motionDetector activityTypeChanged:(SOMotionActivity *)motionActivity;
 {
+    int confidence = motionActivity.confidence;
+    SOMotionType motionType = motionActivity.motionType;
     lastMotionType = motionType;
 
     if (motionType != MotionTypeNotMoving) {
@@ -147,7 +150,7 @@ static NSString * const Domain = @"com.marianhello";
         // we delay tracking stop after location is found
     }
 
-    NSString *type = @"";
+    NSString *type;
     switch (motionType) {
         case MotionTypeNotMoving:
             type = @"STILL";
@@ -161,13 +164,17 @@ static NSString * const Domain = @"com.marianhello";
         case MotionTypeAutomotive:
             type = @"IN_VEHICLE";
             break;
+        case MotionTypeUnknown:
+            type = @"UNKNOWN";
+            break;
     }
     
-    DDLogDebug(@"%@ motionTypeChanged: %@", TAG, type);
-    [self notify:[NSString stringWithFormat:@"%@ activity detected: %@ activity", TAG, type]];
+    DDLogDebug(@"%@ activityTypeChanged: %@", TAG, type);
+    [self notify:[NSString stringWithFormat:@"%@ activity detected: %@ activity, confidence: %d", TAG, type, confidence]];
     
     Activity *activity = [[Activity alloc] init];
     activity.type = type;
+    activity.confidence = [NSNumber numberWithInt:confidence];
     
     [super.delegate onActivityChanged:activity];
 }

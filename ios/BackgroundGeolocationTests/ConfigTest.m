@@ -33,6 +33,7 @@
     XCTAssertFalse([config hasDesiredAccuracy]);
     XCTAssertFalse([config hasDebug]);
     XCTAssertFalse([config hasActivityType]);
+    XCTAssertFalse([config hasActivitiesInterval]);
     XCTAssertFalse([config hasStopOnTerminate]);
     XCTAssertFalse([config hasUrl]);
     XCTAssertFalse([config hasSyncUrl]);

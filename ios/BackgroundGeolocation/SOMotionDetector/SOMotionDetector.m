@@ -70,7 +70,9 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
                                                  selector:@selector(handleLocationWasPausedNotification:)
                                                      name:LOCATION_WAS_PAUSED_NOTIFICATION
                                                    object:nil];
+        self.activityDetectionInterval = 0.01f;
         self.motionManager = [[CMMotionManager alloc] init];
+        _motionActivity = [[SOMotionActivity alloc] init];
     }
     
     return self;
@@ -118,29 +120,44 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
         
         [self.motionActivityManager startActivityUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMMotionActivity *activity) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                
+                SOMotionType motionType;
                 if (activity.walking) {
-                    _motionType = MotionTypeWalking;
+                    motionType = MotionTypeWalking;
                 } else if (activity.running) {
-                    _motionType = MotionTypeRunning;
+                    motionType = MotionTypeRunning;
                 } else if (activity.automotive) {
-                    _motionType = MotionTypeAutomotive;
+                    motionType = MotionTypeAutomotive;
                 } else if (activity.stationary || activity.unknown) {
-                    _motionType = MotionTypeNotMoving;
+                    motionType = MotionTypeNotMoving;
+                } else {
+                    motionType = MotionTypeUnknown;
                 }
                 
+                int confidence;
+                switch (activity.confidence) {
+                    case CMMotionActivityConfidenceLow:
+                        confidence = 20;
+                        break;
+                    case CMMotionActivityConfidenceMedium:
+                        confidence = 40;
+                        break;
+                    case CMMotionActivityConfidenceHigh:
+                        confidence = 80;
+                        break;
+                }
+
+                _motionActivity.motionType = motionType;
+                _motionActivity.confidence = activity.confidence;
+                
                 // If type was changed, then call delegate method
-                if (self.motionType != self.previousMotionType) {
-                    self.previousMotionType = self.motionType;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-                    if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:motionTypeChanged:)]) {
-                        [self.delegate motionDetector:self motionTypeChanged:self.motionType];
+                if (motionType != self.previousMotionType) {
+                    self.previousMotionType = motionType;
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:activityTypeChanged:)]) {
+                        [self.delegate motionDetector:self activityTypeChanged:self.motionActivity];
                     }
-#pragma GCC diagnostic pop
                     
-                    if (self.motionTypeChangedBlock) {
-                        self.motionTypeChangedBlock (self.motionType);
+                    if (self.activityTypeChangedBlock) {
+                        self.activityTypeChangedBlock (self.motionActivity);
                     }
                 }
             });
@@ -149,7 +166,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
     } else {
         [[SOLocationManager sharedInstance] start];
         
-        self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
+        self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:self.activityDetectionInterval
                                                                     target:self
                                                                   selector:@selector(detectShaking)
                                                                   userInfo:Nil
@@ -191,30 +208,31 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma mark - Private Methods
 - (void)calculateMotionType
 {
+    SOMotionType motionType;
     if (_currentSpeed < kMinimumSpeed) {
-        _motionType = MotionTypeNotMoving;
+        motionType = MotionTypeNotMoving;
     } else if (_currentSpeed <= kMaximumWalkingSpeed) {
-        _motionType = _isShaking ? MotionTypeRunning : MotionTypeWalking;
+        motionType = _isShaking ? MotionTypeRunning : MotionTypeWalking;
     } else if (_currentSpeed <= kMaximumRunningSpeed) {
-        _motionType = _isShaking ? MotionTypeRunning : MotionTypeAutomotive;
+        motionType = _isShaking ? MotionTypeRunning : MotionTypeAutomotive;
     } else {
-        _motionType = MotionTypeAutomotive;
+        motionType = MotionTypeAutomotive;
     }
     
+    _motionActivity.motionType = motionType;
+    _motionActivity.confidence = 0;
+    
     // If type was changed, then call delegate method
-    if (self.motionType != self.previousMotionType) {
-        self.previousMotionType = self.motionType;
+    if (motionType != self.previousMotionType) {
+        self.previousMotionType = motionType;
         
         dispatch_async(dispatch_get_main_queue(), ^{
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-            if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:motionTypeChanged:)]) {
-                [self.delegate motionDetector:self motionTypeChanged:self.motionType];
+            if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:activityTypeChanged:)]) {
+                [self.delegate motionDetector:self activityTypeChanged:self.motionActivity];
             }
-#pragma GCC diagnostic pop
             
-            if (self.motionTypeChangedBlock) {
-                self.motionTypeChangedBlock (self.motionType);
+            if (self.activityTypeChangedBlock) {
+                self.activityTypeChangedBlock (self.motionActivity);
             }
         });
     }

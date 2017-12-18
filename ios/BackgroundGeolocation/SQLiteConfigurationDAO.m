@@ -109,7 +109,7 @@
                     [config hasLocationProvider] ? config.locationProvider : @CC_COLUMN_NAME_NULLABLE,
                     [NSNull null], // unsupported interval
                     [NSNull null], // unsupported fastestInterval
-                    [NSNull null], // unsupported activitiesInterval
+                    [config hasActivitiesInterval] ? config.activitiesInterval : @CC_COLUMN_NAME_NULLABLE,
                     [config hasUrl] ? config.url : @CC_COLUMN_NAME_NULLABLE,
                     [config hasSyncUrl] ? config.syncUrl : @CC_COLUMN_NAME_NULLABLE,
                     [config hasSyncThreshold] ? config.syncThreshold : @CC_COLUMN_NAME_NULLABLE,
@@ -188,6 +188,9 @@
             }
             if ([self isNonNull:rs columnIndex:15]) {
                 config.locationProvider = [NSNumber numberWithInt:[rs intForColumnIndex:15]];
+            }
+            if ([self isNonNull:rs columnIndex:18]) {
+                config.activitiesInterval = [NSNumber numberWithInt:[rs intForColumnIndex:18]];
             }
             if ([self isNonNull:rs columnIndex:19]) {
                 config.url = [rs stringForColumnIndex:19];

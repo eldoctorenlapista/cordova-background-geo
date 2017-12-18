@@ -45,6 +45,7 @@
     XCTAssertFalse([config hasDesiredAccuracy]);
     XCTAssertFalse([config hasDebug]);
     XCTAssertFalse([config hasActivityType]);
+    XCTAssertFalse([config hasActivitiesInterval]);
     XCTAssertFalse([config hasStopOnTerminate]);
     XCTAssertFalse([config hasUrl]);
     XCTAssertFalse([config hasSyncUrl]);
@@ -65,6 +66,7 @@
     config.desiredAccuracy = [NSNumber numberWithInt:30];
     config._debug = [NSNumber numberWithBool:YES];
     config.activityType = @"MyActivity";
+    config.activitiesInterval = [NSNumber numberWithInt:1234];
     config._stopOnTerminate = [NSNumber numberWithBool:YES];
     config.url = @"http://server:3000/locations";
     config.syncUrl = @"http://server:3000/sync";
@@ -84,6 +86,7 @@
     XCTAssertEqualObjects(config.desiredAccuracy, stored.desiredAccuracy);
     XCTAssertEqual([config isDebugging], [stored isDebugging]);
     XCTAssertEqualObjects(config.activityType, stored.activityType);
+    XCTAssertEqualObjects(config.activitiesInterval, stored.activitiesInterval);
     XCTAssertEqual([config stopOnTerminate], [stored stopOnTerminate]);
     XCTAssertEqualObjects(config.url, stored.url);
     XCTAssertEqualObjects(config.syncUrl, stored.syncUrl);
