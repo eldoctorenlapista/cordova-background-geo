@@ -20,7 +20,7 @@ Plugin can be used for geolocation when app is running in foreground or backgrou
 
 You can choose from two location location providers:
 * **DISTANCE_FILTER_PROVIDER**
-* **ACTIVITY_PROVIDER** (Android only)
+* **ACTIVITY_PROVIDER**
 * **RAW_PROVIDER**
 
 See [Which provider should I use?](/PROVIDERS.md) for more information about providers.
