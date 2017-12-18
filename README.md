@@ -55,6 +55,7 @@ Default iOS location permission prompt can be changed in your config.xml:
 ```
 <plugin name="cordova-plugin-mauron85-background-geolocation">
     <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app requires background tracking enabled" />
+    <variable name="MOTION_USAGE_DESCRIPTION" value="This app requires motion detection" />
 </plugin>
 ```
 
@@ -64,7 +65,7 @@ Following example will lock google play services to version 11.0.1 for compatibi
 **Note:** Always consult documentation of other plugins to figure out correct GOOGLE_PLAY_SERVICES_VERSION.
 ```
 <plugin name="cordova-plugin-mauron85-background-geolocation">
-    <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app requires background tracking enabled" />
+    <!-- may contain other variables as shown above -->
     <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11.0.1" />
 </plugin>
 ```

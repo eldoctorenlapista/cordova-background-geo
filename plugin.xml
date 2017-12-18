@@ -183,6 +183,7 @@
     <platform name="ios">
         <!-- required background modes:  App registers for location updates -->
         <preference name="ALWAYS_USAGE_DESCRIPTION" default="This app always requires location tracking" />
+        <preference name="MOTION_USAGE_DESCRIPTION" default="This app requires motion detection" />
 
         <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
             <string>$ALWAYS_USAGE_DESCRIPTION</string>
@@ -192,6 +193,9 @@
         </config-file>
         <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription">
             <string>$ALWAYS_USAGE_DESCRIPTION</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSMotionUsageDescription">
+            <string>$MOTION_USAGE_DESCRIPTION</string>
         </config-file>
 
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
