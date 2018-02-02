@@ -20,6 +20,14 @@ public class PluginError {
         this.errorMessage = errorMessage;
     }
 
+    public Integer getErrorCode() {
+        return errorCode;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public JSONObject toJSONObject() throws JSONException {
         JSONObject message = new JSONObject();
         message.put("code", this.errorCode);
