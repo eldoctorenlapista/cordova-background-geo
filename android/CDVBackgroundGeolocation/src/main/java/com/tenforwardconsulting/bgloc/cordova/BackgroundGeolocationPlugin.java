@@ -456,7 +456,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     @Override
     public void onLocationChanged(BackgroundLocation location) {
         try {
-            sendEvent(LOCATION_EVENT, location.toJSONObject());
+            sendEvent(LOCATION_EVENT, location.toJSONObjectWithId());
         } catch (JSONException e) {
             logger.error("Error converting location to json: {}", e.getMessage());
             sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
@@ -466,7 +466,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     @Override
     public void onStationaryChanged(BackgroundLocation location) {
         try {
-            sendEvent(STATIONARY_EVENT, location.toJSONObject());
+            sendEvent(STATIONARY_EVENT, location.toJSONObjectWithId());
         } catch (JSONException e) {
             logger.error("Error converting location to json: {}", e.getMessage());
             sendError(new PluginError(PluginError.JSON_ERROR, e.getMessage()));
