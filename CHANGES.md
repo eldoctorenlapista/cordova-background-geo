@@ -30,6 +30,11 @@ Since alpha.12
 Since alpha.8:
 - Android bind to service on facade construct
 
+### Fixed
+
+Since alpha.13:
+- iOS open location settings on iOS 10 and later (PR #158) by @asafron
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
