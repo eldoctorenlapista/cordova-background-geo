@@ -38,9 +38,6 @@ Instructions how to prepare debug logs can be found in section [Debugging](#debu
 If you're reporting app crash, debug logs might not contain all needed informations about the cause of the crash.
 In that case, also provide relevant parts of output of `adb logcat` command.
 
-## Semantic Versioning
-This plugin is following semantic versioning as defined http://semver.org
-
 ## Migrations
 
 See [MIGRATIONS.md](/MIGRATIONS.md)
@@ -254,7 +251,7 @@ Configure options:
 | `notificationIconSmall`   | `String` optional | Android      | The filename of a custom notification icon. **@see** Android quirks.                                                                                                                                                                                                                                                                               | all         |                            | 
 | `activityType`            | `String`          | iOS          | [AutomotiveNavigation, OtherNavigation, Fitness, Other] Presumably, this affects iOS GPS algorithm. **@see** [Apple docs](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html#//apple_ref/occ/instp/CLLocationManager/activityType) for more information | all         | "OtherNavigation"          | 
 | `pauseLocationUpdates`    | `Boolean`         | iOS          | Pauses location updates when app is paused. **@see* [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical?language=objc)                                                                                                                                                  | all         | false                      | 
-| `saveBatteryOnBackground` | `Boolean`         | iOS          | Switch to less accurate significant changes and region monitory when in background                                                                                                                                                                                                                                                                 | all         | true                       | 
+| `saveBatteryOnBackground` | `Boolean`         | iOS          | Switch to less accurate significant changes and region monitory when in background                                                                                                                                                                                                                                                                 | all         | false                      | 
 | `url`                     | `String`          | all          | Server url where to send HTTP POST with recorded locations **@see** [HTTP locations posting](#http-locations-posting)                                                                                                                                                                                                                              | all         |                            | 
 | `syncUrl`                 | `String`          | all          | Server url where to send fail to post locations **@see** [HTTP locations posting](#http-locations-posting)                                                                                                                                                                                                                                         | all         |                            | 
 | `syncThreshold`           | `Number`          | all          | Specifies how many previously failed locations will be sent to server at once                                                                                                                                                                                                                                                                      | all         | 100                        | 
@@ -327,8 +324,6 @@ Platform: iOS, Android
 Method will return all stored locations.
 This method is useful for initial rendering of user location on a map just after application launch.
 
-**Note:** Returned locations does not contain location.id.
-
 | Success callback parameter | Type    | Description                    |
 |----------------------------|---------|--------------------------------|
 | `locations`                | `Array` | collection of stored locations |
@@ -345,7 +340,6 @@ BackgroundGeolocation.getLocations(
 Platform: iOS, Android
 
 Method will return locations, which has not been yet posted to server.
-**Note:** Locations does contain location.id.
 
 | Success callback parameter | Type    | Description                    |
 |----------------------------|---------|--------------------------------|
@@ -426,6 +420,8 @@ Unregister all event listeners for given event
 | `speed`            | `Number`  | Speed if it is available, in meters/second over ground.                |
 | `altitude`         | `Number`  | Altitude if available, in meters above the WGS 84 reference ellipsoid. |
 | `bearing`          | `Number`  | Bearing, in degrees.                                                   |
+
+Note: Do not use location `id` as unique key in your database as ids will be reused when `option.maxLocations` is reached.
 
 ### Activity event
 | Activity parameter | Type      | Description                                                            |
