@@ -30,6 +30,9 @@ Since alpha.12
 Since alpha.8:
 - Android bind to service on facade construct
 
+Since alpha.14
+- iOS saveBatteryOnBackground defaults to false
+
 ### Fixed
 
 Since alpha.13:
