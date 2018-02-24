@@ -18,6 +18,6 @@
 !/android/CDVBackgroundGeolocation/src
 !/ios
 /ios/*
-!/ios/BackgroundGeolocation
+!/ios/common
 !/ios/CDVBackgroundGeolocation
 !/LICENSE
