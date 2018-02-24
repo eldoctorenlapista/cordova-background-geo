@@ -87,8 +87,8 @@ To register plugin add following line into your config.xml:
 
 | Plugin version   | Cordova CLI       | Cordova Platform Android | Cordova Platform iOS |
 |------------------|-------------------|--------------------------|----------------------|
-| <2.3.0           | 6.4.0             | 6.3.0                    |                      |
-| >=2.3.0          | 7.1.0             | 6.3.0                    |                      |
+| <2.3.0           | 6.4.0             | 6.3.0                    | 4.4.0                |
+| >=2.3.0          | 7.1.0             | 6.3.0                    | 4.4.0                |
 
 **Please note** that as of Cordova Android 6.0.0 icons are by default in mipmap/ directory not drawable/ directory, so this plugin will have a build issue on < 6.0.0 Cordova builds, you will need to update Authenticator.xml to drawable directory from mipmap directory to work on older versions.
 
