@@ -404,7 +404,11 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 
     if ([dict objectForKey:UIApplicationLaunchOptionsLocationKey]) {
         NSLog(@"%@ %@", TAG, @"started by system on location event.");
-//        [manager switchOperationMode:BACKGROUND];
+        Config *config = [facade getConfig];
+        if (![config stopOnTerminate]) {
+            [facade start:nil];
+            [facade switchMode:BACKGROUND];
+        }
     }
 }
 
