@@ -9,8 +9,8 @@ script_dir=$( cd "$(dirname "$0")" ; pwd -P )
 
 if [[ "$platform" == android ]]; then
   src_root="android"
-  target_regexp="s|android/.*BackgroundGeolocation/src/main/java|src|"
-  sources_regexp=".*BackgroundGeolocation/src/main/java/.*\.java"
+  target_regexp="s|android/.*/src/main/java|src|"
+  sources_regexp=".*/src/main/java/.*\.java"
 elif [[ "$platform" ==  ios ]]; then
   src_root="ios"
   sources_regexp=".*BackgroundGeolocation/.*\.[h,m]"
