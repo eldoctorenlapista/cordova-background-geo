@@ -9,10 +9,10 @@
 !/www
 !/android
 /android/*
-!/android/logtofile.gradle
-!/android/BackgroundGeolocation
-/android/BackgroundGeolocation/*
-!/android/BackgroundGeolocation/src
+!/android/common
+/android/common/*
+!/android/common/logtofile.gradle
+!/android/common/src
 !/android/CDVBackgroundGeolocation
 /android/CDVBackgroundGeolocation/*
 !/android/CDVBackgroundGeolocation/src
