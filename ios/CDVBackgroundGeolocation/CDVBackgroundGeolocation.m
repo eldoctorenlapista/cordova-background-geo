@@ -125,13 +125,14 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     NSLog(@"%@ #%@", TAG, @"checkStatus");
     [self.commandDelegate runInBackground:^{
         BOOL isRunning = [facade isStarted];
-        BOOL hasPermissions = [facade isLocationEnabled];
-        NSInteger authorization = 1; // TODO: check authorization
+        BOOL locationServicesEnabled = [facade locationServicesEnabled];
+        NSInteger authorizationStatus = [facade authorizationStatus];
 
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:3];
         [dict setObject:[NSNumber numberWithBool:isRunning] forKey:@"isRunning"];
-        [dict setObject:[NSNumber numberWithBool:hasPermissions] forKey:@"hasPermissions"];
-        [dict setObject:[NSNumber numberWithInteger:authorization] forKey:@"authorization"];
+        [dict setObject:[NSNumber numberWithBool:locationServicesEnabled] forKey:@"hasPermissions"]; // @deprecated
+        [dict setObject:[NSNumber numberWithBool:locationServicesEnabled] forKey:@"locationServicesEnabled"];
+        [dict setObject:[NSNumber numberWithInteger:authorizationStatus] forKey:@"authorization"];
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
@@ -161,7 +162,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 {
     NSLog(@"%@ #%@", TAG, @"isLocationEnabled");
     [self.commandDelegate runInBackground:^{
-        BOOL isLocationEnabled = [facade isLocationEnabled];
+        BOOL isLocationEnabled = [facade locationServicesEnabled];
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isLocationEnabled];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
