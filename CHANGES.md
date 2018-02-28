@@ -17,6 +17,10 @@ Since alpha.8:
 Since alpha.12
 - iOS ACTIVITY_PROVIDER (experimental)
 
+Since alpha.15
+- checkStatus returns status of location services (locationServicesEnabled)
+- iOS RAW_LOCATION_PROVIDER continue to run on app terminate
+
 #### Changed
 - start and stop methods doesn't accept callback (use event listeners instead)
 - for background syncing syncUrl option is required
@@ -33,10 +37,17 @@ Since alpha.8:
 Since alpha.14
 - iOS saveBatteryOnBackground defaults to false
 
+Since alpha.15
+- shared code base with react-native
+
 ### Fixed
 
 Since alpha.13:
 - iOS open location settings on iOS 10 and later (PR #158) by @asafron
+
+Since alpha.15
+- checkStatus authorization
+- Android fix for #362 Build Failed: cannot find symbol (PR #378)
 
 ### [2.3.3] - 2017-11-17
 ### Added
