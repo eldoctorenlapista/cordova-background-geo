@@ -305,8 +305,16 @@ Check status of the service
 | Success callback parameter | Type      | Description                                          |
 |----------------------------|-----------|------------------------------------------------------|
 | `isRunning`                | `Boolean` | true/false (true if service is running)              |
-| `hasPermissions`           | `Boolean` | true/false (true if service has permissions)         |
-| `authorization`            | `Number`  | BackgroundGeolocation.{NOT_AUTHORIZED \| AUTHORIZED}  |
+| `locationServicesEnabled`  | `Boolean` | true/false (true if location services are enabled)   |
+| `authorization`            | `Number`  | authorization status                                 |
+
+Authorization statuses:
+
+* NOT_AUTHORIZED
+* AUTHORIZED - authorization to run in background and foreground
+* AUTHORIZED_FOREGROUND iOS only authorization to run in foreground only
+
+Note: In Android concept of authorization represent application permissions.
 
 ### showAppSettings()
 Platform: Android >= 6, iOS >= 8.0
