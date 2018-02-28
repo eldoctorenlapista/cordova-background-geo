@@ -16,7 +16,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.provider.Settings.SettingNotFoundException;
-import android.support.v4.content.ContextCompat;
 
 import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
@@ -138,7 +137,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         } else if (ACTION_LOCATION_ENABLED_CHECK.equals(action)) {
             logger.debug("Location services enabled check");
             try {
-                callbackContext.success(getAuthorizationStatus());
+                callbackContext.success(facade.locationServicesEnabled() ? 1 : 0);
             } catch (SettingNotFoundException e) {
                 logger.error("Location service checked failed: {}", e.getMessage());
                 callbackContext.error("Location setting error occured");
@@ -267,7 +266,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     }
 
     private void start() {
-        if (hasPermissions()) {
+        if (facade.hasPermissions()) {
             try {
                 facade.start();
             } catch (JSONException e) {
@@ -438,14 +437,11 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     private JSONObject checkStatus() throws Exception {
         JSONObject json = new JSONObject();
         json.put("isRunning", LocationService.isRunning());
-        json.put("hasPermissions", hasPermissions());
-        json.put("authorization", getAuthorizationStatus());
+        json.put("hasPermissions", facade.hasPermissions()); //@Deprecated
+        json.put("locationServicesEnabled", facade.locationServicesEnabled());
+        json.put("authorization", facade.getAuthorizationStatus());
 
         return json;
-    }
-
-    private int getAuthorizationStatus() throws SettingNotFoundException {
-        return facade.getAuthorizationStatus();
     }
 
     @Override
@@ -498,10 +494,6 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         sendError(error);
     }
 
-    public boolean hasPermissions() {
-        return hasPermissions(getContext(), BackgroundGeolocationFacade.PERMISSIONS);
-    }
-
     @Override
     public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
         switch (requestCode) {
@@ -530,14 +522,5 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
                 return;
             }
         }
-    }
-
-    public static boolean hasPermissions(Context context, String[] permissions) {
-        for (String perm: permissions) {
-            if (ContextCompat.checkSelfPermission(context, perm) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
     }
 }
