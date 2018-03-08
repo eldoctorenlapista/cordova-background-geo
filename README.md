@@ -194,7 +194,7 @@ class BgTracking extends Component {
 
     BackgroundGeolocation.checkStatus(status => {
       console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-      console.log('[INFO] BackgroundGeolocation service has permissions', status.hasPermissions);
+      console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
       console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
 
       // you don't need to check status before start (this is just the example)
