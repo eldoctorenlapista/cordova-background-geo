@@ -25,6 +25,7 @@
     <!-- android -->
     <platform name="android">
         <preference name="GOOGLE_PLAY_SERVICES_VERSION" default="+"/>
+        <preference name="ANDROID_SUPPORT_LIBRARY_VERSION" default="+"/>
         <preference name="ICON" default="@mipmap/icon" />
         <preference name="SMALL_ICON" default="@mipmap/icon" />
         <preference name="ACCOUNT_NAME" default="@string/app_name" />
@@ -34,7 +35,7 @@
 
         <framework src="android/common/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
-        <framework src="com.android.support:support-v4:+" />
+        <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_LIBRARY_VERSION" />
         <!-- Generated with gen_sources.sh @ 2018-02-28 19:41:25 -->
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/bgloc/cordova/ConfigMapper.java" target-dir="src/com/marianhello/bgloc/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/bgloc/cordova" />

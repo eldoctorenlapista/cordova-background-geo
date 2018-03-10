@@ -56,17 +56,18 @@ Default iOS location permission prompt can be changed in your config.xml:
 </plugin>
 ```
 
-For compatibility with other plugins you may also set specific google play version.
-Following example will lock google play services to version 11.0.1 for compatibility with phonegap-plugin-push.
+For compatibility with other plugins you may also set specific google play version and android support
+library version.
 
-**Note:** Always consult documentation of other plugins to figure out correct GOOGLE_PLAY_SERVICES_VERSION.
+**Note:** Always consult documentation of other plugins to figure out compatible versions.
+
 ```
 <plugin name="cordova-plugin-mauron85-background-geolocation">
     <!-- may contain other variables as shown above -->
     <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11.0.1" />
+    <variable name="ANDROID_SUPPORT_LIBRARY_VERSION" value="23+" />
 </plugin>
 ```
-
 
 **Note:** To apply changes, you must remove and reinstall plugin.
 
