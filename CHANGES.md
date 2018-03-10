@@ -14,10 +14,10 @@ Since alpha.8:
 - Android on "activity" event
 - iOS configuration persistence
 
-Since alpha.12
+Since alpha.12:
 - iOS ACTIVITY_PROVIDER (experimental)
 
-Since alpha.15
+Since alpha.15:
 - checkStatus returns status of location services (locationServicesEnabled)
 - iOS RAW_LOCATION_PROVIDER continue to run on app terminate
 
@@ -34,10 +34,10 @@ Since alpha.15
 Since alpha.8:
 - Android bind to service on facade construct
 
-Since alpha.14
+Since alpha.14:
 - iOS saveBatteryOnBackground defaults to false
 
-Since alpha.15
+Since alpha.15:
 - shared code base with react-native
 
 ### Fixed
@@ -45,14 +45,17 @@ Since alpha.15
 Since alpha.13:
 - iOS open location settings on iOS 10 and later (PR #158) by @asafron
 
-Since alpha.15
+Since alpha.15:
 - checkStatus authorization
 - Android fix for #362 Build Failed: cannot find symbol (PR #378)
+
+Since alpha.18:
+- Android fix #276 - NullPointerException: onTaskRemoved
+- Android fix #380 - allow to override android support library
 
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
-
 
 ### [2.3.2] - 2017-11-06
 ### Fix
