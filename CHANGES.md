@@ -21,6 +21,9 @@ Since alpha.15:
 - checkStatus returns status of location services (locationServicesEnabled)
 - iOS RAW_LOCATION_PROVIDER continue to run on app terminate
 
+Since alpha.19:
+- Android Headless Task
+
 #### Changed
 - start and stop methods doesn't accept callback (use event listeners instead)
 - for background syncing syncUrl option is required
@@ -52,6 +55,9 @@ Since alpha.15:
 Since alpha.18:
 - Android fix #276 - NullPointerException: onTaskRemoved
 - Android fix #380 - allow to override android support library
+
+Since alpha.19:
+- Android fix event listeners not triggering after app is restarted and service was running
 
 ### [2.3.3] - 2017-11-17
 ### Added
