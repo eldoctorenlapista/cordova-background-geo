@@ -510,10 +510,8 @@ Note: Keep in mind that all locations (even single one) will be sent as array of
 
 ### Android Headless Task (Experimental)
 
-Special task that gets executed when app is terminated, but plugin was configured to continue running in background (option `stopOnTerminate: false`). In this scenario [Android Activity](https://developer.android.com/reference/android/app/Activity.html)
-was killed by the system and all registered event listeners (`BackgroundGeolocation.on('event')` will not be triggered until next app launch.
-
-Keep in mind that callback function lives in isolated scope. Variables from upper scope cannot be referenced!
+Special task that gets executed when app is terminated, but plugin was configured to continue running in the background (option `stopOnTerminate: false`). In this scenario [Activity](https://developer.android.com/reference/android/app/Activity.html)
+was killed by the system and all registered event listeners will not be triggered until app is relaunched.
 
 **Note:** Prefer configuration options `url` and `syncUrl` over headless task. Use it sparingly!
 
@@ -523,7 +521,9 @@ Keep in mind that callback function lives in isolated scope. Variables from uppe
 | `event.name`       | `String`  | Name of the event [ "location", "stationary", "activity" ]             |
 | `event.params`     | `Object`  | Event parameters. @see [Events](#events)                               |
 
-**Note:** Following example requires backend server to support [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+Keep in mind that callback function lives in isolated scope. Variables from upper scope cannot be referenced!
+
+Following example requires [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) enabled backend server.
 
 ```
 BackgroundGeolocation.headlessTask(function(event) {
