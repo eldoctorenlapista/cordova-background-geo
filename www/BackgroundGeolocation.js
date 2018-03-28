@@ -186,6 +186,13 @@ var BackgroundGeolocation = {
       'endTask', [taskKey]);
   },
 
+  headlessTask: function (func, success, failure) {
+    exec(success || emptyFnc,
+      failure || emptyFnc,
+      'BackgroundGeolocation',
+      'registerHeadlessTask', [func.toString()]);
+  },
+
   on: function (event, callbackFn) {
     if (typeof callbackFn !== 'function') {
       throw 'BackgroundGeolocation: callback function must be provided';

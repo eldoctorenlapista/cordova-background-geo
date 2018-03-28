@@ -36,9 +36,19 @@
         <framework src="android/common/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
         <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_LIBRARY_VERSION" />
-        <!-- Generated with gen_sources.sh @ 2018-02-28 19:41:25 -->
+        <!-- Generated with gen_sources.sh @ 2018-03-28 17:26:55 -->
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/bgloc/cordova/ConfigMapper.java" target-dir="src/com/marianhello/bgloc/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/bgloc/cordova" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/HandlerWrapper.java" target-dir="src/com/evgenii/jsevaluator" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/interfaces/CallJavaResultInterface.java" target-dir="src/com/evgenii/jsevaluator/interfaces" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/interfaces/HandlerWrapperInterface.java" target-dir="src/com/evgenii/jsevaluator/interfaces" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/interfaces/JsCallback.java" target-dir="src/com/evgenii/jsevaluator/interfaces" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/interfaces/JsEvaluatorInterface.java" target-dir="src/com/evgenii/jsevaluator/interfaces" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/interfaces/WebViewWrapperInterface.java" target-dir="src/com/evgenii/jsevaluator/interfaces" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/JavaScriptInterface.java" target-dir="src/com/evgenii/jsevaluator" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/JsEvaluator.java" target-dir="src/com/evgenii/jsevaluator" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/JsFunctionCallFormatter.java" target-dir="src/com/evgenii/jsevaluator" />
+        <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/WebViewWrapper.java" target-dir="src/com/evgenii/jsevaluator" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/AbstractLocationProvider.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/ActivityRecognitionLocationProvider.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/BackgroundGeolocationFacade.java" target-dir="src/com/marianhello/bgloc" />
@@ -60,6 +70,11 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteLocationContract.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteLocationDAO.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteOpenHelper.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/ActivityTask.java" target-dir="src/com/marianhello/bgloc/headless" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/HeadlessTaskRunner.java" target-dir="src/com/marianhello/bgloc/headless" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/LocationTask.java" target-dir="src/com/marianhello/bgloc/headless" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/StationaryTask.java" target-dir="src/com/marianhello/bgloc/headless" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/Task.java" target-dir="src/com/marianhello/bgloc/headless" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/HttpPostService.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/LocationProviderFactory.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/LocationProvider.java" target-dir="src/com/marianhello/bgloc" />

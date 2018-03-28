@@ -66,6 +66,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     public static final String ACTION_REGISTER_EVENT_LISTENER = "addEventListener";
     public static final String ACTION_START_TASK = "startTask";
     public static final String ACTION_END_TASK = "endTask";
+    public static final String ACTION_REGISTER_HEADLESS_TASK = "registerHeadlessTask";
 
     private static final int PERMISSIONS_REQUEST_CODE = 1;
 
@@ -80,6 +81,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         super.pluginInitialize();
 
         facade = new BackgroundGeolocationFacade(this);
+        facade.init();
 
         logger = LoggerManager.getLogger(BackgroundGeolocationPlugin.class);
     }
@@ -260,6 +262,13 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         } else if (ACTION_END_TASK.equals(action)) {
             callbackContext.success();
             return true;
+        } else if (ACTION_REGISTER_HEADLESS_TASK.equals(action)) {
+            logger.debug("Registering headless task");
+            try {
+                facade.registerHeadlessTask(data.getString(0));
+            } catch (JSONException e) {
+                callbackContext.error("Registering headless task failed: " + e.getMessage());
+            }
         }
 
         return false;
