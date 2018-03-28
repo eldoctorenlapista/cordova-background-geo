@@ -48,33 +48,36 @@ See [MIGRATIONS.md](/MIGRATIONS.md)
 cordova plugin add cordova-plugin-mauron85-background-geolocation
 ```
 
-Default iOS location permission prompt can be changed in your config.xml:
-```
-<plugin name="cordova-plugin-mauron85-background-geolocation">
-    <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app requires background tracking enabled" />
-    <variable name="MOTION_USAGE_DESCRIPTION" value="This app requires motion detection" />
-</plugin>
-```
-
-For compatibility with other plugins you may also set specific google play version and android support
-library version.
+You may also want to change default iOS permission prompts and set specific google play version and android support library version for compatibility with other plugins.
 
 **Note:** Always consult documentation of other plugins to figure out compatible versions.
 
 ```
+cordova plugin add cordova-plugin-mauron85-background-geolocation \
+  --variable GOOGLE_PLAY_SERVICES_VERSION=11+ \
+  --variable ANDROID_SUPPORT_LIBRARY_VERSION=23+ \
+  --variable ALWAYS_USAGE_DESCRIPTION="App requires ..." \
+  --variable MOTION_USAGE_DESCRIPTION="App requires motion detection"
+```
+
+Or in `config.xml`:
+
+```
 <plugin name="cordova-plugin-mauron85-background-geolocation">
-    <!-- may contain other variables as shown above -->
-    <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11.0.1" />
+    <variable name="ALWAYS_USAGE_DESCRIPTION" value="App requires background tracking enabled" />
+    <variable name="MOTION_USAGE_DESCRIPTION" value="App requires motion detection" />
+    <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11+" />
     <variable name="ANDROID_SUPPORT_LIBRARY_VERSION" value="23+" />
 </plugin>
 ```
 
 **Note:** To apply changes, you must remove and reinstall plugin.
 
+
 ## Registering plugin for Adobe® PhoneGap™ Build
 
 This plugin should work with Adobe® PhoneGap™ Build without any modification.
-To register plugin add following line into your config.xml:
+To register plugin add following line into your `config.xml`:
 
 ```
 <plugin name="cordova-plugin-mauron85-background-geolocation"/>
@@ -505,9 +508,41 @@ BackgroundGeolocation.configure({
 Note: only string keys and values are supported.
 Note: Keep in mind that all locations (even single one) will be sent as array of object(s), when postTemplate is `jsonObject` and array of array(s) for `jsonArray`!
 
+### Android Headless Task (Experimental)
+
+Special task that gets executed when app is terminated, but plugin was configured to continue running in background (option `stopOnTerminate: false`). In this scenario [Android Activity](https://developer.android.com/reference/android/app/Activity.html)
+was killed by the system and all registered event listeners (`BackgroundGeolocation.on('event')` will not be triggered until next app launch.
+
+Keep in mind that callback function lives in isolated scope. Variables from upper scope cannot be referenced!
+
+**Note:** Prefer configuration options `url` and `syncUrl` over headless task. Use it sparingly!
+
+#### Task event
+| Parameter          | Type      | Description                                                            |
+|--------------------|-----------|------------------------------------------------------------------------|
+| `event.name`       | `String`  | Name of the event [ "location", "stationary", "activity" ]             |
+| `event.params`     | `Object`  | Event parameters. @see [Events](#events)                               |
+
+**Note:** Following example requires backend server to support [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+```
+BackgroundGeolocation.headlessTask(function(event) {
+    if (event.name === 'location' ||
+      event.name === 'stationary') {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://192.168.81.14:3000/headless');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(event.params));
+    }
+
+    return 'Processing event: ' + event.name; // will be logged
+});
+```
+
 ### Example of backend server
 
-[Background-geolocation-server](https://github.com/mauron85/background-geolocation-server) is a backend server written in nodejs.
+[Background-geolocation-server](https://github.com/mauron85/background-geolocation-server) is a backend server written in nodejs
+with CORS - Cross-Origin Resource Sharing support.
 There are instructions how to run it and simulate locations on Android, iOS Simulator and Genymotion.
 
 ## Quirks
