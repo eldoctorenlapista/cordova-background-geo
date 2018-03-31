@@ -421,18 +421,23 @@ Unregister all event listeners for given event
 | `background`        |                        | Android      | all         | app entered background state           |
 
 ### Location event
-| Location parameter | Type      | Description                                                            |
-|--------------------|-----------|------------------------------------------------------------------------|
-| `id`               | `Number`  | ID of location as stored in DB (or null)                               |
-| `provider`         | `String`  | gps, network, passive or fused                                         |
-| `locationProvider` | `Number`  | location provider                                                      |
-| `time`             | `Number`  | UTC time of this fix, in milliseconds since January 1, 1970.           |
-| `latitude`         | `Number`  | Latitude, in degrees.                                                  |
-| `longitude`        | `Number`  | Longitude, in degrees.                                                 |
-| `accuracy`         | `Number`  | Estimated accuracy of this location, in meters.                        |
-| `speed`            | `Number`  | Speed if it is available, in meters/second over ground.                |
-| `altitude`         | `Number`  | Altitude if available, in meters above the WGS 84 reference ellipsoid. |
-| `bearing`          | `Number`  | Bearing, in degrees.                                                   |
+| Location parameter     | Type      | Description                                                            |
+|------------------------|-----------|------------------------------------------------------------------------|
+| `id`                   | `Number`  | ID of location as stored in DB (or null)                               |
+| `provider`             | `String`  | gps, network, passive or fused                                         |
+| `locationProvider`     | `Number`  | location provider                                                      |
+| `time`                 | `Number`  | UTC time of this fix, in milliseconds since January 1, 1970.           |
+| `latitude`             | `Number`  | Latitude, in degrees.                                                  |
+| `longitude`            | `Number`  | Longitude, in degrees.                                                 |
+| `accuracy`             | `Number`  | Estimated accuracy of this location, in meters.                        |
+| `speed`                | `Number`  | Speed if it is available, in meters/second over ground.                |
+| `altitude`             | `Number`  | Altitude if available, in meters above the WGS 84 reference ellipsoid. |
+| `bearing`              | `Number`  | Bearing, in degrees.                                                   |
+| `isFromMockProvider`   | `Boolean` | (android only) True if location was recorded by mock provider          |
+| `mockLocationsEnabled` | `Boolean` | (android only) True if device has mock locations enabled               |
+
+Locations parameters `isFromMockProvider` and `mockLocationsEnabled` are not posted to `url` or `syncUrl` by default.
+Both can be requested via option `postTemplate`.
 
 Note: Do not use location `id` as unique key in your database as ids will be reused when `option.maxLocations` is reached.
 
