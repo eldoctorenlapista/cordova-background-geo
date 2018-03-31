@@ -40,3 +40,4 @@ for f in $src_files; do
     echo "<source-file src=\"$f\" $target_attr/>"
   fi
 done
+echo "<!-- End of generated sources -->"
