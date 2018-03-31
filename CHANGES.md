@@ -24,6 +24,9 @@ Since alpha.15:
 Since alpha.19:
 - Android Headless Task
 
+Since alpha.20:
+- Android location parameters isFromMockProvider and mockLocationsEnabled
+
 #### Changed
 - start and stop methods doesn't accept callback (use event listeners instead)
 - for background syncing syncUrl option is required
