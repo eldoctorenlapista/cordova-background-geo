@@ -62,6 +62,10 @@ Since alpha.18:
 Since alpha.19:
 - Android fix event listeners not triggering after app is restarted and service was running
 
+Since alpha.23:
+- iOS fix #394 - App Store Rejection - Prefs Non-Public URL Scheme
+- iOS reset connectivity status on stop
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
