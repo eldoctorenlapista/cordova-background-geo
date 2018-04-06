@@ -24,8 +24,8 @@
 
     <!-- android -->
     <platform name="android">
-        <preference name="GOOGLE_PLAY_SERVICES_VERSION" default="+"/>
-        <preference name="ANDROID_SUPPORT_LIBRARY_VERSION" default="+"/>
+        <preference name="GOOGLE_PLAY_SERVICES_VERSION" default="11+"/>
+        <preference name="ANDROID_SUPPORT_LIBRARY_VERSION" default="26+"/>
         <preference name="ICON" default="@mipmap/icon" />
         <preference name="SMALL_ICON" default="@mipmap/icon" />
         <preference name="ACCOUNT_NAME" default="@string/app_name" />
@@ -36,7 +36,7 @@
         <framework src="android/common/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
         <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_LIBRARY_VERSION" />
-        <!-- Generated with gen_sources.sh @ 2018-03-31 17:00:44 -->
+        <!-- Generated with gen_sources.sh @ 2018-04-06 11:19:33 -->
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/bgloc/cordova/ConfigMapper.java" target-dir="src/com/marianhello/bgloc/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/bgloc/cordova" />
         <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/HandlerWrapper.java" target-dir="src/com/evgenii/jsevaluator" />
@@ -75,6 +75,7 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/Task.java" target-dir="src/com/marianhello/bgloc/headless" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/HttpPostService.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/LocationService.java" target-dir="src/com/marianhello/bgloc" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/NotificationHelper.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/PluginDelegate.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/PluginError.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/AbstractLocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
