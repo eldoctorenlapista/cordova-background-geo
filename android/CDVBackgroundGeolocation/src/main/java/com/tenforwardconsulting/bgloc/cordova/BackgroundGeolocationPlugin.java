@@ -269,6 +269,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             } catch (JSONException e) {
                 callbackContext.error("Registering headless task failed: " + e.getMessage());
             }
+            return true;
         }
 
         return false;
