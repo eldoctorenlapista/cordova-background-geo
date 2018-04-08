@@ -64,10 +64,10 @@ Or in `config.xml`:
 
 ```
 <plugin name="cordova-plugin-mauron85-background-geolocation">
-    <variable name="ALWAYS_USAGE_DESCRIPTION" value="App requires background tracking enabled" />
-    <variable name="MOTION_USAGE_DESCRIPTION" value="App requires motion detection" />
-    <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11+" />
-    <variable name="ANDROID_SUPPORT_LIBRARY_VERSION" value="23+" />
+  <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11+" />
+  <variable name="ANDROID_SUPPORT_LIBRARY_VERSION" value="23+" />
+  <variable name="ALWAYS_USAGE_DESCRIPTION" value="App requires background tracking enabled" />
+  <variable name="MOTION_USAGE_DESCRIPTION" value="App requires motion detection" />
 </plugin>
 ```
 
@@ -112,121 +112,101 @@ You will need to ensure that you have installed the following items through the 
 Android is no longer supporting downloading support libraries through the SDK Manager.
 The support libraries are now available through Google's Maven repository.
 
-## Example using React Component
-
-
-**Note:** You don't have to use React or write your app in ES2015. You can call BackgroundGeolocation methods directly.
+## Example
 
 ```javascript
-import React, { Component } from 'react';
-import { Alert } from 'react-native-web';
-import ReactDOM from 'react-dom';
-
-class BgTracking extends Component {
-  componentDidMount() {
-    BackgroundGeolocation.configure({
-      desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
-      stationaryRadius: 50,
-      distanceFilter: 50,
-      notificationTitle: 'Background tracking',
-      notificationText: 'enabled',
-      debug: true,
-      startOnBoot: false,
-      stopOnTerminate: false,
-      locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
-      interval: 10000,
-      fastestInterval: 5000,
-      activitiesInterval: 10000,
-      url: 'http://192.168.81.15:3000/location',
-      httpHeaders: {
-        'X-FOO': 'bar'
-      },
-      // customize post properties
-      postTemplate: {
-        lat: '@latitude',
-        lon: '@longitude',
-        foo: 'bar' // you can also add your own properties
-      }
-    });
-
-    BackgroundGeolocation.on('location', (location) => {
-      // handle your locations here
-      // to perform long running operation on iOS
-      // you need to create background task
-      BackgroundGeolocation.startTask(taskKey => {
-        // execute long running task
-        // eg. ajax post location
-        // IMPORTANT: task has to be ended by endTask
-        BackgroundGeolocation.endTask(taskKey);
-      });
-    });
-
-    BackgroundGeolocation.on('stationary', (stationaryLocation) => {
-      // handle stationary locations here
-    });
-
-    BackgroundGeolocation.on('error', (error) => {
-      console.log('[ERROR] BackgroundGeolocation error:', error.code, error.message);
-    });
-
-    BackgroundGeolocation.on('start', () => {
-      console.log('[INFO] BackgroundGeolocation service has been started');
-    });
-
-    BackgroundGeolocation.on('stop', () => {
-      console.log('[INFO] BackgroundGeolocation service has been stopped');
-    });
-
-    BackgroundGeolocation.on('authorization', (status) => {
-      console.log('[INFO] BackgroundGeolocation authorization status: ' + status);
-      if (status !== BackgroundGeolocation.AUTHORIZED) {
-        // we need to set delay or otherwise alert may not be shown
-        setTimeout(() =>
-          Alert.alert('App requires location tracking permission', 'Would you like to open app settings?', [
-            { text: 'Yes', onPress: () => BackgroundGeolocation.showAppSettings() },
-            { text: 'No', onPress: () => console.log('No Pressed'), style: 'cancel' }
-          ]), 1000);
-      }
-    });
-
-    BackgroundGeolocation.on('background', () => {
-      console.log('[INFO] App is in background');
-      // you can also reconfigure service (changes will be applied immediately)
-      BackgroundGeolocation.configure({ debug: true });
-    });
-
-    BackgroundGeolocation.on('foreground', () => {
-      console.log('[INFO] App is in foreground');
-      BackgroundGeolocation.configure({ debug: false });
-    });
-
-    BackgroundGeolocation.checkStatus(status => {
-      console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-      console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
-      console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
-      // you don't need to check status before start (this is just the example)
-      if (!status.isRunning) {
-        BackgroundGeolocation.start(); //triggers start on start event
-      }
-    });
-
-    // you can also just start without checking for status
-    // BackgroundGeolocation.start();
-  }
-
-  componentWillUnmount() {
-    // unregister all event listeners
-    BackgroundGeolocation.events.forEach(event => BackgroundGeolocation.removeAllListeners(event));
-  }
-
-  render() {
-    // render locations, buttons, etc...
-  }
-}
-
 function onDeviceReady() {
-  ReactDOM.render(<BgTracking />, node);
+  BackgroundGeolocation.configure({
+    locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
+    desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
+    stationaryRadius: 50,
+    distanceFilter: 50,
+    notificationTitle: 'Background tracking',
+    notificationText: 'enabled',
+    debug: true,
+    interval: 10000,
+    fastestInterval: 5000,
+    activitiesInterval: 10000,
+    url: 'http://192.168.81.15:3000/location',
+    httpHeaders: {
+      'X-FOO': 'bar'
+    },
+    // customize post properties
+    postTemplate: {
+      lat: '@latitude',
+      lon: '@longitude',
+      foo: 'bar' // you can also add your own properties
+    }
+  });
+
+  BackgroundGeolocation.on('location', function(location) {
+    // handle your locations here
+    // to perform long running operation on iOS
+    // you need to create background task
+    BackgroundGeolocation.startTask(function(taskKey) {
+      // execute long running task
+      // eg. ajax post location
+      // IMPORTANT: task has to be ended by endTask
+      BackgroundGeolocation.endTask(taskKey);
+    });
+  });
+
+  BackgroundGeolocation.on('stationary', function(stationaryLocation) {
+    // handle stationary locations here
+  });
+
+  BackgroundGeolocation.on('error', function(error) {
+    console.log('[ERROR] BackgroundGeolocation error:', error.code, error.message);
+  });
+
+  BackgroundGeolocation.on('start', function() {
+    console.log('[INFO] BackgroundGeolocation service has been started');
+  });
+
+  BackgroundGeolocation.on('stop', function() {
+    console.log('[INFO] BackgroundGeolocation service has been stopped');
+  });
+
+  BackgroundGeolocation.on('authorization', function(status) {
+    console.log('[INFO] BackgroundGeolocation authorization status: ' + status);
+    if (status !== BackgroundGeolocation.AUTHORIZED) {
+      // we need to set delay or otherwise alert may not be shown
+      setTimeout(function() {
+        var showSettings = confirm('App requires location tracking permission. Would you like to open app settings?');
+        if (showSetting) {
+          return BackgroundGeolocation.showAppSettings();
+        }
+      }, 1000);
+    }
+  });
+
+  BackgroundGeolocation.on('background', function() {
+    console.log('[INFO] App is in background');
+    // you can also reconfigure service (changes will be applied immediately)
+    BackgroundGeolocation.configure({ debug: true });
+  });
+
+  BackgroundGeolocation.on('foreground', function() {
+    console.log('[INFO] App is in foreground');
+    BackgroundGeolocation.configure({ debug: false });
+  });
+
+  BackgroundGeolocation.checkStatus(function(status) {
+    console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+    console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+    console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+    // you don't need to check status before start (this is just the example)
+    if (!status.isRunning) {
+      BackgroundGeolocation.start(); //triggers start on start event
+    }
+  });
+
+  // you can also just start without checking for status
+  // BackgroundGeolocation.start();
+
+  // Don't forget to remove listeners at some point!
+  // BackgroundGeolocation.events.forEach(event => BackgroundGeolocation.removeAllListeners(event));
 }
 
 document.addEventListener('deviceready', onDeviceReady, false);
@@ -583,16 +563,16 @@ If you have an issue compiling the app and you're getting an error similar to th
 ```
 UNEXPECTED TOP-LEVEL EXCEPTION:
 com.android.dex.DexException: Multiple dex files define Landroid/support/annotation/AnimRes;
-	at com.android.dx.merge.DexMerger.readSortableTypes(DexMerger.java:596)
-	at com.android.dx.merge.DexMerger.getSortedTypes(DexMerger.java:554)
-	at com.android.dx.merge.DexMerger.mergeClassDefs(DexMerger.java:535)
-	at com.android.dx.merge.DexMerger.mergeDexes(DexMerger.java:171)
-	at com.android.dx.merge.DexMerger.merge(DexMerger.java:189)
-	at com.android.dx.command.dexer.Main.mergeLibraryDexBuffers(Main.java:502)
-	at com.android.dx.command.dexer.Main.runMonoDex(Main.java:334)
-	at com.android.dx.command.dexer.Main.run(Main.java:277)
-	at com.android.dx.command.dexer.Main.main(Main.java:245)
-	at com.android.dx.command.Main.main(Main.java:106)
+  at com.android.dx.merge.DexMerger.readSortableTypes(DexMerger.java:596)
+  at com.android.dx.merge.DexMerger.getSortedTypes(DexMerger.java:554)
+  at com.android.dx.merge.DexMerger.mergeClassDefs(DexMerger.java:535)
+  at com.android.dx.merge.DexMerger.mergeDexes(DexMerger.java:171)
+  at com.android.dx.merge.DexMerger.merge(DexMerger.java:189)
+  at com.android.dx.command.dexer.Main.mergeLibraryDexBuffers(Main.java:502)
+  at com.android.dx.command.dexer.Main.runMonoDex(Main.java:334)
+  at com.android.dx.command.dexer.Main.run(Main.java:277)
+  at com.android.dx.command.dexer.Main.main(Main.java:245)
+  at com.android.dx.command.Main.main(Main.java:106)
 ```
 
 Then at least one other plugin you have installed is using an outdated way to declare dependencies such as `android-support` or `play-services-gcm`.
