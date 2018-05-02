@@ -193,6 +193,13 @@ var BackgroundGeolocation = {
       'registerHeadlessTask', [func.toString()]);
   },
 
+  forceSync: function (success, failure) {
+    exec(success || emptyFnc,
+      failure || emptyFnc,
+      'BackgroundGeolocation',
+      'forceSync', []);
+  },
+
   on: function (event, callbackFn) {
     if (typeof callbackFn !== 'function') {
       throw 'BackgroundGeolocation: callback function must be provided';

@@ -3,7 +3,6 @@ package com.marianhello.bgloc.cordova;
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.data.ArrayListLocationTemplate;
 import com.marianhello.bgloc.data.HashMapLocationTemplate;
-import com.marianhello.bgloc.data.LinkedHashSetLocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplate;
 import com.marianhello.bgloc.data.LocationTemplateFactory;
 
@@ -11,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -36,10 +34,10 @@ public class ConfigMapper {
             config.setDebugging(jObject.getBoolean("debug"));
         }
         if (jObject.has("notificationTitle")) {
-            config.setNotificationTitle(jObject.getString("notificationTitle"));
+            config.setNotificationTitle(!jObject.isNull("notificationTitle") ? jObject.getString("notificationTitle") : Config.NullString);
         }
         if (jObject.has("notificationText")) {
-            config.setNotificationText(jObject.getString("notificationText"));
+            config.setNotificationText(!jObject.isNull("notificationText") ? jObject.getString("notificationText") : Config.NullString);
         }
         if (jObject.has("stopOnTerminate")) {
             config.setStopOnTerminate(jObject.getBoolean("stopOnTerminate"));
@@ -60,13 +58,13 @@ public class ConfigMapper {
             config.setActivitiesInterval(jObject.getInt("activitiesInterval"));
         }
         if (jObject.has("notificationIconColor")) {
-            config.setNotificationIconColor(jObject.getString("notificationIconColor"));
+            config.setNotificationIconColor(!jObject.isNull("notificationIconColor") ? jObject.getString("notificationIconColor") : Config.NullString);
         }
         if (jObject.has("notificationIconLarge")) {
-            config.setLargeNotificationIcon(jObject.getString("notificationIconLarge"));
+            config.setLargeNotificationIcon(!jObject.isNull("notificationIconLarge") ? jObject.getString("notificationIconLarge") : Config.NullString);
         }
         if (jObject.has("notificationIconSmall")) {
-            config.setSmallNotificationIcon(jObject.getString("notificationIconSmall"));
+            config.setSmallNotificationIcon(!jObject.isNull("notificationIconSmall") ? jObject.getString("notificationIconSmall") : Config.NullString);
         }
         if (jObject.has("startForeground")) {
             config.setStartForeground(jObject.getBoolean("startForeground"));
@@ -75,10 +73,10 @@ public class ConfigMapper {
             config.setStopOnStillActivity(jObject.getBoolean("stopOnStillActivity"));
         }
         if (jObject.has("url")) {
-            config.setUrl(jObject.getString("url"));
+            config.setUrl(!jObject.isNull("url") ? jObject.getString("url") : Config.NullString);
         }
         if (jObject.has("syncUrl")) {
-            config.setSyncUrl(jObject.getString("syncUrl"));
+            config.setSyncUrl(!jObject.isNull("syncUrl") ? jObject.getString("syncUrl") : Config.NullString);
         }
         if (jObject.has("syncThreshold")) {
             config.setSyncThreshold(jObject.getInt("syncThreshold"));
@@ -107,11 +105,11 @@ public class ConfigMapper {
         json.put("distanceFilter", config.getDistanceFilter());
         json.put("desiredAccuracy", config.getDesiredAccuracy());
         json.put("debug", config.isDebugging());
-        json.put("notificationTitle", config.getNotificationTitle());
-        json.put("notificationText", config.getNotificationText());
-        json.put("notificationIconLarge", config.getLargeNotificationIcon());
-        json.put("notificationIconSmall", config.getSmallNotificationIcon());
-        json.put("notificationIconColor", config.getNotificationIconColor());
+        json.put("notificationTitle", config.getNotificationTitle() != Config.NullString ? config.getNotificationTitle() : JSONObject.NULL);
+        json.put("notificationText", config.getNotificationText() != Config.NullString ? config.getNotificationText() : JSONObject.NULL);
+        json.put("notificationIconLarge", config.getLargeNotificationIcon() != Config.NullString ? config.getLargeNotificationIcon() : JSONObject.NULL);
+        json.put("notificationIconSmall", config.getSmallNotificationIcon() != Config.NullString ? config.getSmallNotificationIcon() : JSONObject.NULL);
+        json.put("notificationIconColor", config.getNotificationIconColor() != Config.NullString ? config.getNotificationIconColor() : JSONObject.NULL);
         json.put("stopOnTerminate", config.getStopOnTerminate());
         json.put("startOnBoot", config.getStartOnBoot());
         json.put("startForeground", config.getStartForeground());
@@ -120,8 +118,8 @@ public class ConfigMapper {
         json.put("fastestInterval", config.getFastestInterval());
         json.put("activitiesInterval", config.getActivitiesInterval());
         json.put("stopOnStillActivity", config.getStopOnStillActivity());
-        json.put("url", config.getUrl());
-        json.put("syncUrl", config.getSyncUrl());
+        json.put("url", config.getUrl() != Config.NullString ? config.getUrl() : JSONObject.NULL);
+        json.put("syncUrl", config.getSyncUrl() != Config.NullString  ? config.getSyncUrl() : JSONObject.NULL);
         json.put("syncThreshold", config.getSyncThreshold());
         json.put("httpHeaders", new JSONObject(config.getHttpHeaders()));
         json.put("maxLocations", config.getMaxLocations());
@@ -131,11 +129,6 @@ public class ConfigMapper {
             Map map = ((HashMapLocationTemplate)tpl).toMap();
             if (map != null) {
                 template = new JSONObject(map);
-            }
-        } else if (tpl instanceof LinkedHashSetLocationTemplate) {
-            Object[] keys = ((LinkedHashSetLocationTemplate)tpl).toArray();
-            if (keys != null) {
-                template = new JSONArray(Arrays.asList(keys));
             }
         } else if (tpl instanceof ArrayListLocationTemplate) {
             Object[] keys = ((ArrayListLocationTemplate)tpl).toArray();

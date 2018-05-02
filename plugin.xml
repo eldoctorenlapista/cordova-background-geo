@@ -36,7 +36,7 @@
         <framework src="android/common/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
         <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_LIBRARY_VERSION" />
-        <!-- Generated with gen_sources.sh @ 2018-04-06 11:19:33 -->
+        <!-- Generated with gen_sources.sh @ 2018-05-02 07:18:07 -->
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/bgloc/cordova/ConfigMapper.java" target-dir="src/com/marianhello/bgloc/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/bgloc/cordova" />
         <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/HandlerWrapper.java" target-dir="src/com/evgenii/jsevaluator" />
@@ -59,7 +59,6 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/ConfigurationDAO.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/DAOFactory.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/HashMapLocationTemplate.java" target-dir="src/com/marianhello/bgloc/data" />
-        <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/LinkedHashSetLocationTemplate.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/LocationDAO.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/LocationTemplateFactory.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/LocationTemplate.java" target-dir="src/com/marianhello/bgloc/data" />
@@ -75,9 +74,8 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/Task.java" target-dir="src/com/marianhello/bgloc/headless" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/HttpPostService.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/LocationService.java" target-dir="src/com/marianhello/bgloc" />
-        <source-file src="android/common/src/main/java/com/marianhello/bgloc/NotificationHelper.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/PluginDelegate.java" target-dir="src/com/marianhello/bgloc" />
-        <source-file src="android/common/src/main/java/com/marianhello/bgloc/PluginError.java" target-dir="src/com/marianhello/bgloc" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/PluginException.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/AbstractLocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/ActivityRecognitionLocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/LocationProviderFactory.java" target-dir="src/com/marianhello/bgloc/provider" />
@@ -90,21 +88,25 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/sync/AuthenticatorService.java" target-dir="src/com/marianhello/bgloc/sync" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/sync/BatchManager.java" target-dir="src/com/marianhello/bgloc/sync" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/sync/DummyContentProvider.java" target-dir="src/com/marianhello/bgloc/sync" />
-        <source-file src="android/common/src/main/java/com/marianhello/bgloc/sync/SyncAdapter.java" target-dir="src/com/marianhello/bgloc/sync" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/sync/SyncService.java" target-dir="src/com/marianhello/bgloc/sync" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/UploadingCallback.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/logging/DBLogReader.java" target-dir="src/com/marianhello/logging" />
-        <source-file src="android/common/src/main/java/com/marianhello/logging/FileLogReader.java" target-dir="src/com/marianhello/logging" />
         <source-file src="android/common/src/main/java/com/marianhello/logging/LogEntry.java" target-dir="src/com/marianhello/logging" />
         <source-file src="android/common/src/main/java/com/marianhello/logging/LoggerManager.java" target-dir="src/com/marianhello/logging" />
-        <source-file src="android/common/src/main/java/com/marianhello/logging/LogReader.java" target-dir="src/com/marianhello/logging" />
-        <source-file src="android/common/src/main/java/com/marianhello/logging/SQLBuilder.java" target-dir="src/com/marianhello/logging" />
-        <source-file src="android/common/src/main/java/com/marianhello/logging/SQLiteAppender.java" target-dir="src/com/marianhello/logging" />
+        <source-file src="android/common/src/main/java/com/marianhello/logging/UncaughtExceptionLogger.java" target-dir="src/com/marianhello/logging" />
+        <source-file src="android/common/src/main/java/com/marianhello/utils/CloneHelper.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/common/src/main/java/com/marianhello/utils/Convert.java" target-dir="src/com/marianhello/utils" />
+        <source-file src="android/common/src/main/java/com/marianhello/utils/TextUtils.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/common/src/main/java/com/marianhello/utils/Tone.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/common/src/main/java/com/tenforwardconsulting/bgloc/DistanceFilterLocationProvider.java" target-dir="src/com/tenforwardconsulting/bgloc" />
         <source-file src="android/common/src/main/java/org/apache/commons/io/Charsets.java" target-dir="src/org/apache/commons/io" />
         <source-file src="android/common/src/main/java/org/apache/commons/io/input/ReversedLinesFileReader.java" target-dir="src/org/apache/commons/io/input" />
+        <source-file src="android/common/src/main/java/ru/andremoniy/sqlbuilder/SqlExpression.java" target-dir="src/ru/andremoniy/sqlbuilder" />
+        <source-file src="android/common/src/main/java/ru/andremoniy/sqlbuilder/SqlSelectStatement.java" target-dir="src/ru/andremoniy/sqlbuilder" />
+        <source-file src="android/common/src/main/java/ru/andremoniy/sqlbuilder/SqlStatement.java" target-dir="src/ru/andremoniy/sqlbuilder" />
+        <source-file src="android/common/src/main/java/ru/andremoniy/utils/TextUtils.java" target-dir="src/ru/andremoniy/utils" />
+        <source-file src="android/common/src/oreo/java/com/marianhello/bgloc/NotificationHelper.java" target-dir="src/com/marianhello/bgloc" />
+        <source-file src="android/common/src/oreo/java/com/marianhello/bgloc/sync/SyncAdapter.java" target-dir="src/com/marianhello/bgloc/sync" />
         <!-- End of generated sources -->
 
         <resource-file src="android/common/src/main/res/xml/syncadapter.xml" target="res/xml/syncadapter.xml" />
@@ -246,47 +248,59 @@
         <framework src="AudioToolbox.framework" weak="true" />
         <framework src="AVFoundation.framework" weak="true" />
         <framework src="libsqlite3.dylib" weak="true" />
-        <!-- Generated with gen_sources.sh @ 2018-02-24 13:30:48 -->
+        <!-- Generated with gen_sources.sh @ 2018-04-30 17:38:27 -->
         <header-file src="ios/CDVBackgroundGeolocation/CDVBackgroundGeolocation.h" />
         <source-file src="ios/CDVBackgroundGeolocation/CDVBackgroundGeolocation.m" />
-        <header-file src="ios/common/BackgroundGeolocation/AbstractLocationProvider.h" />
-        <source-file src="ios/common/BackgroundGeolocation/AbstractLocationProvider.m" />
-        <header-file src="ios/common/BackgroundGeolocation/Activity.h" />
-        <source-file src="ios/common/BackgroundGeolocation/Activity.m" />
-        <header-file src="ios/common/BackgroundGeolocation/ActivityLocationProvider.h" />
-        <source-file src="ios/common/BackgroundGeolocation/ActivityLocationProvider.m" />
-        <header-file src="ios/common/BackgroundGeolocation/BackgroundGeolocationFacade.h" />
-        <source-file src="ios/common/BackgroundGeolocation/BackgroundGeolocationFacade.m" />
-        <header-file src="ios/common/BackgroundGeolocation/BackgroundSync.h" />
-        <source-file src="ios/common/BackgroundGeolocation/BackgroundSync.m" />
-        <header-file src="ios/common/BackgroundGeolocation/BackgroundTaskManager.h" />
-        <source-file src="ios/common/BackgroundGeolocation/BackgroundTaskManager.m" />
         <header-file src="ios/common/BackgroundGeolocation/CocoaLumberjack.h" />
         <source-file src="ios/common/BackgroundGeolocation/CocoaLumberjack.m" />
-        <header-file src="ios/common/BackgroundGeolocation/Config.h" />
-        <source-file src="ios/common/BackgroundGeolocation/Config.m" />
-        <header-file src="ios/common/BackgroundGeolocation/ConfigurationContract.h" />
-        <source-file src="ios/common/BackgroundGeolocation/ConfigurationContract.m" />
-        <header-file src="ios/common/BackgroundGeolocation/DistanceFilterLocationProvider.h" />
-        <source-file src="ios/common/BackgroundGeolocation/DistanceFilterLocationProvider.m" />
         <header-file src="ios/common/BackgroundGeolocation/FMDB.h" />
         <source-file src="ios/common/BackgroundGeolocation/FMDB.m" />
         <header-file src="ios/common/BackgroundGeolocation/FMDBLogger.h" />
         <source-file src="ios/common/BackgroundGeolocation/FMDBLogger.m" />
-        <header-file src="ios/common/BackgroundGeolocation/GeolocationOpenHelper.h" />
-        <source-file src="ios/common/BackgroundGeolocation/GeolocationOpenHelper.m" />
-        <header-file src="ios/common/BackgroundGeolocation/Location.h" />
-        <source-file src="ios/common/BackgroundGeolocation/Location.m" />
-        <header-file src="ios/common/BackgroundGeolocation/LocationContract.h" />
-        <source-file src="ios/common/BackgroundGeolocation/LocationContract.m" />
-        <header-file src="ios/common/BackgroundGeolocation/LocationController.h" />
-        <source-file src="ios/common/BackgroundGeolocation/LocationController.m" />
-        <header-file src="ios/common/BackgroundGeolocation/LogReader.h" />
-        <source-file src="ios/common/BackgroundGeolocation/LogReader.m" />
-        <header-file src="ios/common/BackgroundGeolocation/Logging.h" />
-        <header-file src="ios/common/BackgroundGeolocation/ProviderDelegate.h" />
-        <header-file src="ios/common/BackgroundGeolocation/RawLocationProvider.h" />
-        <source-file src="ios/common/BackgroundGeolocation/RawLocationProvider.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURAbstractLocationProvider.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURAbstractLocationProvider.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURActivity.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURActivity.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURActivityLocationProvider.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURActivityLocationProvider.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURBackgroundGeolocationFacade.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURBackgroundGeolocationFacade.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURBackgroundSync.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURBackgroundSync.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURBackgroundTaskManager.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURBackgroundTaskManager.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURConfig.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURConfig.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURConfigurationContract.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURConfigurationContract.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURDistanceFilterLocationProvider.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURDistanceFilterLocationProvider.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURGeolocationOpenHelper.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURGeolocationOpenHelper.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURLocation.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURLocation.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURLocationContract.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURLocationContract.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURLocationController.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURLocationController.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURLogReader.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURLogReader.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURLogging.h" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURPostLocationTask.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURPostLocationTask.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURProviderDelegate.h" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURRawLocationProvider.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURRawLocationProvider.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURSQLiteConfigurationDAO.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURSQLiteConfigurationDAO.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURSQLiteHelper.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURSQLiteHelper.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURSQLiteLocationDAO.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURSQLiteLocationDAO.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURSQLiteOpenHelper.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURSQLiteOpenHelper.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURUncaughtExceptionLogger.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURUncaughtExceptionLogger.m" />
         <header-file src="ios/common/BackgroundGeolocation/Reachability.h" />
         <source-file src="ios/common/BackgroundGeolocation/Reachability.m" />
         <header-file src="ios/common/BackgroundGeolocation/SOMotionDetector/SOLocationManager.h" />
@@ -297,13 +311,14 @@
         <source-file src="ios/common/BackgroundGeolocation/SOMotionDetector/SOMotionDetector.m" />
         <header-file src="ios/common/BackgroundGeolocation/SOMotionDetector/SOStepDetector.h" />
         <source-file src="ios/common/BackgroundGeolocation/SOMotionDetector/SOStepDetector.m" />
-        <header-file src="ios/common/BackgroundGeolocation/SQLiteConfigurationDAO.h" />
-        <source-file src="ios/common/BackgroundGeolocation/SQLiteConfigurationDAO.m" />
-        <header-file src="ios/common/BackgroundGeolocation/SQLiteHelper.h" />
-        <source-file src="ios/common/BackgroundGeolocation/SQLiteHelper.m" />
-        <header-file src="ios/common/BackgroundGeolocation/SQLiteLocationDAO.h" />
-        <source-file src="ios/common/BackgroundGeolocation/SQLiteLocationDAO.m" />
-        <header-file src="ios/common/BackgroundGeolocation/SQLiteOpenHelper.h" />
-        <source-file src="ios/common/BackgroundGeolocation/SQLiteOpenHelper.m" />
+        <header-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/ext/NSString+ZIMString.h" />
+        <source-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/ext/NSString+ZIMString.m" />
+        <header-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/sql/ZIMSqlDataManipulationCommand.h" />
+        <header-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/sql/ZIMSqlExpression.h" />
+        <source-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/sql/ZIMSqlExpression.m" />
+        <header-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/sql/ZIMSqlSelectStatement.h" />
+        <source-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/sql/ZIMSqlSelectStatement.m" />
+        <header-file src="ios/common/BackgroundGeolocation/SQLQueryBuilder/sql/ZIMSqlStatement.h" />
+        <!-- End of generated sources -->
      </platform>
 </plugin>

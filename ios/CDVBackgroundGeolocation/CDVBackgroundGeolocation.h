@@ -10,9 +10,9 @@
 //  https://github.com/christocracy/cordova-plugin-background-geolocation
 
 #import <Cordova/CDVPlugin.h>
-#import "ProviderDelegate.h"
+#import "MAURProviderDelegate.h"
 
-@interface CDVBackgroundGeolocation : CDVPlugin <ProviderDelegate>
+@interface CDVBackgroundGeolocation : CDVPlugin <MAURProviderDelegate>
 
 - (void) configure:(CDVInvokedUrlCommand*)command;
 - (void) start:(CDVInvokedUrlCommand*)command;
@@ -31,6 +31,7 @@
 - (void) getLogEntries:(CDVInvokedUrlCommand*)command;
 - (void) startTask:(CDVInvokedUrlCommand*)command;
 - (void) endTask:(CDVInvokedUrlCommand*)command;
+- (void) forceSync:(CDVInvokedUrlCommand*)command;
 - (void) addEventListener:(CDVInvokedUrlCommand*)command;
 - (void) removeEventListener:(CDVInvokedUrlCommand*)command;
 
