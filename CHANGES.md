@@ -30,6 +30,11 @@ Since alpha.20:
 Since alpha.24:
 - Android Oreo support
 
+Since alpha.25:
+- method forceSync
+- option to get logs by offset and filter by log level
+- log uncaught exceptions
+
 #### Changed
 - start and stop methods doesn't accept callback (use event listeners instead)
 - for background syncing syncUrl option is required
@@ -48,6 +53,12 @@ Since alpha.14:
 
 Since alpha.15:
 - shared code base with react-native
+
+Since alpha.25:
+- Android common error format
+- Android remove sync delay when conditions are met
+- Android consider HTTP 201 response code as succesful post
+- Android obey system sync setting
 
 ### Fixed
 
@@ -71,6 +82,10 @@ Since alpha.23:
 
 Since alpha.24:
 - Android fix service accidently started with default or stored config
+
+Since alpha.25:
+- Android add guards to prevent some race conditions
+- Android config null handling
 
 ### [2.3.3] - 2017-11-17
 ### Added
