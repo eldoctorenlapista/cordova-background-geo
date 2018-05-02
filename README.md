@@ -377,12 +377,35 @@ BackgroundGeolocation.switchMode(BackgroundGeolocation.FOREGROUND_MODE);
 BackgroundGeolocation.switchMode(BackgroundGeolocation.BACKGROUND_MODE);
 ```
 
-### getLogEntries(limit, success, fail)
+### forceSync(success, fail)
+Platform: Android, iOS
+
+Force sync of pending locations. Option `syncThreshold` will be ignored and
+all pending locations will be immediately posted to `syncUrl` in single batch.
+
+### getLogEntries(limit, offset, minLevel, success, fail)
 Platform: Android, iOS
 
 Return all logged events. Useful for plugin debugging.
-Parameter `limit` limits number of returned entries.
-**@see [Debugging](#debugging)** for more information.
+
+| Parameter  | Type          | Description                                                                                       |
+|------------|---------------|---------------------------------------------------------------------------------------------------|
+| `limit`    | `Number`      | limits number of returned entries                                                                 |
+| `offset`   | `Number`      | return entries from offset. Useful if you plan to implement infinite log scrolling*               |
+| `minLevel` | `String`      | return log entries above level. Available levels: ["TRACE", "DEBUG", "INFO", "WARN", "ERROR]      |
+| `success`  | `Function`    | callback function which will be called with log entries                                           |
+
+*[Example of infinite log scrolling](https://github.com/mauron85/react-native-background-geolocation-example/blob/master/src/scenes/Logs.js)
+
+Format of log entry:
+
+| Parameter   | Type          | Description                                                                                       |
+|-------------|---------------|---------------------------------------------------------------------------------------------------|
+| `id`        | `Number`      | id of log entry as stored in db                                                                   |
+| `timestamp` | `Number`      | timestamp in milliseconds since beginning of UNIX epoch                                           |
+| `level`     | `String`      | log level                                                                                         |
+| `message`   | `String`      | log message                                                                                       |
+| `stackTrace`| `String`      | recorded stacktrace (Android only, on iOS part of message)                                        |
 
 ### removeAllListeners(event)
 
