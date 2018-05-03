@@ -8,7 +8,7 @@ Plugin has been upgraded significantly since v2. Please read docs thoroughly.
 
 ## Donation
 
-Please support my work and support continuous development by your donation.
+Please support my work and continued development with your donation.
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KTUXQQD85F666)
 
@@ -16,7 +16,7 @@ Please support my work and support continuous development by your donation.
 
 Cross-platform geolocation for Cordova / PhoneGap with battery-saving "circular region monitoring" and "stop detection".
 
-Plugin can be used for geolocation when app is running in foreground or background. It is more battery and data efficient than html5 geolocation or cordova-geolocation plugin. It can be used side by side with other geolocation providers (eg. html5 navigator.geolocation).
+This plugin can be used for geolocation when the app is running in the foreground or background. It is more battery and data efficient than html5 geolocation or cordova-geolocation plugin. It can be used side by side with other geolocation providers (eg. html5 navigator.geolocation).
 
 You can choose from two location location providers:
 * **DISTANCE_FILTER_PROVIDER**
@@ -32,10 +32,10 @@ Checkout repository [cordova-plugin-background-geolocation-example](https://gith
 ## Submitting issues
 
 All new issues should follow instructions in [ISSUE_TEMPLATE.md](/ISSUE_TEMPLATE.md).
-Properly filled issue report will significantly reduce number of follow up questions and decrease issue resolving time.
+A properly filled issue report will significantly reduce number of follow up questions and decrease issue resolving time.
 Most issues cannot be resolved without debug logs. Please try to isolate debug lines related to your issue.
-Instructions how to prepare debug logs can be found in section [Debugging](#debugging).
-If you're reporting app crash, debug logs might not contain all needed informations about the cause of the crash.
+Instructions for how to prepare debug logs can be found in section [Debugging](#debugging).
+If you're reporting an app crash, debug logs might not contain all the necessary information about the cause of the crash.
 In that case, also provide relevant parts of output of `adb logcat` command.
 
 ## Migrations
@@ -253,7 +253,7 @@ ACT = ACTIVITY\_PROVIDER
 RAW = RAW\_PROVIDER
 
 
-Partial reconfiguration is possible be providing only some configuration options:
+Partial reconfiguration is possible by later providing a subset of the configuration options:
 
 ```
 BackgroundGeolocation.configure({
@@ -302,7 +302,7 @@ Authorization statuses:
 * AUTHORIZED - authorization to run in background and foreground
 * AUTHORIZED_FOREGROUND iOS only authorization to run in foreground only
 
-Note: In Android concept of authorization represent application permissions.
+Note: In the Android concept of authorization, these represent application permissions.
 
 ### showAppSettings()
 Platform: Android >= 6, iOS >= 8.0
@@ -335,7 +335,7 @@ BackgroundGeolocation.getLocations(
 ### getValidLocations(success, fail)
 Platform: iOS, Android
 
-Method will return locations, which has not been yet posted to server.
+Method will return locations which have not yet been posted to server.
 
 | Success callback parameter | Type    | Description                    |
 |----------------------------|---------|--------------------------------|
@@ -348,7 +348,7 @@ Delete location with locationId.
 
 ### deleteAllLocations(success, fail)
 
-**Note:** You don't need to delete all locations. Plugin manages number of locations automatically and location count never exceeds number as defined by `option.maxLocations`.
+**Note:** You don't need to delete all locations. The plugin manages the number of stored locations automatically and the total count never exceeds the number as defined by `option.maxLocations`.
 
 Platform: iOS, Android
 
@@ -360,10 +360,10 @@ Instead locations are marked as deleted. Locations marked as deleted will not ap
 ### switchMode(modeId, success, fail)
 Platform: iOS
 
-Normally plugin will handle switching between **BACKGROUND** and **FOREGROUND** mode itself.
-Calling switchMode you can override plugin behavior and force plugin to switch into other mode.
+Normally the plugin will handle switching between **BACKGROUND** and **FOREGROUND** mode itself.
+Calling switchMode you can override plugin behavior and force it to switch into other mode.
 
-In **FOREGROUND** mode plugin uses iOS local manager to receive locations and behavior is affected
+In **FOREGROUND** mode the plugin uses iOS local manager to receive locations and behavior is affected
 by `option.desiredAccuracy` and `option.distanceFilter`.
 
 In **BACKGROUND** mode plugin uses significant changes and region monitoring to receive locations
@@ -472,27 +472,27 @@ individually, or with `removeAllListeners`
 
 ## HTTP locations posting
 
-All locations updates are recorded in local db at all times. When App is in foreground or background in addition to storing location in local db,
-location callback function is triggered. Number of location stored in db is limited by `option.maxLocations` a never exceeds this number.
-Instead old locations are replaced by new ones.
+All locations updates are recorded in the local db at all times. When the App is in foreground or background, in addition to storing location in local db,
+the location callback function is triggered. The number of locations stored in db is limited by `option.maxLocations` and never exceeds this number.
+Instead, old locations are replaced by new ones.
 
 When `option.url` is defined, each location is also immediately posted to url defined by `option.url`.
-If post is successful, the location is marked as deleted in local db.
+If the post is successful, the location is marked as deleted in local db.
 
-When `option.syncUrl` is defined all failed to post locations will be coalesced and send in some time later in one single batch.
-Batch sync takes place only when number of failed to post locations reaches `option.syncTreshold`.
-Locations are send only in single batch, when number of locations reaches `option.syncTreshold`. (No individual location will be send)
+When `option.syncUrl` is defined, all locations that fail to post locations will be coalesced and sent in some time later in a one single batch.
+Batch sync takes place only when the number of failed-to-post locations reaches `option.syncTreshold`.
+Locations are sent only in single batch, when the number of locations reaches `option.syncTreshold`. (No individual locations will be sent)
 
-Request body of posted locations is always array, even when only one location is sent.
+The request body of posted locations is always an array, even when only one location is sent.
 
-Warning: `option.maxLocations` has to be larger than `option.syncThreshold`. It's recommended to be 2x larger. In other case location syncing might not work properly.
+Warning: `option.maxLocations` has to be larger than `option.syncThreshold`. It's recommended to be 2x larger. In any other case the location syncing might not work properly.
 
 ## Custom post template
 
-With `option.postTemplate` is possible to specify which location properties should be posted to `option.url` or `option.syncUrl`. This can be useful to reduce
-number of bytes sent over the "wire".
+With `option.postTemplate` it is possible to specify which location properties should be posted to `option.url` or `option.syncUrl`. This can be useful to reduce
+the number of bytes sent "over the wire".
 
-All wanted location properties has to be prefixed with `@`. For all available properties check [Location event](#location-event).
+All wanted location properties have to be prefixed with `@`. For all available properties check [Location event](#location-event).
 
 Two forms are supported:
 
@@ -516,12 +516,13 @@ BackgroundGeolocation.configure({
 ```
 
 Note: only string keys and values are supported.
-Note: Keep in mind that all locations (even single one) will be sent as array of object(s), when postTemplate is `jsonObject` and array of array(s) for `jsonArray`!
+Note: Keep in mind that all locations (even a single one) will be sent as an array of object(s), when postTemplate is `jsonObject` and array of array(s) for `jsonArray`!
 
 ### Android Headless Task (Experimental)
 
-Special task that gets executed when app is terminated, but plugin was configured to continue running in the background (option `stopOnTerminate: false`). In this scenario [Activity](https://developer.android.com/reference/android/app/Activity.html)
-was killed by the system and all registered event listeners will not be triggered until app is relaunched.
+A special task that gets executed when the app is terminated, but the plugin was configured to continue running in the background (option `stopOnTerminate: false`).
+In this scenario the [Activity](https://developer.android.com/reference/android/app/Activity.html)
+was killed by the system and all registered event listeners will not be triggered until the app is relaunched.
 
 **Note:** Prefer configuration options `url` and `syncUrl` over headless task. Use it sparingly!
 
@@ -531,7 +532,7 @@ was killed by the system and all registered event listeners will not be triggere
 | `event.name`       | `String`  | Name of the event [ "location", "stationary", "activity" ]             |
 | `event.params`     | `Object`  | Event parameters. @see [Events](#events)                               |
 
-Keep in mind that callback function lives in isolated scope. Variables from upper scope cannot be referenced!
+Keep in mind that the callback function lives in an isolated scope. Variables from a higher scope cannot be referenced!
 
 Following example requires [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) enabled backend server.
 
