@@ -291,7 +291,10 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             runOnWebViewThread(new Runnable() {
                 public void run() {
                     try {
-                        callbackContext.success(getLogs(data.getInt(0)));
+                        int limit = data.getInt(0);
+                        int offset = data.getInt(1);
+                        String minLevel = data.getString(2);
+                        callbackContext.success(getLogs(limit, offset, minLevel));
                     } catch (Exception e) {
                         callbackContext.sendPluginResult(ErrorPluginResult.from("Getting logs failed", e, PluginException.SERVICE_ERROR));
                     }
@@ -484,9 +487,9 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         return jsonLocationsArray;
     }
 
-    private JSONArray getLogs(Integer limit) throws Exception {
+    private JSONArray getLogs(Integer limit, int offset, String minLevel) throws Exception {
         JSONArray jsonLogsArray = new JSONArray();
-        Collection<LogEntry> logEntries = facade.getLogEntries(limit);
+        Collection<LogEntry> logEntries = facade.getLogEntries(limit, offset, minLevel);
         for (LogEntry logEntry : logEntries) {
             jsonLogsArray.put(logEntry.toJSONObject());
         }
