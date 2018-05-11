@@ -60,6 +60,10 @@ Since alpha.25:
 - Android consider HTTP 201 response code as succesful post
 - Android obey system sync setting
 
+Since alpha.28:
+- Android remove wake locks
+https://github.com/mauron85/background-geolocation-android/pull/4 by @grassick
+
 ### Fixed
 
 Since alpha.13:
