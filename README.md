@@ -206,7 +206,9 @@ function onDeviceReady() {
   // BackgroundGeolocation.start();
 
   // Don't forget to remove listeners at some point!
-  // BackgroundGeolocation.events.forEach(event => BackgroundGeolocation.removeAllListeners(event));
+  // BackgroundGeolocation.events.forEach(function(event) {
+  //   return BackgroundGeolocation.removeAllListeners(event);
+  // });
 }
 
 document.addEventListener('deviceready', onDeviceReady, false);
