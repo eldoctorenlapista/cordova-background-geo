@@ -4,6 +4,7 @@
 
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
+<!--- Please specify exact version numbers and don't use terms like "latest", as such reference to numeric version changes over the time -->
 * Plugin version:
 * Platform: iOS or Android
 * OS version:
