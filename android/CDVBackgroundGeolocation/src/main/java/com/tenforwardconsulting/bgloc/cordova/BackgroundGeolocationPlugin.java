@@ -130,10 +130,9 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     protected void pluginInitialize() {
         super.pluginInitialize();
 
-        facade = new BackgroundGeolocationFacade(this.getContext(), this);
-        facade.init();
-
         logger = LoggerManager.getLogger(BackgroundGeolocationPlugin.class);
+        facade = new BackgroundGeolocationFacade(this.getContext(), this);
+        facade.resume();
     }
 
     public boolean execute(String action, final JSONArray data, final CallbackContext callbackContext) {
@@ -353,7 +352,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
      */
     public void onPause(boolean multitasking) {
         logger.info("App will be paused multitasking={}", multitasking);
-        facade.switchMode(BackgroundGeolocationFacade.BACKGROUND_MODE);
+        facade.pause();
         sendEvent(BACKGROUND_EVENT);
     }
 
@@ -364,7 +363,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
      */
     public void onResume(boolean multitasking) {
         logger.info("App will be resumed multitasking={}", multitasking);
-        facade.switchMode(BackgroundGeolocationFacade.FOREGROUND_MODE);
+        facade.resume();
         sendEvent(FOREGROUND_EVENT);
     }
 
@@ -386,10 +385,10 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
      * The final call you receive before your activity is destroyed.
      * Checks to see if it should turn off
      */
-     @Override
+    @Override
     public void onDestroy() {
         logger.info("Destroying plugin");
-        facade.onAppDestroy();
+        facade.destroy();
         super.onDestroy();
     }
 
@@ -406,9 +405,9 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     }
 
     private void sendEvent(String name) {
-         if (callbackContext == null) {
-             return;
-         }
+        if (callbackContext == null) {
+            return;
+        }
         JSONObject event = new JSONObject();
         try {
             event.put("name", name);
@@ -498,7 +497,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
 
     private JSONObject checkStatus() throws Exception {
         JSONObject json = new JSONObject();
-        json.put("isRunning", LocationService.isRunning());
+        json.put("isRunning", facade.isRunning());
         json.put("hasPermissions", facade.hasPermissions()); //@Deprecated
         json.put("locationServicesEnabled", facade.locationServicesEnabled());
         json.put("authorization", facade.getAuthorizationStatus());
@@ -542,13 +541,15 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     }
 
     @Override
-    public void onLocationPause() {
-        sendEvent(STOP_EVENT);
-    }
-
-    @Override
-    public void onLocationResume() {
-        sendEvent(START_EVENT);
+    public void onServiceStatusChanged(int status) {
+        switch (status) {
+            case LocationService.SERVICE_STARTED:
+                sendEvent(START_EVENT);
+                return;
+            case LocationService.SERVICE_STOPPED:
+                sendEvent(STOP_EVENT);
+                return;
+        }
     }
 
     @Override

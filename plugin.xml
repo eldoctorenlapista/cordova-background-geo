@@ -36,7 +36,7 @@
         <framework src="android/common/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
         <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_LIBRARY_VERSION" />
-        <!-- Generated with gen_sources.sh @ 2018-05-02 07:18:07 -->
+        <!-- Generated with gen_sources.sh @ 2018-05-16 17:06:54 -->
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/bgloc/cordova/ConfigMapper.java" target-dir="src/com/marianhello/bgloc/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/bgloc/cordova" />
         <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/HandlerWrapper.java" target-dir="src/com/evgenii/jsevaluator" />
@@ -82,6 +82,7 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/LocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/ProviderDelegate.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/RawLocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/ProxyServiceConnection.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/ResourceResolver.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/sync/AccountHelper.java" target-dir="src/com/marianhello/bgloc/sync" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/sync/Authenticator.java" target-dir="src/com/marianhello/bgloc/sync" />
@@ -101,6 +102,7 @@
         <source-file src="android/common/src/main/java/com/tenforwardconsulting/bgloc/DistanceFilterLocationProvider.java" target-dir="src/com/tenforwardconsulting/bgloc" />
         <source-file src="android/common/src/main/java/org/apache/commons/io/Charsets.java" target-dir="src/org/apache/commons/io" />
         <source-file src="android/common/src/main/java/org/apache/commons/io/input/ReversedLinesFileReader.java" target-dir="src/org/apache/commons/io/input" />
+        <source-file src="android/common/src/main/java/org/chromium/content/browser/ThreadUtils.java" target-dir="src/org/chromium/content/browser" />
         <source-file src="android/common/src/main/java/ru/andremoniy/sqlbuilder/SqlExpression.java" target-dir="src/ru/andremoniy/sqlbuilder" />
         <source-file src="android/common/src/main/java/ru/andremoniy/sqlbuilder/SqlSelectStatement.java" target-dir="src/ru/andremoniy/sqlbuilder" />
         <source-file src="android/common/src/main/java/ru/andremoniy/sqlbuilder/SqlStatement.java" target-dir="src/ru/andremoniy/sqlbuilder" />
