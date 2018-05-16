@@ -64,6 +64,10 @@ Since alpha.28:
 - Android remove wake locks
 https://github.com/mauron85/background-geolocation-android/pull/4 by @grassick
 
+Since alpha.29:
+- Android show service notification only when in background
+- Android remove config option startForeground (related to above)
+
 ### Fixed
 
 Since alpha.13:
