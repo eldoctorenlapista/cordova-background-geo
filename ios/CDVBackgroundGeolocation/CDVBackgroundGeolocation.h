@@ -28,6 +28,7 @@
 - (void) getValidLocations:(CDVInvokedUrlCommand*)command;
 - (void) deleteLocation:(CDVInvokedUrlCommand*)command;
 - (void) deleteAllLocations:(CDVInvokedUrlCommand*)command;
+- (void) getCurrentLocation:(CDVInvokedUrlCommand*)command;
 - (void) getLogEntries:(CDVInvokedUrlCommand*)command;
 - (void) startTask:(CDVInvokedUrlCommand*)command;
 - (void) endTask:(CDVInvokedUrlCommand*)command;

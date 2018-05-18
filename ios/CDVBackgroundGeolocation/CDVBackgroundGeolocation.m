@@ -247,6 +247,33 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     }];
 }
 
+- (void) getCurrentLocation:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@"%@ #%@", TAG, @"getCurrentLocation");
+    [self.commandDelegate runInBackground:^{
+        NSError *error = nil;
+        NSArray *args = command.arguments;
+        int timeout = [args objectAtIndex: 0] == [NSNull null] ? INT_MAX : [[args objectAtIndex: 0] intValue];
+        long maximumAge = [args objectAtIndex: 1] == [NSNull null] ? LONG_MAX : [[args objectAtIndex: 1] longValue];
+        BOOL enableHighAccuracy = [args objectAtIndex: 2] == [NSNull null] ? NO : [[args objectAtIndex: 2] boolValue];
+
+        MAURLocation *location = [facade getCurrentLocation:timeout maximumAge:maximumAge enableHighAccuracy:enableHighAccuracy error:&error];
+        CDVPluginResult* result;
+        if (location != nil) {
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[location toDictionary]];
+        } else {
+            NSDictionary *userInfo = [error userInfo];
+            NSString *errorMessage = [error localizedDescription];
+            if (errorMessage == nil) {
+                errorMessage = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
+            }
+            NSDictionary *errorDict = @{ @"code": [NSNumber numberWithLong:error.code], @"message": errorMessage};
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDict];
+        }
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }];
+}
+
 - (void) getLogEntries:(CDVInvokedUrlCommand*)command
 {
     NSLog(@"%@ #%@", TAG, @"getLogEntries");

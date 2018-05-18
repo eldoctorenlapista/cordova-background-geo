@@ -250,7 +250,7 @@
         <framework src="AudioToolbox.framework" weak="true" />
         <framework src="AVFoundation.framework" weak="true" />
         <framework src="libsqlite3.dylib" weak="true" />
-        <!-- Generated with gen_sources.sh @ 2018-04-30 17:38:27 -->
+        <!-- Generated with gen_sources.sh @ 2018-05-18 12:29:31 -->
         <header-file src="ios/CDVBackgroundGeolocation/CDVBackgroundGeolocation.h" />
         <source-file src="ios/CDVBackgroundGeolocation/CDVBackgroundGeolocation.m" />
         <header-file src="ios/common/BackgroundGeolocation/CocoaLumberjack.h" />
@@ -259,6 +259,16 @@
         <source-file src="ios/common/BackgroundGeolocation/FMDB.m" />
         <header-file src="ios/common/BackgroundGeolocation/FMDBLogger.h" />
         <source-file src="ios/common/BackgroundGeolocation/FMDBLogger.m" />
+        <header-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTUHeadingRequest.h" />
+        <source-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTUHeadingRequest.m" />
+        <header-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTULocationManager+Internal.h" />
+        <header-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTULocationManager.h" />
+        <source-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTULocationManager.m" />
+        <header-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTULocationRequest.h" />
+        <source-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTULocationRequest.m" />
+        <header-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTULocationRequestDefines.h" />
+        <header-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTURequestIDGenerator.h" />
+        <source-file src="ios/common/BackgroundGeolocation/INTULocationManager/INTURequestIDGenerator.m" />
         <header-file src="ios/common/BackgroundGeolocation/MAURAbstractLocationProvider.h" />
         <source-file src="ios/common/BackgroundGeolocation/MAURAbstractLocationProvider.m" />
         <header-file src="ios/common/BackgroundGeolocation/MAURActivity.h" />

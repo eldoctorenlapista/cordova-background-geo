@@ -35,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
+import java.util.concurrent.TimeoutException;
 
 public class BackgroundGeolocationPlugin extends CordovaPlugin implements PluginDelegate {
 
@@ -59,6 +60,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     public static final String ACTION_GET_VALID_LOCATIONS = "getValidLocations";
     public static final String ACTION_DELETE_LOCATION = "deleteLocation";
     public static final String ACTION_DELETE_ALL_LOCATIONS = "deleteAllLocations";
+    public static final String ACTION_GET_CURRENT_LOCATION = "getCurrentLocation";
     public static final String ACTION_GET_CONFIG = "getConfig";
     public static final String ACTION_GET_LOG_ENTRIES = "getLogEntries";
     public static final String ACTION_CHECK_STATUS = "checkStatus";
@@ -103,7 +105,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         public static PluginResult from(PluginException e) {
             JSONObject json = new JSONObject();
             try {
-                json.put("code", e.getMessage());
+                json.put("code", e.getCode());
                 json.put("message", e.getMessage());
                 if (e.getCause() != null) {
                     json.put("cause", from(e.getCause()));
@@ -270,6 +272,25 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             });
 
             return true;
+        } else if (ACTION_GET_CURRENT_LOCATION.equals(action)) {
+            runOnWebViewThread(new Runnable() {
+                @Override
+                public void run() {
+                    int timeout = data.optInt(0, Integer.MAX_VALUE);
+                    long maximumAge = data.optLong(1, Long.MAX_VALUE);
+                    boolean enableHighAccuracy = data.optBoolean(2, false);
+                    try {
+                        BackgroundLocation location = getCurrentLocation(timeout, maximumAge, enableHighAccuracy);
+                        callbackContext.success(location.toJSONObject());
+                    } catch (JSONException e) {
+                        callbackContext.sendPluginResult(ErrorPluginResult.from(e.getMessage(), 2));
+                    } catch (PluginException e) {
+                        callbackContext.sendPluginResult(ErrorPluginResult.from(e));
+                    }
+                }
+            });
+
+            return true;
         } else if (ACTION_GET_CONFIG.equals(action)) {
             runOnWebViewThread(new Runnable() {
                 public void run() {
@@ -342,6 +363,24 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         } else {
             logger.debug("Permissions not granted");
             cordova.requestPermissions(this, PERMISSIONS_REQUEST_CODE, BackgroundGeolocationFacade.PERMISSIONS);
+        }
+    }
+
+    private BackgroundLocation getCurrentLocation(int timeout, long maximumAge, boolean enableHighAccuracy) throws PluginException {
+        try {
+            BackgroundLocation location = facade.getCurrentLocation(timeout, maximumAge, enableHighAccuracy);
+            if (location == null) {
+                throw new PluginException("Location not available", 2); // LOCATION_UNAVAILABLE
+            }
+            return location;
+        } catch (PluginException e) {
+            if (e.getCode() == PluginException.PERMISSION_DENIED_ERROR) {
+                throw new PluginException("Permission denied", 1); // PERMISSION_DENIED
+            } else {
+                throw new PluginException(e.getMessage(), 2); // LOCATION_UNAVAILABLE
+            }
+        } catch (TimeoutException e) {
+            throw new PluginException("Location request timed out", 3);
         }
     }
 
@@ -495,7 +534,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
         return jsonLogsArray;
     }
 
-    private JSONObject checkStatus() throws Exception {
+    private JSONObject checkStatus() throws JSONException, PluginException {
         JSONObject json = new JSONObject();
         json.put("isRunning", facade.isRunning());
         json.put("hasPermissions", facade.hasPermissions()); //@Deprecated

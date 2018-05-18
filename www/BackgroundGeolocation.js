@@ -58,6 +58,10 @@ var BackgroundGeolocation = {
   LOG_DEBUG: 'DEBUG',
   LOG_TRACE: 'TRACE',
 
+  PERMISSION_DENIED: 1,
+  LOCATION_UNAVAILABLE: 2,
+  TIMEOUT: 3,
+
   configure: function (config, success, failure) {
     exec(success || emptyFnc,
       failure || emptyFnc,
@@ -162,6 +166,14 @@ var BackgroundGeolocation = {
       failure || emptyFnc,
       'BackgroundGeolocation',
       'deleteAllLocations', []);
+  },
+
+  getCurrentLocation: function(success, failure, options) {
+    options = options || {};
+    exec(success || emptyFnc,
+      failure || emptyFnc,
+      'BackgroundGeolocation',
+      'getCurrentLocation', [options.timeout, options.maximumAge, options.enableHighAccuracy]);
   },
 
   getLogEntries: function(limit /*, offset = 0, minLevel = "DEBUG", success = emptyFnc, failure = emptyFnc */) {
