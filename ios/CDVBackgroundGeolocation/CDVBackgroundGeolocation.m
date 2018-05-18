@@ -52,8 +52,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         if ([facade configure:config error:&error]) {
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         } else {
-            NSString *errorMessage = [error localizedDescription];
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self errorToDictionary:error]];
         }
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
@@ -223,8 +222,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         if (success) {
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         } else {
-            NSString *errorMessage = [error localizedDescription];
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self errorToDictionary:error]];
         }
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
@@ -240,8 +238,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         if (success) {
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         } else {
-            NSString *errorMessage = [error localizedDescription];
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMessage];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self errorToDictionary:error]];
         }
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
@@ -262,13 +259,7 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         if (location != nil) {
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[location toDictionary]];
         } else {
-            NSDictionary *userInfo = [error userInfo];
-            NSString *errorMessage = [error localizedDescription];
-            if (errorMessage == nil) {
-                errorMessage = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
-            }
-            NSDictionary *errorDict = @{ @"code": [NSNumber numberWithLong:error.code], @"message": errorMessage};
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDict];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self errorToDictionary:error]];
         }
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
@@ -365,15 +356,19 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
         return;
     }
 
+    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self errorToDictionary:error]];
+    [cordovaResult setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:cordovaResult callbackId:callbackId];
+}
+
+- (NSDictionary*) errorToDictionary:(NSError*)error
+{
     NSDictionary *userInfo = [error userInfo];
     NSString *errorMessage = [error localizedDescription];
     if (errorMessage == nil) {
         errorMessage = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
     }
-    NSDictionary *errorDict = @{ @"code": [NSNumber numberWithLong:error.code], @"message": errorMessage};
-    CDVPluginResult* cordovaResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDict];
-    [cordovaResult setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:cordovaResult callbackId:callbackId];
+    return @{ @"code": [NSNumber numberWithLong:error.code], @"message": errorMessage};
 }
 
 - (void) onAuthorizationChanged:(MAURLocationAuthorizationStatus)authStatus
