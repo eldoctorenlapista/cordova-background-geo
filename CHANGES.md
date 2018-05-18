@@ -35,6 +35,9 @@ Since alpha.25:
 - option to get logs by offset and filter by log level
 - log uncaught exceptions
 
+Since alpha.30:
+- method getCurrentLocation
+
 #### Changed
 - start and stop methods doesn't accept callback (use event listeners instead)
 - for background syncing syncUrl option is required
