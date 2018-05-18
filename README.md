@@ -296,6 +296,7 @@ One time location check to get current location of the device.
 | `message`                  | `String`  | Message describing the details of the error                    |
 
 Error codes:
+
 | Value | Associated constant  | Description                                                              |
 |-------|----------------------|--------------------------------------------------------------------------|
 | 1     | PERMISSION_DENIED    | Request failed due missing permissions                                   |
