@@ -275,6 +275,33 @@ Platform: iOS, Android
 
 Stop background geolocation.
 
+### getCurrentLocation(success, fail, options)
+Platform: iOS, Android
+
+One time location check to get current location of the device.
+
+| Option parameter           | Type      | Description                                                                            |
+|----------------------------|-----------|----------------------------------------------------------------------------------------|
+| `timeout`                  | `Number`  | Maximum time in milliseconds device will wait for location                             |
+| `maximumAge`               | `Number`  | Maximum age in milliseconds of a possible cached location that is acceptable to return |
+| `enableHighAccuracy`       | `Boolean` | if true and if the device is able to provide a more accurate position, it will do so   |
+
+| Success callback parameter | Type      | Description                                                    |
+|----------------------------|-----------|----------------------------------------------------------------|
+| `location`                 | `Object`  | location object (@see [Location event](#location-event))       |
+
+| Error callback parameter   | Type      | Description                                                    |
+|----------------------------|-----------|----------------------------------------------------------------|
+| `code`                     | `Number`  | Reason of an error occurring when using the geolocating device |
+| `message`                  | `String`  | Message describing the details of the error                    |
+
+Error codes:
+| Value | Associated constant  | Description                                                              |
+|-------|----------------------|--------------------------------------------------------------------------|
+| 1     | PERMISSION_DENIED    | Request failed due missing permissions                                   |
+| 2     | LOCATION_UNAVAILABLE | Internal source of location returned an internal error                   |
+| 3     | TIMEOUT              | Timeout defined by `option.timeout was exceeded                          |
+
 ### isLocationEnabled(success, fail)
 Deprecated: This method is deprecated and will be removed in next major version.
 Use `checkStatus` as replacement.
