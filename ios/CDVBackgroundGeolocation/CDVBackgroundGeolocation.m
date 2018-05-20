@@ -269,9 +269,15 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
 {
     NSLog(@"%@ #%@", TAG, @"getLogEntries");
     [self.commandDelegate runInBackground:^{
-        NSInteger limit = [command.arguments objectAtIndex: 0] == [NSNull null]
-            ? 0 : [[command.arguments objectAtIndex: 0] integerValue];
-        NSArray *logs = [facade getLogEntries:limit];
+        NSArray *args = command.arguments;
+        NSInteger limit = [args objectAtIndex: 0] == [NSNull null]
+            ? 0 : [[args objectAtIndex: 0] integerValue];
+        NSInteger entryId = [args objectAtIndex: 1] == [NSNull null]
+            ? 0 : [[args objectAtIndex: 1] integerValue];
+        NSString *minLogLevel = [args objectAtIndex: 2] == [NSNull null]
+            ? @"DEBUG" : [args objectAtIndex: 2];
+
+        NSArray *logs = [facade getLogEntries:limit fromLogEntryId:entryId minLogLevelFromString:minLogLevel];
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:logs];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
