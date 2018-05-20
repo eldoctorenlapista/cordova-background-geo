@@ -98,6 +98,10 @@ Since alpha.25:
 - Android add guards to prevent some race conditions
 - Android config null handling
 
+Since alpha.31:
+- iOS fix error message format
+- iOS fix missing getLogEntries arguments
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
