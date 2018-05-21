@@ -36,8 +36,9 @@
         <framework src="android/common/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:$GOOGLE_PLAY_SERVICES_VERSION" />
         <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_LIBRARY_VERSION" />
-        <!-- Generated with gen_sources.sh @ 2018-05-16 17:06:54 -->
+        <!-- Generated with gen_sources.sh @ 2018-05-22 20:05:38 -->
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/bgloc/cordova/ConfigMapper.java" target-dir="src/com/marianhello/bgloc/cordova" />
+        <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/marianhello/bgloc/cordova/PermissionManager.java" target-dir="src/com/marianhello/bgloc/cordova" />
         <source-file src="android/CDVBackgroundGeolocation/src/main/java/com/tenforwardconsulting/bgloc/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/bgloc/cordova" />
         <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/HandlerWrapper.java" target-dir="src/com/evgenii/jsevaluator" />
         <source-file src="android/common/src/main/java/com/evgenii/jsevaluator/interfaces/CallJavaResultInterface.java" target-dir="src/com/evgenii/jsevaluator/interfaces" />
@@ -250,7 +251,7 @@
         <framework src="AudioToolbox.framework" weak="true" />
         <framework src="AVFoundation.framework" weak="true" />
         <framework src="libsqlite3.dylib" weak="true" />
-        <!-- Generated with gen_sources.sh @ 2018-05-18 12:29:31 -->
+        <!-- Generated with gen_sources.sh @ 2018-05-22 13:19:11 -->
         <header-file src="ios/CDVBackgroundGeolocation/CDVBackgroundGeolocation.h" />
         <source-file src="ios/CDVBackgroundGeolocation/CDVBackgroundGeolocation.m" />
         <header-file src="ios/common/BackgroundGeolocation/CocoaLumberjack.h" />
@@ -293,8 +294,8 @@
         <source-file src="ios/common/BackgroundGeolocation/MAURLocation.m" />
         <header-file src="ios/common/BackgroundGeolocation/MAURLocationContract.h" />
         <source-file src="ios/common/BackgroundGeolocation/MAURLocationContract.m" />
-        <header-file src="ios/common/BackgroundGeolocation/MAURLocationController.h" />
-        <source-file src="ios/common/BackgroundGeolocation/MAURLocationController.m" />
+        <header-file src="ios/common/BackgroundGeolocation/MAURLocationManager.h" />
+        <source-file src="ios/common/BackgroundGeolocation/MAURLocationManager.m" />
         <header-file src="ios/common/BackgroundGeolocation/MAURLogReader.h" />
         <source-file src="ios/common/BackgroundGeolocation/MAURLogReader.m" />
         <header-file src="ios/common/BackgroundGeolocation/MAURLogging.h" />

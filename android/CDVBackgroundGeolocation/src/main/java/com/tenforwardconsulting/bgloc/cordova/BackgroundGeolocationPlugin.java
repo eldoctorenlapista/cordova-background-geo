@@ -22,6 +22,7 @@ import com.marianhello.bgloc.LocationService;
 import com.marianhello.bgloc.PluginDelegate;
 import com.marianhello.bgloc.PluginException;
 import com.marianhello.bgloc.cordova.ConfigMapper;
+import com.marianhello.bgloc.cordova.PermissionManager;
 import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.logging.LogEntry;
@@ -34,8 +35,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeoutException;
+
+import static com.marianhello.bgloc.BackgroundGeolocationFacade.PERMISSIONS;
 
 public class BackgroundGeolocationPlugin extends CordovaPlugin implements PluginDelegate {
 
@@ -276,17 +280,29 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             runOnWebViewThread(new Runnable() {
                 @Override
                 public void run() {
-                    int timeout = data.optInt(0, Integer.MAX_VALUE);
-                    long maximumAge = data.optLong(1, Long.MAX_VALUE);
-                    boolean enableHighAccuracy = data.optBoolean(2, false);
-                    try {
-                        BackgroundLocation location = getCurrentLocation(timeout, maximumAge, enableHighAccuracy);
-                        callbackContext.success(location.toJSONObject());
-                    } catch (JSONException e) {
-                        callbackContext.sendPluginResult(ErrorPluginResult.from(e.getMessage(), 2));
-                    } catch (PluginException e) {
-                        callbackContext.sendPluginResult(ErrorPluginResult.from(e));
-                    }
+                    PermissionManager permissionManager = PermissionManager.getInstance(cordova);
+                    permissionManager.checkPermissions(Arrays.asList(PERMISSIONS), new PermissionManager.PermissionRequestListener() {
+                        @Override
+                        public void onPermissionGranted() {
+                            int timeout = data.optInt(0, Integer.MAX_VALUE);
+                            long maximumAge = data.optLong(1, Long.MAX_VALUE);
+                            boolean enableHighAccuracy = data.optBoolean(2, false);
+                            try {
+                                BackgroundLocation location = getCurrentLocation(timeout, maximumAge, enableHighAccuracy);
+                                callbackContext.success(location.toJSONObject());
+                            } catch (JSONException e) {
+                                callbackContext.sendPluginResult(ErrorPluginResult.from(e.getMessage(), 2));
+                            } catch (PluginException e) {
+                                callbackContext.sendPluginResult(ErrorPluginResult.from(e));
+                            }
+                        }
+
+                        @Override
+                        public void onPermissionDenied() {
+                            logger.info("User denied requested permissions");
+                            callbackContext.sendPluginResult(ErrorPluginResult.from("Permission denied", 1));
+                        }
+                    });
                 }
             });
 

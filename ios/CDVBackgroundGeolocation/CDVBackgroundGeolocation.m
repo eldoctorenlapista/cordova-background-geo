@@ -9,7 +9,6 @@
 //  This is class is using code from christocracy cordova-plugin-background-geolocation plugin
 //  https://github.com/christocracy/cordova-plugin-background-geolocation
 
-
 #import "CDVBackgroundGeolocation.h"
 #import "MAURConfig.h"
 #import "MAURBackgroundGeolocationFacade.h"
@@ -436,8 +435,12 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
  */
 -(void) onFinishLaunching:(NSNotification *)notification
 {
+    if (@available(iOS 10, *)) {
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        center.delegate = self;
+    }
+    
     NSDictionary *dict = [notification userInfo];
-
     if ([dict objectForKey:UIApplicationLaunchOptionsLocationKey]) {
         NSLog(@"%@ %@", TAG, @"started by system on location event.");
         MAURConfig *config = [facade getConfig];
@@ -446,6 +449,13 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
             [facade switchMode:MAURBackgroundMode];
         }
     }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+    completionHandler(UNNotificationPresentationOptionAlert);
 }
 
 -(void) onAppTerminate:(NSNotification *)notification
