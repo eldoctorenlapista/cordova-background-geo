@@ -71,6 +71,19 @@ Since alpha.29:
 - Android show service notification only when in background
 - Android remove config option startForeground (related to above)
 
+Since alpha.32:
+- Android bring back startOnForeground config option (BREAKING CHANGE!)
+
+startOnForeground has slightly different meaning.
+
+If false (default) then service will create notification and promotes
+itself to foreground service, when client unbinds from service.
+This typically happens when application is moving to background.
+If app is moving back to foreground (becoming visible to user)
+service destroys notification and also stop being foreground service.
+
+If true service will create notification and will stay in foreground at all times.
+
 ### Fixed
 
 Since alpha.13:
@@ -101,6 +114,11 @@ Since alpha.25:
 Since alpha.31:
 - iOS fix error message format
 - iOS fix missing getLogEntries arguments
+
+Since alpha.32:
+- iOS display debug notifications in foreground on iOS >= 10
+- iOS missing activity provider stationary event
+- Android getCurrentLocation request permission prompt
 
 ### [2.3.3] - 2017-11-17
 ### Added
