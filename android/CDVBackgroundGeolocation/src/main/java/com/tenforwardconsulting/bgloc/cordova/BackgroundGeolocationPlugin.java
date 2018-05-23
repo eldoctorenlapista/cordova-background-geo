@@ -14,7 +14,6 @@ package com.tenforwardconsulting.bgloc.cordova;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.PackageManager;
 
 import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.marianhello.bgloc.Config;
@@ -22,7 +21,6 @@ import com.marianhello.bgloc.LocationService;
 import com.marianhello.bgloc.PluginDelegate;
 import com.marianhello.bgloc.PluginException;
 import com.marianhello.bgloc.cordova.ConfigMapper;
-import com.marianhello.bgloc.cordova.PermissionManager;
 import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.logging.LogEntry;
@@ -35,11 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.TimeoutException;
-
-import static com.marianhello.bgloc.BackgroundGeolocationFacade.PERMISSIONS;
 
 public class BackgroundGeolocationPlugin extends CordovaPlugin implements PluginDelegate {
 
@@ -73,8 +67,6 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     public static final String ACTION_END_TASK = "endTask";
     public static final String ACTION_REGISTER_HEADLESS_TASK = "registerHeadlessTask";
     public static final String ACTION_FORCE_SYNC = "forceSync";
-
-    private static final int PERMISSIONS_REQUEST_CODE = 1;
 
     private BackgroundGeolocationFacade facade;
 
@@ -280,29 +272,17 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             runOnWebViewThread(new Runnable() {
                 @Override
                 public void run() {
-                    PermissionManager permissionManager = PermissionManager.getInstance(cordova);
-                    permissionManager.checkPermissions(Arrays.asList(PERMISSIONS), new PermissionManager.PermissionRequestListener() {
-                        @Override
-                        public void onPermissionGranted() {
-                            int timeout = data.optInt(0, Integer.MAX_VALUE);
-                            long maximumAge = data.optLong(1, Long.MAX_VALUE);
-                            boolean enableHighAccuracy = data.optBoolean(2, false);
-                            try {
-                                BackgroundLocation location = getCurrentLocation(timeout, maximumAge, enableHighAccuracy);
-                                callbackContext.success(location.toJSONObject());
-                            } catch (JSONException e) {
-                                callbackContext.sendPluginResult(ErrorPluginResult.from(e.getMessage(), 2));
-                            } catch (PluginException e) {
-                                callbackContext.sendPluginResult(ErrorPluginResult.from(e));
-                            }
-                        }
-
-                        @Override
-                        public void onPermissionDenied() {
-                            logger.info("User denied requested permissions");
-                            callbackContext.sendPluginResult(ErrorPluginResult.from("Permission denied", 1));
-                        }
-                    });
+                    int timeout = data.optInt(0, Integer.MAX_VALUE);
+                    long maximumAge = data.optLong(1, Long.MAX_VALUE);
+                    boolean enableHighAccuracy = data.optBoolean(2, false);
+                    try {
+                        BackgroundLocation location = facade.getCurrentLocation(timeout, maximumAge, enableHighAccuracy);
+                        callbackContext.success(location.toJSONObject());
+                    } catch (JSONException e) {
+                        callbackContext.sendPluginResult(ErrorPluginResult.from(e.getMessage(), 2));
+                    } catch (PluginException e) {
+                        callbackContext.sendPluginResult(ErrorPluginResult.from(e));
+                    }
                 }
             });
 
@@ -374,30 +354,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     }
 
     private void start() {
-        if (facade.hasPermissions()) {
-            facade.start();
-        } else {
-            logger.debug("Permissions not granted");
-            cordova.requestPermissions(this, PERMISSIONS_REQUEST_CODE, BackgroundGeolocationFacade.PERMISSIONS);
-        }
-    }
-
-    private BackgroundLocation getCurrentLocation(int timeout, long maximumAge, boolean enableHighAccuracy) throws PluginException {
-        try {
-            BackgroundLocation location = facade.getCurrentLocation(timeout, maximumAge, enableHighAccuracy);
-            if (location == null) {
-                throw new PluginException("Location not available", 2); // LOCATION_UNAVAILABLE
-            }
-            return location;
-        } catch (PluginException e) {
-            if (e.getCode() == PluginException.PERMISSION_DENIED_ERROR) {
-                throw new PluginException("Permission denied", 1); // PERMISSION_DENIED
-            } else {
-                throw new PluginException(e.getMessage(), 2); // LOCATION_UNAVAILABLE
-            }
-        } catch (TimeoutException e) {
-            throw new PluginException("Location request timed out", 3);
-        }
+        facade.start();
     }
 
     /**
@@ -610,35 +567,5 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     @Override
     public void onError(PluginException e) {
         sendError(e);
-    }
-
-    @Override
-    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length == 0) {
-                    // permission denied
-                    logger.info("User denied requested permissions");
-                    onAuthorizationChanged(BackgroundGeolocationFacade.AUTHORIZATION_DENIED);
-                    return;
-                }
-                for (int grant : grantResults) {
-                    if (grant != PackageManager.PERMISSION_GRANTED) {
-                        // permission denied
-                        logger.info("User denied requested permissions");
-                        onAuthorizationChanged(BackgroundGeolocationFacade.AUTHORIZATION_DENIED);
-                        return;
-                    }
-                }
-
-                // permission was granted
-                // start service
-                logger.info("User granted requested permissions");
-                facade.start();
-
-                return;
-            }
-        }
     }
 }
