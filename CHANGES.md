@@ -84,6 +84,9 @@ service destroys notification and also stop being foreground service.
 
 If true service will create notification and will stay in foreground at all times.
 
+Since alpha.33:
+- Android internal changes (permission handling)
+
 ### Fixed
 
 Since alpha.13:
