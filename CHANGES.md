@@ -72,9 +72,9 @@ Since alpha.29:
 - Android remove config option startForeground (related to above)
 
 Since alpha.32:
-- Android bring back startOnForeground config option (BREAKING CHANGE!)
+- Android bring back startForeground config option (BREAKING CHANGE!)
 
-startOnForeground has slightly different meaning.
+startForeground has slightly different meaning.
 
 If false (default) then service will create notification and promotes
 itself to foreground service, when client unbinds from service.
