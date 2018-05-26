@@ -123,6 +123,9 @@ Since alpha.32:
 - iOS missing activity provider stationary event
 - Android getCurrentLocation request permission prompt
 
+Since alpha.35:
+- Android fix issue #431 - "dependencies.gradle" not found
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
