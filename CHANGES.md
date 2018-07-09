@@ -126,6 +126,9 @@ Since alpha.32:
 Since alpha.35:
 - Android fix issue #431 - "dependencies.gradle" not found
 
+Since alpha.38:
+- iOS Fix crash on delete all location ([7392e39](https://github.com/mauron85/background-geolocation-ios/commit/7392e391c3de3ff0d6f5ef2ef19c34aba612bf9b) by [@acerbetti](https://github.com/acerbetti/))
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
