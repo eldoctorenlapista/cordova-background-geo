@@ -20,6 +20,9 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     NSString *callbackId;
     MAURConfig *config;
     MAURBackgroundGeolocationFacade* facade;
+
+    API_AVAILABLE(ios(10.0))
+    __weak id<UNUserNotificationCenterDelegate> prevNotificationDelegate;
 }
 
 - (void)pluginInitialize
@@ -441,6 +444,18 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     }
     
     NSDictionary *dict = [notification userInfo];
+
+    MAURConfig *config = [facade getConfig];
+    if (config.isDebugging)
+    {
+        if (@available(iOS 10, *))
+        {
+            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+            prevNotificationDelegate = center.delegate;
+            center.delegate = self;
+        }
+    }
+
     if ([dict objectForKey:UIApplicationLaunchOptionsLocationKey]) {
         NSLog(@"%@ %@", TAG, @"started by system on location event.");
         MAURConfig *config = [facade getConfig];
@@ -455,7 +470,18 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-    completionHandler(UNNotificationPresentationOptionAlert);
+    if (prevNotificationDelegate && [prevNotificationDelegate respondsToSelector:@selector(userNotificationCenter:willPresentNotification:withCompletionHandler:)])
+    {
+        // Give other delegates (like FCM) the chance to process this notification
+
+        [prevNotificationDelegate userNotificationCenter:center willPresentNotification:notification withCompletionHandler:^(UNNotificationPresentationOptions options) {
+            completionHandler(UNNotificationPresentationOptionAlert);
+        }];
+    }
+    else
+    {
+        completionHandler(UNNotificationPresentationOptionAlert);
+    }
 }
 
 -(void) onAppTerminate:(NSNotification *)notification
