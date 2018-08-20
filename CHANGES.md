@@ -87,6 +87,11 @@ If true service will create notification and will stay in foreground at all time
 Since alpha.33:
 - Android internal changes (permission handling)
 
+Since alpha.40:
+- Android disable notification sound and vibration on oreo
+(PR: [#9](https://github.com/mauron85/background-geolocation-android/pull/9)
+by [@danielgindi](https://github.com/danielgindi/))
+
 ### Fixed
 
 Since alpha.13:
@@ -135,6 +140,9 @@ Since alpha.39:
 Commit: [00e1314](https://github.com/mauron85/background-geolocation-android/commit/00e131478ad4e37576eb85581bb663b65302a4e0) by [@danielgindi](https://github.com/danielgindi/),
 fixes #201, #181, #172)
 
+Since alpha.40:
+- iOS Avoid taking control of UNUserNotificationCenter
+(PR: [#268](https://github.com/mauron85/react-native-background-geolocation/pull/268))
 
 ### [2.3.3] - 2017-11-17
 ### Added
