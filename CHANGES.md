@@ -38,6 +38,12 @@ Since alpha.25:
 Since alpha.30:
 - method getCurrentLocation
 
+Since alpha.41:
+- notificationsEnabled config option (by [@danielgindi](https://github.com/danielgindi/))
+More info: https://github.com/mauron85/react-native-background-geolocation/pull/269
+- Allow stopping location updates on status "285 Updates Not Required" (by [@danielgindi](https://github.com/danielgindi/))
+More info: https://github.com/mauron85/react-native-background-geolocation/pull/271
+
 #### Changed
 - start and stop methods doesn't accept callback (use event listeners instead)
 - for background syncing syncUrl option is required
