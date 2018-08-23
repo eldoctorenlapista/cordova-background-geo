@@ -33,6 +33,9 @@ public class ConfigMapper {
         if (jObject.has("debug")) {
             config.setDebugging(jObject.getBoolean("debug"));
         }
+        if (jObject.has("notificationsEnabled")) {
+            config.setNotificationsEnabled(jObject.getBoolean("notificationsEnabled"));
+        }
         if (jObject.has("notificationTitle")) {
             config.setNotificationTitle(!jObject.isNull("notificationTitle") ? jObject.getString("notificationTitle") : Config.NullString);
         }
@@ -105,6 +108,7 @@ public class ConfigMapper {
         json.put("distanceFilter", config.getDistanceFilter());
         json.put("desiredAccuracy", config.getDesiredAccuracy());
         json.put("debug", config.isDebugging());
+        json.put("notificationsEnabled", config.getNotificationsEnabled());
         json.put("notificationTitle", config.getNotificationTitle() != Config.NullString ? config.getNotificationTitle() : JSONObject.NULL);
         json.put("notificationText", config.getNotificationText() != Config.NullString ? config.getNotificationText() : JSONObject.NULL);
         json.put("notificationIconLarge", config.getLargeNotificationIcon() != Config.NullString ? config.getLargeNotificationIcon() : JSONObject.NULL);
