@@ -433,6 +433,12 @@ static NSString * const TAG = @"CDVBackgroundGeolocation";
     [facade switchMode:MAURBackgroundMode];
 }
 
+-(void) onAbortRequested
+{
+    NSLog(@"%@ %@", TAG, @"abort requested by the server");
+    [self sendEvent:@"abort_requested"];
+}
+
 /**@
  * on UIApplicationDidFinishLaunchingNotification
  */

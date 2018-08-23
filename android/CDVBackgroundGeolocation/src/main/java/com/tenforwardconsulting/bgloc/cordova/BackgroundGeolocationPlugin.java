@@ -45,6 +45,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     public static final String AUTHORIZATION_EVENT = "authorization";
     public static final String START_EVENT = "start";
     public static final String STOP_EVENT = "stop";
+    public static final String ABORT_REQUESTED_EVENT = "abort_requested";
 
     public static final String ACTION_START = "start";
     public static final String ACTION_STOP = "stop";
@@ -562,6 +563,11 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
                 sendEvent(STOP_EVENT);
                 return;
         }
+    }
+
+    @Override
+    public void onAbortRequested() {
+        sendEvent(ABORT_REQUESTED_EVENT, 0);
     }
 
     @Override

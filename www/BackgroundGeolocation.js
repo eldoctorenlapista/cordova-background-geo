@@ -33,7 +33,8 @@ var BackgroundGeolocation = {
     'error',
     'authorization',
     'foreground',
-    'background'
+    'background',
+    'abort_requested'
   ],
 
   DISTANCE_FILTER_PROVIDER: 0,
