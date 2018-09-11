@@ -150,6 +150,11 @@ Since alpha.40:
 - iOS Avoid taking control of UNUserNotificationCenter
 (PR: [#268](https://github.com/mauron85/react-native-background-geolocation/pull/268))
 
+Since alpha.42:
+- Android fix locationService treating success as errors
+(PR: [#13](https://github.com/mauron85/background-geolocation-android/pull/13)
+by [@hoisel](https://github.com/hoisel/))
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
