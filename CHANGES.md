@@ -1,9 +1,16 @@
 ## Changelog
 
+### [2.3.6] - 2018-09-11
+### Fixed
+- Android remove non public URL
+
+### [2.3.5] - 2018-03-29
+### Fixed
+- Android fix #384
+
 ### [2.3.3] - 2017-11-17
 ### Added
 - Android allow override google play services version
-
 
 ### [2.3.2] - 2017-11-06
 ### Fix
