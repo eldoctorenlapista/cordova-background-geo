@@ -21,7 +21,7 @@
     <platform name="android">
         <framework src="android/logtofile.gradle" custom="true" type="gradleReference"/>
         <framework src="com.google.android.gms:play-services-location:+" />
-        <framework src="com.android.support:support-v4:23+" />
+        <framework src="com.android.support:support-v4:27.1.0" />
         <source-file src="android/plugin/src/main/java/com/tenforwardconsulting/cordova/BackgroundGeolocationPlugin.java" target-dir="src/com/tenforwardconsulting/cordova"/>
         <source-file src="android/plugin/src/main/java/com/tenforwardconsulting/bgloc/DistanceFilterLocationProvider.java" target-dir="src/com/tenforwardconsulting/bgloc"/>
         <source-file src="android/plugin/src/main/java/com/marianhello/bgloc/AbstractLocationProvider.java" target-dir="src/com/marianhello/bgloc"/>
